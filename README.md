@@ -1,6 +1,12 @@
 ## Idea: Train a model to recognize IVR system like AF, FK or the Swedish Police
 
-### Goals:
+ ### Goals:
+
+1. Train the model to recognize queue number - when the robot operator says "Din plats är : <number>
+
+
+
+<!-- ### Goals:
 1. Train the model to recognize queue number - when the robot operator says "Din plats är : <number>
 
 ### Choose an architecture of one of the following:
@@ -26,4 +32,4 @@ Task 3: Validate on test set
   ↓
 Task 4: Deploy model to production
 
-
+ -->

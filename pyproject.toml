@@ -1,22 +1,17 @@
 [project]
-name = "audio-numbers-lab"
+name = "adaptive-ivr-agent"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "Rickard Åberg", email = "raberg@duck.com" }
+    { name = "Rickard Åberg", email = "19254086+kizouker@users.noreply.github.com" }
 ]
 requires-python = ">=3.12"
-dependencies = [
-    "librosa>=1.0.0",
-    "matplotlib>=3.11.2",
-    "numpy>=2.5.3",
-    "scikit-learn>=1.9.1",
-]
+dependencies = []
 
 [project.scripts]
-audio-numbers-lab = "audio_numbers_lab:main"
+adaptive-ivr-agent = "adaptive_ivr_agent:main"
 
 [build-system]
-requires = ["uv_build>=0.12.17,<0.13.0"]
+requires = ["uv_build>=0.13.1,<0.14.0"]
 build-backend = "uv_build"
