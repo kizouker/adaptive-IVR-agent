@@ -64,7 +64,7 @@ open -a "Audio MIDI Setup"
 - `open -a` = open an app by its name
 
 Then:
-![alt text](image-1.png)
+![alt text](multioutput.png)
 1. Click **+** at the bottom left → **Create Multi-Output Device**.
 2. Tick your **headphones** and **BlackHole 16ch**.
 3. Set **Primary Device** to your headphones.

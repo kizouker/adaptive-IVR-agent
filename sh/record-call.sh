@@ -4,13 +4,17 @@
 # Switches the Mac's audio output and microphone back when the script ends.
 #
 # Usage:
-#   ./sh/record-call.sh          checks, then records (you start the call yourself)
-#   ./sh/record-call.sh --call   checks, places the call from the Mac, then records
-#   ./sh/record-call.sh --check  only runs the checks (steps 1-4), then stops
+#   ./sh/record-call.sh             checks, then records (you start the call yourself)
+#   ./sh/record-call.sh --call      checks, places the call from the Mac, then records
+#   ./sh/record-call.sh --check     only runs the checks (steps 1-4), then stops
+#   ./sh/record-call.sh --airpods   listen in AirPods instead of the MacBook speakers
+#   (options can be combined, for example --airpods --call)
 set -euo pipefail
 
-MULTI_OUTPUT="IVR_Agent_Output"
-BLACKHOLE="BlackHole 16ch"          # ffmpeg records from this (IVR_Agent_Output sends sound into it)
+OUTPUT_SPEAKERS="IVR_Agent_Speakers"   # MacBook speakers + BlackHole (default)
+OUTPUT_AIRPODS="IVR_Agent_Output"      # AirPods + BlackHole (with --airpods)
+NORMAL_OUTPUT="Högtalare i MacBook Pro" # switch back to this if the script started on an IVR_Agent device
+BLACKHOLE="BlackHole 16ch"          # ffmpeg records from this (both outputs above send sound into it)
 MIC="MacBook Pro-mikrofon"
 CALL_NUMBER="+46771416416"          # Arbetsförmedlingen, job seekers
 TEST_SOUND="/System/Library/Sounds/Ping.aiff"
@@ -19,12 +23,14 @@ SILENT_BELOW_DB=-60
 YELLOW=$'\033[1;33m'
 GREEN=$'\033[1;32m'
 RED=$'\033[1;31m'
+BLUE=$'\033[1;34m'
 RESET=$'\033[0m'
 
 ok()   { echo "  ${GREEN}✓${RESET} $1"; }
 warn() { echo "  ${YELLOW}!${RESET} $1"; }
 fail() { echo "  ${RED}✗ $1${RESET}"; exit 1; }
-step() { echo; echo "${YELLOW}$1${RESET}"; }
+step() { echo; echo "${BLUE}$1${RESET}"; }
+info() { echo "  • $1"; }
 
 # Loudest point of a sound file, in dB
 max_db() {
@@ -34,8 +40,15 @@ max_db() {
 
 PLACE_CALL=false
 CHECK_ONLY=false
-if [ "${1:-}" = "--call" ]; then PLACE_CALL=true; fi
-if [ "${1:-}" = "--check" ]; then CHECK_ONLY=true; fi
+MULTI_OUTPUT="$OUTPUT_SPEAKERS"
+for arg in "$@"; do
+  case "$arg" in
+    --call)    PLACE_CALL=true ;;
+    --check)   CHECK_ONLY=true ;;
+    --airpods) MULTI_OUTPUT="$OUTPUT_AIRPODS" ;;
+    *) echo "Unknown option: $arg (use --call, --check or --airpods)"; exit 1 ;;
+  esac
+done
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 mkdir -p "$SCRIPT_DIR/../data/recordings"
@@ -56,12 +69,7 @@ if SwitchAudioSource -a -t output | grep -Fxq "$MULTI_OUTPUT"; then
 else
   fail "Output device '$MULTI_OUTPUT' not found (create it in Audio MIDI Setup)"
 fi
-CURRENT_OUTPUT="$(SwitchAudioSource -c -t output)"
-if [ "$CURRENT_OUTPUT" = "$MULTI_OUTPUT" ]; then
-  ok "Output '$MULTI_OUTPUT' is selected"
-else
-  warn "Output '$MULTI_OUTPUT' is not selected yet (now: '$CURRENT_OUTPUT'). Step 3 selects it."
-fi
+info "Output right now: '$(SwitchAudioSource -c -t output)' (step 3 switches it, you don't need to)"
 # ffmpeg always exits with an error code when it only lists devices,
 # so save the list first and search it afterwards
 FFMPEG_DEVICES="$(ffmpeg -hide_banner -f avfoundation -list_devices true -i "" 2>&1 || true)"
@@ -79,6 +87,10 @@ fi
 # ---------- 3. Switch output and microphone ----------
 step "3. Switch sound"
 ORIGINAL_OUTPUT="$(SwitchAudioSource -c -t output)"
+# If we start on one of our own IVR_Agent devices, switch back to normal speakers afterwards
+case "$ORIGINAL_OUTPUT" in
+  IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
+esac
 ORIGINAL_INPUT="$(SwitchAudioSource -c -t input)"
 
 switch_back() {
@@ -97,14 +109,14 @@ trap 'exit 130' INT TERM
 
 SwitchAudioSource -s "$MULTI_OUTPUT" -t output >/dev/null
 if [ "$(SwitchAudioSource -c -t output)" = "$MULTI_OUTPUT" ]; then
-  ok "Output is now '$MULTI_OUTPUT' (was '$ORIGINAL_OUTPUT')"
+  ok "Output is now '$MULTI_OUTPUT' (switches back to '$ORIGINAL_OUTPUT' when done)"
 else
   fail "Could not switch output to '$MULTI_OUTPUT'"
 fi
 
 SwitchAudioSource -s "$MIC" -t input >/dev/null
 if [ "$(SwitchAudioSource -c -t input)" = "$MIC" ]; then
-  ok "Microphone is now '$MIC' (was '$ORIGINAL_INPUT')"
+  ok "Microphone is now '$MIC' (switches back to '$ORIGINAL_INPUT' when done)"
 else
   fail "Could not switch microphone to '$MIC'"
 fi
