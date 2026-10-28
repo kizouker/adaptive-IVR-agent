@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-28",
-  "last_thought": "Code names chosen: Holdmate (agent), The Castle (agency), The Doorkeeper (robot). Docs are built from docs/templates via sh/apply-names.sh.",
-  "next_micro_step": "v1 (Thu 29 Oct): define the step-file format, then the mini practice robot with 3 lines made with say.",
+  "updated": "2026-10-29",
+  "last_thought": "Design research folded into reqs: FN-027..030 + NF-006, OQ-17/18, T-032..36; features/ now 57 scenarios, all 36 REQ IDs tagged.",
+  "next_micro_step": "v1 (Thu 29 Oct): step-file format (T-003), keyword table (T-004), mini robot (T-006); optionally add behave/pytest-bdd + step defs.",
   "priority_1": "v1: step file + mini practice robot",
   "priority_2": "Fill ROADMAP.MD (point to docs/04)"
 }
