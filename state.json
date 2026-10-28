@@ -1,0 +1,7 @@
+{
+  "updated": "2026-10-28",
+  "last_thought": "Code names chosen: Holdmate (agent), The Castle (agency), The Doorkeeper (robot). Docs are built from docs/templates via sh/apply-names.sh.",
+  "next_micro_step": "v1 (Thu 29 Oct): define the step-file format, then the mini practice robot with 3 lines made with say.",
+  "priority_1": "v1: step file + mini practice robot",
+  "priority_2": "Fill ROADMAP.MD (point to docs/04)"
+}

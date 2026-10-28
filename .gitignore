@@ -4,3 +4,4 @@ venv/
 
 ## recordings
 data/recordings/
+.env
