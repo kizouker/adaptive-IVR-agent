@@ -1,7 +1,7 @@
 {
   "updated": "2026-10-29",
-  "last_thought": "Restart pending (side-chat shell dead throughout). DONE: tickets renamed to REQ IDs; CI+check-reqs+pre-push+make-tickets scripts; v1 tests (constants in test_data.py) GREEN 9/9 via uv; src steps/keywords/robot; design note + mermaid; pre-push fixes (uv run, -S warning, switchaudio shebang). UNCERTAIN: merge of prompts/agent-instructions blocked by local .agents/process changes (stash+retry prescribed, outcome unknown); pre-push rerun after shebang fix unknown; possible 'wip' stash left. TODO after restart: git status/stash list, finish merge (keep USER_STORIES.md), pytest, pre-push, commit, push, make-tickets.sh. Standing rule from Rickard: NO hardcoding, use constants and data structures.",
-  "next_micro_step": "After restart: verify shell works, then git status + git stash list to recover merge state.",
+  "last_thought": "DONE: committed v1 skeleton (90fe6ef, .pyc amended out), merged prompts/agent-instructions clean (no conflicts, .agents/process identical), restored docs/USER_STORIES.md (staged, uncommitted). Tests GREEN 9/9 via homebrew pytest + PYTHONPATH=src. NOTES: pytest is NOT a project dep (uv run silently used outer pytest); uv cannot fetch (sandboxed, no network) so 'uv add --dev pytest' failed and left tree untouched; VIRTUAL_ENV points to nonexistent /Users/raberg/audio-numbers-lab/.venv. TODO: commit USER_STORIES.md + this state, push feat/v1-skeleton, run sh/make-tickets.sh. Standing rule from Rickard: NO hardcoding, use constants and data structures.",
+  "next_micro_step": "Commit restored USER_STORIES.md + state.json, push feat/v1-skeleton.",
   "priority_1": "v1: step file + mini practice robot",
   "priority_2": "Fill ROADMAP.MD (point to docs/04)"
 }
