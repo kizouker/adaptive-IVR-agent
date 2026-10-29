@@ -1,8 +1,8 @@
 # Tickets – Holdmate
 
-One ticket per requirement. Priority = hackathon day (v0 done … v5), post (after hackathon), future, always. Small enough for one work session. No GitHub issues created – only on request.
+One ticket per requirement. Each ticket carries its requirement ID as its name. Priority = hackathon day (v0 done … v5), post (after hackathon), future, always. Small enough for one work session. No GitHub issues created – only on request.
 
-### T-001 Record the robot voice
+### FN-REQ-IVR-001 Record the robot voice
 
 - REQ IDs: FN-REQ-IVR-001
 - Description: Record the robot side of a call to data/recordings/robot-YYYYMMDD-HHMMSS.wav (mono 16000 Hz) and switch the sound back when done.
@@ -10,7 +10,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: done (v0)
 - Depends on: –
 
-### T-002 Transcribe the newest recording
+### FN-REQ-IVR-002 Transcribe the newest recording
 
 - REQ IDs: FN-REQ-IVR-002
 - Description: Turn the newest wav into text with whisper-cli; save the .txt next to it and print it.
@@ -18,7 +18,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: done (v0)
 - Depends on: –
 
-### T-003 Save each call as steps
+### FN-REQ-IVR-003 Save each call as steps
 
 - REQ IDs: FN-REQ-IVR-003
 - Description: Define the step-file format and save each call/run as steps.
@@ -26,7 +26,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v1 (Thu 29 Oct)
 - Depends on: –
 
-### T-004 Keyword table
+### FN-REQ-IVR-004 Keyword table
 
 - REQ IDs: FN-REQ-IVR-004
 - Description: Table mapping each keyword to what it gets done, and back ("I want X → say Y").
@@ -34,7 +34,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v1 (Thu 29 Oct)
 - Depends on: –
 
-### T-005 Menu map with position
+### FN-REQ-IVR-005 Menu map with position
 
 - REQ IDs: FN-REQ-IVR-005
 - Description: Draw the menu map from the steps and mark the current position with *.
@@ -42,7 +42,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v3 (Sat 31 Oct)
 - Depends on: FN-REQ-IVR-003
 
-### T-006 Mini robot plays three lines
+### FN-REQ-IVR-006 Mini robot plays three lines
 
 - REQ IDs: FN-REQ-IVR-006
 - Description: Mini practice robot playing 3 The Doorkeeper lines made with `say`; each line saved as a step.
@@ -50,7 +50,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v1 (Thu 29 Oct)
 - Depends on: FN-REQ-IVR-003
 
-### T-007 Reactive robot
+### FN-REQ-IVR-007 Reactive robot
 
 - REQ IDs: FN-REQ-IVR-007
 - Description: Practice robot reacts to words and key presses, with "not understood" and yes/no handling.
@@ -58,7 +58,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v4 (Sun 1 Nov)
 - Depends on: FN-REQ-IVR-006
 
-### T-008 Pick words from the keyword table
+### FN-REQ-IVR-008 Pick words from the keyword table
 
 - REQ IDs: FN-REQ-IVR-008
 - Description: Holdmate picks words from the keyword table when talking to the practice robot.
@@ -66,7 +66,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v4 (Sun 1 Nov)
 - Depends on: FN-REQ-IVR-004, FN-REQ-IVR-007
 
-### T-009 Try words and fill the map
+### FN-REQ-IVR-009 Try words and fill the map
 
 - REQ IDs: FN-REQ-IVR-009
 - Description: Holdmate tries words on the practice robot and adds each observation to the menu map.
@@ -74,7 +74,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v4 (Sun 1 Nov)
 - Depends on: FN-REQ-IVR-007
 
-### T-010 Reach the queue without a loop
+### FN-REQ-IVR-010 Reach the queue without a loop
 
 - REQ IDs: FN-REQ-IVR-010
 - Description: Full explore run reaching the right place with no loops.
@@ -82,7 +82,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v4 (Sun 1 Nov)
 - Depends on: FN-REQ-IVR-008, FN-REQ-IVR-009
 
-### T-011 Find the queue number
+### FN-REQ-IVR-011 Find the queue number
 
 - REQ IDs: FN-REQ-IVR-011
 - Description: Text search finding the queue number in three phrasings.
@@ -90,7 +90,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v2 (Fri 30 Oct)
 - Depends on: FN-REQ-IVR-002
 
-### T-012 Alert on the Mac near the front
+### FN-REQ-IVR-012 Alert on the Mac near the front
 
 - REQ IDs: FN-REQ-IVR-012
 - Description: Mac alert when the queue is near the front.
@@ -98,7 +98,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v2 (Fri 30 Oct)
 - Depends on: FN-REQ-IVR-011
 
-### T-013 Queue counts down
+### FN-REQ-IVR-013 Queue counts down
 
 - REQ IDs: FN-REQ-IVR-013
 - Description: Shown queue number updates as the queue moves, without listening.
@@ -106,7 +106,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v5 (Mon 2 Nov)
 - Depends on: FN-REQ-IVR-011
 
-### T-014 Intake in own words
+### FN-REQ-IVR-014 Intake in own words
 
 - REQ IDs: FN-REQ-IVR-014
 - Description: Holdmate asks "What's your concern?" by chat or talk; free-word answer becomes the call goal.
@@ -114,7 +114,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: –
 
-### T-015 Two ways to start a call
+### FN-REQ-IVR-015 Two ways to start a call
 
 - REQ IDs: FN-REQ-IVR-015
 - Description: Start from chat text or from clicking the menu tree + Call; the app steers as far as it can.
@@ -122,7 +122,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: FN-REQ-IVR-005
 
-### T-016 Identity-check ping
+### FN-REQ-IVR-016 Identity-check ping
 
 - REQ IDs: FN-REQ-IVR-016
 - Description: Ping the caller at the identity check; caller approves on their phone (BankID); Holdmate never approves.
@@ -130,7 +130,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: –
 
-### T-017 Handover when a person answers
+### FN-REQ-IVR-017 Handover when a person answers
 
 - REQ IDs: FN-REQ-IVR-017
 - Description: Buzz ("You are number 3"), show the queue number in a web widget, hand over or keep both in the call.
@@ -138,7 +138,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: FN-REQ-IVR-012, FN-REQ-IVR-013
 
-### T-018 Handover with a clear question
+### FN-REQ-IVR-018 Handover with a clear question
 
 - REQ IDs: FN-REQ-IVR-018
 - Description: At handover the caller's question is clear and ready.
@@ -146,7 +146,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: FN-REQ-IVR-014
 
-### T-019 Any phone line
+### FN-REQ-IVR-019 Any phone line
 
 - REQ IDs: FN-REQ-IVR-019
 - Description: Assisted calls work on any trained line, not just The Castle.
@@ -154,7 +154,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: FN-REQ-IVR-009
 
-### T-020 Say it is an AI
+### FN-REQ-IVR-020 Say it is an AI
 
 - REQ IDs: FN-REQ-IVR-020
 - Description: Holdmate identifies as AI whenever it talks.
@@ -162,7 +162,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v5 (Mon 2 Nov)
 - Depends on: –
 
-### T-021 Real calls with the caller present
+### FN-REQ-IVR-021 Real calls with the caller present
 
 - REQ IDs: FN-REQ-IVR-021
 - Description: A few real-line calls: user present, AI disclosure, user does the identity check.
@@ -170,7 +170,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: future (after hackathon)
 - Depends on: FN-REQ-IVR-016, FN-REQ-IVR-020, NF-REQ-IVR-003
 
-### T-022 Fully on its own
+### FN-REQ-IVR-022 Fully on its own
 
 - REQ IDs: FN-REQ-IVR-022
 - Description: End-to-end case handling; caller steps in only for identity check or to talk to a person.
@@ -178,7 +178,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: future
 - Depends on: FN-REQ-IVR-021
 
-### T-023 FK, union, police
+### FN-REQ-IVR-023 FK, union, police
 
 - REQ IDs: FN-REQ-IVR-023
 - Description: Add Försäkringskassan, the union, and police 114 14 with the same train-map-call approach.
@@ -186,7 +186,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: future
 - Depends on: FN-REQ-IVR-019
 
-### T-024 Talk through agency MCP
+### FN-REQ-IVR-024 Talk through agency MCP
 
 - REQ IDs: FN-REQ-IVR-024
 - Description: Use an agency's MCP server directly instead of calling, where offered.
@@ -194,7 +194,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: future
 - Depends on: – (agency-side)
 
-### T-025 Cases across agencies
+### FN-REQ-IVR-025 Cases across agencies
 
 - REQ IDs: FN-REQ-IVR-025
 - Description: Handle a case moving between agencies (a-kassa → Försäkringskassan) with the caller in the loop.
@@ -202,7 +202,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: future
 - Depends on: FN-REQ-IVR-024
 
-### T-026 Wording for your situation
+### FN-REQ-IVR-026 Wording for your situation
 
 - REQ IDs: FN-REQ-IVR-026
 - Description: v2 – guide what to say from the caller's place in The Castle's process (needs a process model).
@@ -210,7 +210,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: future (v2)
 - Depends on: FN-REQ-IVR-004
 
-### T-027 Helpful and kind (draft)
+### NF-REQ-IVR-001 Helpful and kind (draft)
 
 - REQ IDs: NF-REQ-IVR-001
 - Description: Holdmate's voice is helpful and kind in the v5 full run.
@@ -218,7 +218,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: v5 (Mon 2 Nov)
 - Depends on: –
 
-### T-028 No personal data kept
+### NF-REQ-IVR-002 No personal data kept
 
 - REQ IDs: NF-REQ-IVR-002
 - Description: Cut recordings where staff answer; keep no ID numbers, staff names or staff voices in logs, demos or GitHub.
@@ -226,7 +226,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: always (applies now)
 - Depends on: –
 
-### T-029 Real-line restraint
+### NF-REQ-IVR-003 Real-line restraint
 
 - REQ IDs: NF-REQ-IVR-003
 - Description: Real line only a few times with the user present; hackathon testing all on the practice robot.
@@ -234,7 +234,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: always
 - Depends on: –
 
-### T-030 Any language (draft)
+### NF-REQ-IVR-004 Any language (draft)
 
 - REQ IDs: NF-REQ-IVR-004
 - Description: Serve callers in any language, starting with the English branch (press 0).
@@ -242,7 +242,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: future
 - Depends on: –
 
-### T-031 Never test against 112
+### NF-REQ-IVR-005 Never test against 112
 
 - REQ IDs: NF-REQ-IVR-005
 - Description: Keep 112 out of all test targets, always.
@@ -250,7 +250,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: always
 - Depends on: –
 
-### T-032 Probe recovery behaviour
+### FN-REQ-IVR-027 Probe recovery behaviour
 
 - REQ IDs: FN-REQ-IVR-027
 - Description: Probe no-input vs no-match, correction recovery, and loops/dead ends/fallback paths.
@@ -258,7 +258,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: FN-REQ-IVR-007, FN-REQ-IVR-030
 
-### T-033 Verify same-state equivalence
+### FN-REQ-IVR-028 Verify same-state equivalence
 
 - REQ IDs: FN-REQ-IVR-028
 - Description: Check whether synonyms, different routes, and DTMF vs speech reach the same state.
@@ -266,7 +266,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: FN-REQ-IVR-009
 
-### T-034 Tag evidence levels in the map
+### FN-REQ-IVR-029 Tag evidence levels in the map
 
 - REQ IDs: FN-REQ-IVR-029
 - Description: Tag map entries as observed/inferred/untested with evidence; revise or reject on counter-evidence.
@@ -274,7 +274,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: FN-REQ-IVR-005
 
-### T-035 Handle silence and timeouts
+### FN-REQ-IVR-030 Handle silence and timeouts
 
 - REQ IDs: FN-REQ-IVR-030
 - Description: Practice robot answers silence with repeated no-input prompts, then times out or falls back.
@@ -282,7 +282,7 @@ One ticket per requirement. Priority = hackathon day (v0 done … v5), post (aft
 - Priority: post (after hackathon)
 - Depends on: FN-REQ-IVR-007
 
-### T-036 Real-system experiments stay harmless
+### NF-REQ-IVR-006 Real-system experiments stay harmless
 
 - REQ IDs: NF-REQ-IVR-006
 - Description: Every real-line experiment plan avoids human agents and service disruption; runs stay within the approved limit.

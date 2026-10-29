@@ -1,7 +1,7 @@
 {
   "updated": "2026-10-29",
-  "last_thought": "Design research folded into reqs: FN-027..030 + NF-006, OQ-17/18, T-032..36; features/ now 57 scenarios, all 36 REQ IDs tagged.",
-  "next_micro_step": "v1 (Thu 29 Oct): step-file format (T-003), keyword table (T-004), mini robot (T-006); optionally add behave/pytest-bdd + step defs.",
+  "last_thought": "Restart pending (side-chat shell dead throughout). DONE: tickets renamed to REQ IDs; CI+check-reqs+pre-push+make-tickets scripts; v1 tests (constants in test_data.py) GREEN 9/9 via uv; src steps/keywords/robot; design note + mermaid; pre-push fixes (uv run, -S warning, switchaudio shebang). UNCERTAIN: merge of prompts/agent-instructions blocked by local .agents/process changes (stash+retry prescribed, outcome unknown); pre-push rerun after shebang fix unknown; possible 'wip' stash left. TODO after restart: git status/stash list, finish merge (keep USER_STORIES.md), pytest, pre-push, commit, push, make-tickets.sh. Standing rule from Rickard: NO hardcoding, use constants and data structures.",
+  "next_micro_step": "After restart: verify shell works, then git status + git stash list to recover merge state.",
   "priority_1": "v1: step file + mini practice robot",
   "priority_2": "Fill ROADMAP.MD (point to docs/04)"
 }

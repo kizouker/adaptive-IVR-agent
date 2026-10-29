@@ -1,4 +1,5 @@
-
+#!/usr/bin/env bash
+# (notes file, not an executable script)
 
 # SwitchAudioSource [-a] [-c] [-f format] [-t type] [-n] -s device_name | -i device_id | -u device_uid
 

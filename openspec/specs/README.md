@@ -71,7 +71,7 @@ Vague lines (no way to test as written):
 From the design research (openspec/design/IVR-domain-research-solution-concepts.md):
 
 - OQ-17 "We have not established which IVR platform the Swedish Public Employment Service (Arbetsförmedlingen) currently uses, nor how its internal dialog logic is implemented." – research ongoing; no vendor assumptions meanwhile.
-- OQ-18 "How should the agent determine whether two observations correspond to the same dialog state?" – affects the step format (T-003) and evidence tagging (FN-REQ-IVR-029); the rest of §4 stays in the design doc for the design phase.
+- OQ-18 "How should the agent determine whether two observations correspond to the same dialog state?" – affects the step format (FN-REQ-IVR-003) and evidence tagging (FN-REQ-IVR-029); the rest of §4 stays in the design doc for the design phase.
 
 ## Notes
 

@@ -1,0 +1,29 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install project
+        run: pip install -e .
+
+      - name: Requirement coverage
+        run: ./sh/check-reqs.sh
+
+      - name: Shell syntax and lint
+        run: |
+          for f in sh/*.sh; do bash -n "$f"; done
+          sudo apt-get install -y shellcheck
+          shellcheck -S warning sh/*.sh
+
+      - name: Tests
+        run: |
+          if [ -d tests ]; then pip install pytest && pytest -q; else echo "no tests yet"; fi
