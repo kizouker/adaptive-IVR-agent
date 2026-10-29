@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "model": "target_seed",
+  "description": "Public website topics and publicly documented phone-routing facts that can seed controlled IVR experiments. These are not verified internal intents or a transcription of complete phone trees.",
+  "updated_at": "2026-10-28",
+  "evidence_policy": {
+    "target_seed_is_observation": false,
+    "observed_model_location": "separate run data store",
+    "status_values": ["publicly_documented", "website_taxonomy", "candidate_only"],
+    "rule": "Only call evidence from a test call may create an observed state or transition. Preserve source references and confidence separately."
+  },
+  "sources": [
+    {"id":"fk_private","url":"https://www.forsakringskassan.se/privatperson","title":"Försäkringskassan – Privatperson"},
+    {"id":"fk_terms","url":"https://www.forsakringskassan.se/om-forsakringskassan/forsakringskassans-termbank","title":"Försäkringskassan – Termbank"},
+    {"id":"fk_employer","url":"https://www.forsakringskassan.se/arbetsgivare","title":"Försäkringskassan – Arbetsgivare"},
+    {"id":"af_jobseekers","url":"https://arbetsformedlingen.se/for-arbetssokande","title":"Arbetsförmedlingen – För arbetssökande"},
+    {"id":"af_contact","url":"https://arbetsformedlingen.se/kontakt/for-arbetssokande","title":"Arbetsförmedlingen – Kontakt för arbetssökande"},
+    {"id":"af_employers","url":"https://arbetsformedlingen.se/for-arbetsgivare","title":"Arbetsförmedlingen – För arbetsgivare"},
+    {"id":"police_phone","url":"https://polisen.se/om-polisen/kontakt/polisens-telefonnummer/","title":"Polisen – Telefonnummer och kontaktvägar"},
+    {"id":"kfm_contact","url":"https://kronofogden.se/kontakta-oss","title":"Kronofogden – Kontakta oss"},
+    {"id":"kfm_faq","url":"https://kronofogden.se/kontakta-oss/mejla-oss","title":"Kronofogden – Frågor och svar/kontakt"},
+    {"id":"skv_voice","url":"https://www.skatteverket.se/ring","title":"Skatteverket – Ring oss och röststyrning"},
+    {"id":"skv_contact","url":"https://www.skatteverket.se/omoss/kontaktaoss","title":"Skatteverket – Kontakta oss"},
+    {"id":"migrations_phone","url":"https://www.migrationsverket.se/Kontakta-oss/Ring-oss.html","title":"Migrationsverket – Ring oss"},
+    {"id":"migrations_contact","url":"https://www.migrationsverket.se/kontakta-oss/kontaktvagar-for-privatpersoner.html","title":"Migrationsverket – Kontaktvägar för privatpersoner"},
+    {"id":"pensions_contact","url":"https://www.pensionsmyndigheten.se/kontakta-oss/kontakta-oss","title":"Pensionsmyndigheten – Kontakta oss"},
+    {"id":"ssc_contact","url":"https://www.statenssc.se/om-statens-servicecenter/kontakta-oss","title":"Statens servicecenter – Kontakta oss"},
+    {"id":"csn_contact","url":"https://www.csn.se/kontakta-oss.html","title":"CSN – Kontakta oss"},
+    {"id":"csn_merge_loans","url":"https://www.csn.se/bidrag-och-lan/betala-tillbaka-studielan/sla-ihop-lan.html","title":"CSN – Slå ihop lån (telefonfras)"}
+  ],
+  "authorities": [
+    {
+      "id":"forsakringskassan","name":"Försäkringskassan","scope":"citizen_and_employer_topics",
+      "phone_facts":{"status":"candidate_only","summary":"The reviewed pages show contact routes but do not publish a complete IVR tree."},
+      "sources":["fk_private","fk_terms","fk_employer"],
+      "tree":[
+        {"id":"fk.private","label":"Privatperson","kind":"web_section","status":"website_taxonomy","source_ids":["fk_private"],"children":[
+          {"id":"fk.family","label":"Familj och barn","kind":"topic","status":"website_taxonomy","source_ids":["fk_private"],"candidate_utterances":["vab","vabba","vård av sjukt barn","föräldrapenning","föräldraledig","barnbidrag","bostadsbidrag"],"children":[]},
+          {"id":"fk.sickness","label":"Sjuk eller skadad","kind":"topic","status":"website_taxonomy","source_ids":["fk_private"],"candidate_utterances":["sjukpenning","sjukskriven","arbetsskada","rehabilitering"],"children":[]},
+          {"id":"fk.jobseeker","label":"Arbetssökande","kind":"topic","status":"website_taxonomy","source_ids":["fk_private"],"candidate_utterances":["aktivitetsstöd","utvecklingsersättning","etableringsersättning","sjukpenning för arbetssökande"],"children":[]},
+          {"id":"fk.disability","label":"Vuxen med funktionsnedsättning","kind":"topic","status":"website_taxonomy","source_ids":["fk_private"],"candidate_utterances":["assistansersättning","aktivitetsersättning","sjukersättning","merkostnadsersättning","bilstöd"],"children":[]},
+          {"id":"fk.benefits","label":"Ersättningar A–Ö","kind":"topic","status":"website_taxonomy","source_ids":["fk_private"],"candidate_utterances":[],"children":[]},
+          {"id":"fk.services","label":"E-tjänster, blanketter och intyg","kind":"topic","status":"website_taxonomy","source_ids":["fk_private"],"candidate_utterances":["e-tjänst","blankett","intyg","Mina sidor"],"children":[]}
+        ]},
+        {"id":"fk.employer","label":"Arbetsgivare","kind":"web_section","status":"website_taxonomy","source_ids":["fk_employer"],"candidate_utterances":["sjukanmäla medarbetare","sjuklön","rehabilitering","föräldraledighet","vab"],"children":[]},
+        {"id":"fk.partners","label":"Samarbetspartner","kind":"web_section","status":"website_taxonomy","source_ids":["fk_private"],"candidate_utterances":[],"children":[]}
+      ]
+    },
+    {
+      "id":"arbetsformedlingen","name":"Arbetsförmedlingen","scope":"jobseeker_and_employer_topics",
+      "phone_facts":{"status":"publicly_documented","summary":"The contact page says the caller reaches a speech-driven phone response and should say what the matter is. It does not publish the full vocabulary or tree."},
+      "sources":["af_jobseekers","af_contact","af_employers"],
+      "tree":[
+        {"id":"af.jobseeker","label":"För arbetssökande","kind":"web_section","status":"website_taxonomy","source_ids":["af_jobseekers"],"children":[
+          {"id":"af.unemployed","label":"Arbetslös – vad händer nu?","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["skriva in mig","inskrivning","a-kassa","planeringssamtal","aktivitetsrapport","meddela förändring"],"children":[]},
+          {"id":"af.support","label":"Extra stöd","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["arbetsmarknadsutbildning","Rusta och matcha","praktik","stöd vid funktionsnedsättning","program"],"children":[]},
+          {"id":"af.jobsearch","label":"Så hittar du jobbet","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["Platsbanken","söka jobb","kompetensprofil","starta eget"],"children":[]},
+          {"id":"af.application","label":"Cv, ansökan och intervju","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["cv","personligt brev","jobbintervju","referenser"],"children":[]},
+          {"id":"af.career","label":"Yrkesval och utbildning","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["vilket yrke passar mig","utbildning","yrkesval"],"children":[]},
+          {"id":"af.personal_case","label":"Pågående personligt ärende","kind":"topic","status":"publicly_documented","source_ids":["af_contact"],"candidate_utterances":["mitt ärende","pågående ärende","handläggare"],"children":[]}
+        ]},
+        {"id":"af.employer","label":"För arbetsgivare","kind":"web_section","status":"website_taxonomy","source_ids":["af_employers"],"candidate_utterances":["annonsera jobb","söka kandidater","anställningsstöd","nystartsjobb","anmäla varsel"],"children":[]}
+      ]
+    },
+    {
+      "id":"polisen","name":"Polismyndigheten","scope":"non_emergency_11414_only",
+      "phone_facts":{"status":"publicly_documented","summary":"114 14 has a speech-driven response; the official page says callers can say ‘tips’. Use 112 only for emergencies, never as an experiment target."},
+      "sources":["police_phone"],
+      "tree":[{"id":"police.11414","label":"114 14 – icke-akuta ärenden","kind":"phone_scope","status":"publicly_documented","source_ids":["police_phone"],"candidate_utterances":["anmälan","tips","pass","nationellt id-kort","tillstånd","belastningsregisterutdrag","allmän handling","öppettider"],"children":[]}]
+    },
+    {
+      "id":"kronofogden","name":"Kronofogden","scope":"public_website_topic_tree",
+      "phone_facts":{"status":"candidate_only","summary":"The reviewed contact pages expose service topics but not a complete IVR or a confirmed speech/DTMF mode."},
+      "sources":["kfm_contact","kfm_faq"],
+      "tree":[{"id":"kfm.topics","label":"Kundserviceämnen","kind":"web_topic_group","status":"website_taxonomy","source_ids":["kfm_contact","kfm_faq"],"candidate_utterances":["mina skulder","föreläggande","betala skuld","betalningsföreläggande","löneutmätning","utmätning","betalningsanmärkning","skuldupplysning"],"children":[]}]
+    },
+    {
+      "id":"skatteverket","name":"Skatteverket","scope":"speech_router_and_contact_topics",
+      "phone_facts":{"status":"publicly_documented","summary":"The digital phone receptionist asks callers to briefly describe the matter and may route to automated information before offering a human queue."},
+      "sources":["skv_voice","skv_contact"],
+      "tree":[{"id":"skv.phone_router","label":"Digital telefonist","kind":"phone_entry","status":"publicly_documented","source_ids":["skv_voice"],"candidate_utterances":["deklaration","skatt","folkbokföring","anmäla ny adress","pågående ärende","handläggare","ändra konto för skatteutbetalning","beställa"],"children":[{"id":"skv.automated_info","label":"Automatiserat informationssvar, eventuellt","kind":"possible_route","status":"publicly_documented","source_ids":["skv_voice"],"candidate_utterances":[],"children":[{"id":"skv.human_queue","label":"Kö till handläggare om svaret inte räcker","kind":"recovery_route","status":"publicly_documented","source_ids":["skv_voice"],"candidate_utterances":[],"children":[]}]}]}]
+    },
+    {
+      "id":"migrationsverket","name":"Migrationsverket","scope":"published_phone_menu_and_web_topics",
+      "phone_facts":{"status":"publicly_documented","summary":"The first phone choices are published: 1 general/case question, 2 employer or authority, 3 switchboard. Further options under 1 are not fully published."},
+      "sources":["migrations_phone","migrations_contact"],
+      "tree":[
+        {"id":"mv.option1","label":"Knappval 1: allmän fråga eller ärendefråga","kind":"dtmf_choice","status":"publicly_documented","source_ids":["migrations_phone"],"candidate_utterances":["fråga om ett ärende","min ansökan","uppehållstillstånd","medborgarskap","arbetstillstånd","asyl","väntetider"],"children":[{"id":"mv.option1.submenu","label":"Fortsatt val efter ärendetyp","kind":"submenu","status":"candidate_only","source_ids":["migrations_phone"],"candidate_utterances":[],"children":[]}]},
+        {"id":"mv.option2","label":"Knappval 2: arbetsgivare eller myndighet","kind":"dtmf_choice","status":"publicly_documented","source_ids":["migrations_phone"],"candidate_utterances":["arbetsgivare","myndighet"],"children":[]},
+        {"id":"mv.option3","label":"Knappval 3: växel","kind":"dtmf_choice","status":"publicly_documented","source_ids":["migrations_phone"],"candidate_utterances":["växel"],"children":[]}
+      ]
+    },
+    {
+      "id":"pensionsmyndigheten","name":"Pensionsmyndigheten","scope":"customer_service_and_self_service",
+      "phone_facts":{"status":"publicly_documented","summary":"The contact page documents phone self-service available around the clock for next-payment information and ordering forms/materials; it does not publish all menu choices."},
+      "sources":["pensions_contact"],
+      "tree":[{"id":"pm.phone","label":"Telefonkontakt","kind":"phone_entry","status":"publicly_documented","source_ids":["pensions_contact"],"children":[{"id":"pm.customer_service","label":"Kundservice","kind":"service_route","status":"publicly_documented","source_ids":["pensions_contact"],"candidate_utterances":["pension","ansöka om pension","bostadstillägg","utbetalning","skatt","mitt ärende"],"children":[]},{"id":"pm.self_service","label":"Självbetjäning, dygnet runt","kind":"service_route","status":"publicly_documented","source_ids":["pensions_contact"],"candidate_utterances":["nästa utbetalning","beställa blankett","informationsmaterial"],"children":[]}]}]
+    },
+    {
+      "id":"statens_servicecenter","name":"Statens servicecenter","scope":"public_service_centres_and_agency_support",
+      "phone_facts":{"status":"publicly_documented","summary":"The reviewed page documents phone service mainly for employees at client agencies and a separate switchboard; citizen assistance is primarily at service offices. No citizen-facing voice IVR tree is published."},
+      "sources":["ssc_contact"],
+      "tree":[{"id":"ssc.audience","label":"Kontaktvägar per målgrupp","kind":"web_contact_group","status":"publicly_documented","source_ids":["ssc_contact"],"children":[{"id":"ssc.employee","label":"Anställd vid myndighet: portal och telefonservice","kind":"service_route","status":"publicly_documented","source_ids":["ssc_contact"],"candidate_utterances":["felanmälan","intyg","support","fråga"],"children":[]},{"id":"ssc.citizen","label":"Privatperson/företagare: besök servicekontor","kind":"service_route","status":"publicly_documented","source_ids":["ssc_contact"],"candidate_utterances":["Arbetsförmedlingen","Försäkringskassan","Pensionsmyndigheten","Skatteverket","Migrationsverket"],"children":[]},{"id":"ssc.switchboard","label":"Övriga frågor: växel/registratur","kind":"service_route","status":"publicly_documented","source_ids":["ssc_contact"],"candidate_utterances":["växel","registrator","allmän handling"],"children":[]}]}]
+    },
+    {
+      "id":"csn","name":"CSN","scope":"web_contact_categories_and_documented_phone_phrase",
+      "phone_facts":{"status":"publicly_documented","summary":"The contact page presents three web categories, not confirmed as phone IVR choices. A CSN page explicitly tells callers to say ‘slå ihop lån’ to reach the right phone queue."},
+      "sources":["csn_contact","csn_merge_loans"],
+      "tree":[
+        {"id":"csn.study_support","label":"Bidrag och lån för studier","kind":"web_contact_choice","status":"website_taxonomy","source_ids":["csn_contact"],"candidate_utterances":["studiestöd","studiemedel","bidrag och lån","beslut och pengar"],"children":[]},
+        {"id":"csn.repayment","label":"Betala tillbaka lån eller återkrav","kind":"web_contact_choice","status":"website_taxonomy","source_ids":["csn_contact"],"candidate_utterances":["betala tillbaka lån","återkrav","betalningsplan","slå ihop lån"],"children":[{"id":"csn.merge_loans_phrase","label":"Publicerad telefonfras för rätt kö","kind":"utterance_example","status":"publicly_documented","source_ids":["csn_merge_loans"],"candidate_utterances":["slå ihop lån"],"children":[]}]},
+        {"id":"csn.other","label":"Annat","kind":"web_contact_choice","status":"website_taxonomy","source_ids":["csn_contact"],"candidate_utterances":["annat ärende"],"children":[]},
+        {"id":"csn.documents","label":"Mejla dokument","kind":"web_contact_route","status":"website_taxonomy","source_ids":["csn_contact"],"candidate_utterances":["skicka dokument"],"children":[]}
+      ]
+    }
+  ]
+}
