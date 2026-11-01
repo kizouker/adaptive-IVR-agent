@@ -1,0 +1,286 @@
+"""Holdmate calls by itself: BFS lessons, word table, map evidence (S2)."""
+import json
+import subprocess
+from pathlib import Path
+
+import pytest
+
+from adaptive_ivr_agent.holdmate import (
+    FIXED_PLACE,
+    Knowledge,
+    Lesson,
+    build_agda,
+    lesson_log,
+    main,
+    run_call,
+    speak_turns,
+    wintitle,
+)
+
+ROOT = Path(__file__).resolve().parent.parent
+PHRASEBOOKS = ROOT / "data" / "role-phrasebooks.json"
+LINES = ROOT / "data" / "doorkeeper-lines.json"
+
+FAKE_LINES = {
+    "L01": "Welcome. For English, press 0.",
+    "L02": "What is your errand?",
+    "L03": "Say a, b or c.",
+    "L22": "Yes or no?",
+    "L19": "Transferring.",
+    "L09": "ID please.",
+    "L12": "ID failed.",
+    "L43": "Please identify first.",
+    "L11": "ID ok.",
+    "L30": "Served.",
+    "L13": "Queued.",
+    "L29": "Place 1.",
+    "L41": "Please answer yes or no.",
+}
+
+
+def fake_respond(heard):
+    """Only 'kw' is known, like one exact AF keyword."""
+    if heard.strip().lower() == "kw":
+        return "You said kw.", "kw"
+    return "Not understood.", None
+
+
+def make_lesson(candidates, max_misses=2):
+    agda = build_agda(FAKE_LINES, fake_respond)
+    return Lesson("test-persona", candidates, agda, Knowledge(), max_misses)
+
+
+def test_bfs_tries_every_pair_once_in_level_order():
+    lesson = make_lesson(["kw", "eh"])
+    summary = lesson.run()
+    pairs = [(s.misses, s.word) for s in lesson.sims]
+    assert pairs == [(0, "kw"), (0, "eh"), (1, "kw"), (1, "eh"), (2, "kw"), (2, "eh")]
+    assert summary["sims"] == 6
+    assert summary["transfers"] == 3  # kw x3 (matched); eh reprompts at 2
+    assert summary["matched"] == ["kw"]
+
+
+def test_transfer_runs_to_handover():
+    agda = build_agda(FAKE_LINES, fake_respond)
+    result, turns, _ = run_call(agda, "kw", 0)
+    assert result.transferred is True
+    assert result.matched == "kw"
+    assert result.served is True
+    assert turns[0] == "YOU: kw"
+    assert turns[-1] == "AGDA: Served."
+
+
+def test_miss_stays_unserved_until_transfer():
+    agda = build_agda(FAKE_LINES, fake_respond)
+    result, _, _ = run_call(agda, "eh", 0)
+    assert result.transferred is False
+    assert result.served is False
+
+
+def test_run_call_returns_board_exchanges_with_states():
+    agda = build_agda(FAKE_LINES, fake_respond)
+    result, turns, exchanges = run_call(agda, "kw", 0)
+    assert turns[0] == "YOU: kw"
+    assert exchanges[0] == ("kw", result and exchanges[0].robot, True, "transfer")
+    assert [e.state for e in exchanges[1:]] == ["queue"] * (FIXED_PLACE + 1)
+    assert result.exchanges == tuple(exchanges)
+    missed, _, missed_ex = run_call(agda, "eh", 0)
+    assert [(e.caller, e.state) for e in missed_ex] == [("eh", "example_words")]
+    assert missed.exchanges == tuple(missed_ex)
+
+
+def test_word_table_records_tries_transfers_keywords():
+    lesson = make_lesson(["kw", "eh"])
+    lesson.run()
+    words = lesson.knowledge.words
+    assert words["kw"] == {"tries": 3, "transfers": 3, "keywords": {"kw": 3}}
+    assert words["eh"]["tries"] == 3
+    assert words["eh"]["transfers"] == 0  # reprompt at misses 2, never transfers
+    assert words["eh"]["keywords"] == {}
+
+
+def test_miss_edge_points_to_next_state_without_success():
+    lesson = make_lesson(["eh"], max_misses=0)
+    lesson.run()
+    edge = next(
+        e for e in lesson.knowledge.shown.edges if e.label == "eh"
+    )
+    assert (edge.source, edge.target) == ("open_question", "example_words")
+    assert edge.evidence.tries == 1
+    assert edge.evidence.successes == 0
+
+
+def test_transfer_path_marks_queue_ticks_observed():
+    lesson = make_lesson(["kw"], max_misses=0)
+    lesson.run()
+    by_label = {(e.source, e.target, e.label): e for e in lesson.knowledge.shown.edges}
+    assert by_label[("queue", "queue", "tick")].evidence.tries == FIXED_PLACE - 1
+    assert by_label[("transfer", "identification", "kopplar")].evidence.successes == 1
+    assert by_label[("queue", "officer", "served")].evidence.successes == 1
+
+
+def test_knowledge_save_load_roundtrip_accumulates(tmp_path):
+    target = tmp_path / "knowledge.json"
+    first = make_lesson(["kw"], max_misses=0)
+    first.run()
+    first.knowledge.save(target)
+    second = Knowledge.load(target)
+    assert second.words["kw"]["tries"] == 1
+    again = Lesson("test-persona", ["kw"], build_agda(FAKE_LINES, fake_respond),
+                   second, max_misses=0)
+    again.run()
+    assert second.words["kw"]["tries"] == 2
+    edge = next(e for e in second.shown.edges if e.label == "kw")
+    assert edge.evidence.tries == 2
+    base = [e for e in second.shown.edges
+            if (e.source, e.target, e.label) == ("transfer", "identification", "kopplar")]
+    assert len(base) == 1
+    assert base[0].evidence.tries == 2
+
+
+def test_lesson_log_appends_one_record_per_sim(tmp_path):
+    target = tmp_path / "lessons.jsonl"
+    lesson = make_lesson(["kw", "eh"], max_misses=0)
+    lesson.run()
+    for sim in lesson.sims:
+        lesson_log(target, sim)
+    rows = [json.loads(line) for line in target.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 2
+    assert rows[0]["word"] == "kw"
+    assert rows[0]["transferred"] is True
+    assert rows[1]["served"] is False
+
+
+def test_main_runs_one_persona_headless(tmp_path):
+    knowledge = tmp_path / "k.json"
+    lessons = tmp_path / "l.jsonl"
+    code = main([
+        "--phrasebooks", str(PHRASEBOOKS),
+        "--lines", str(LINES),
+        "--knowledge", str(knowledge),
+        "--lessons", str(lessons),
+        "--as", "ny-arbetslos",
+        "--fresh",
+    ])
+    assert code == 0
+    saved = json.loads(knowledge.read_text(encoding="utf-8"))
+    assert saved["lessons"][0]["persona"] == "ny-arbetslos"
+    assert saved["lessons"][0]["served"] == saved["lessons"][0]["transfers"]
+    assert "skriva in mig" in saved["words"]
+    assert len(lessons.read_text(encoding="utf-8").splitlines()) == saved["lessons"][0]["sims"]
+
+
+def test_main_rejects_unknown_persona(tmp_path):
+    code = main([
+        "--phrasebooks", str(PHRASEBOOKS),
+        "--lines", str(LINES),
+        "--knowledge", str(tmp_path / "k.json"),
+        "--lessons", str(tmp_path / "l.jsonl"),
+        "--as", "atlantis",
+    ])
+    assert code == 1
+
+
+def test_main_rejects_bad_depth(tmp_path):
+    with pytest.raises(SystemExit):
+        main([
+            "--phrasebooks", str(PHRASEBOOKS),
+            "--lines", str(LINES),
+            "--knowledge", str(tmp_path / "k.json"),
+            "--lessons", str(tmp_path / "l.jsonl"),
+            "--depth", "9",
+        ])
+
+
+def test_wintitle_is_silent_without_a_tty():
+    wintitle("lesson 1/8")
+    assert True  # must not raise where /dev/tty is missing
+
+
+def test_interrupt_mid_lesson_keeps_partial_knowledge():
+    seen = []
+
+    def exploding(heard):
+        seen.append(heard)
+        if len(seen) > 2:
+            raise KeyboardInterrupt
+        return ("nope", None)
+
+    agda = build_agda(FAKE_LINES, exploding)
+    lesson = Lesson("quit-persona", ["a", "b", "c"], agda, Knowledge(), 0)
+    with pytest.raises(KeyboardInterrupt):
+        lesson.run()
+    assert len(lesson.sims) == 2
+    assert set(lesson.knowledge.words) == {"a", "b"}
+
+
+def test_speak_turns_layout_indents_wraps_and_spaces(capsys, monkeypatch):
+    cmds = []
+
+    class FakeProc:
+        returncode = 0
+
+        def wait(self):
+            return 0
+
+    def fake_popen(cmd, **kwargs):
+        cmds.append(cmd)
+        return FakeProc()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+    speak_turns(["YOU: hej", "AGDA: " + "ord " * 40])
+    out = capsys.readouterr().out
+    assert out.startswith("    You: hej\n")
+    assert "\n" + " " * 10 + "ord" in out  # hanging indent, plain width
+    assert out.endswith("\n\n")
+    assert cmds[0][-1] == "hej"  # speech stays unpainted
+    assert all("\x1b" not in part for cmd in cmds for part in cmd)
+
+
+def test_run_prints_live_line_per_sim(capsys):
+    lesson = make_lesson(["kw", "eh"], max_misses=0)
+    lesson.run()
+    out = capsys.readouterr().out
+    assert "✓ kw → transfer (open question)" in out
+    assert "✗ eh → miss (open question)" in out
+
+
+def test_main_prints_plan_and_lesson_progress(capsys, tmp_path):
+    code = main([
+        "--phrasebooks", str(PHRASEBOOKS),
+        "--lines", str(LINES),
+        "--knowledge", str(tmp_path / "k.json"),
+        "--lessons", str(tmp_path / "l.jsonl"),
+        "--as", "ny-arbetslos",
+        "--depth", "0",
+        "--fresh",
+    ])
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "plan: 1 lessons, up to " in out
+    assert "lesson 1/1: ny-arbetslos" in out
+    assert "matched " in out and " words: " in out
+
+
+def test_main_writes_lesson_board_with_words(tmp_path):
+    board = tmp_path / "board.json"
+    code = main([
+        "--phrasebooks", str(PHRASEBOOKS),
+        "--lines", str(LINES),
+        "--knowledge", str(tmp_path / "k.json"),
+        "--lessons", str(tmp_path / "l.jsonl"),
+        "--as", "ny-arbetslos",
+        "--depth", "0",
+        "--fresh",
+        "--board-out", str(board),
+    ])
+    assert code == 0
+    raw = json.loads(board.read_text(encoding="utf-8"))
+    assert raw["calls"][0]["persona"] == "ny-arbetslos"
+    assert raw["calls"][0]["errand_en"] == "Register as a job seeker"
+    assert set(raw["calls"][0]["turns"][0]["state_name"]) == {"sv", "en"}
+    assert raw["lessons"][0]["persona"] == "ny-arbetslos"
+    assert raw["words"]["skriva in mig"]["transfers"] == 1
+    assert "I will connect you to an officer." in raw["calls"][0]["turns"][0]["robot_en"]
+    assert raw["coverage"]["tried"] > 0
+    assert raw["coverage"]["total"] >= raw["coverage"]["tried"]

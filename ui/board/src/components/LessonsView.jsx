@@ -1,0 +1,82 @@
+import PropTypes from 'prop-types';
+
+function mark(entry) {
+  if (entry.transfers === entry.tries) return { glyph: '✓', cls: 'kw-ok' };
+  if (entry.transfers === 0) return { glyph: '✗', cls: 'kw-miss' };
+  return { glyph: '~', cls: 'kw-miss' };
+}
+
+function LessonsView({ lessons, words, t }) {
+  const rows = Object.entries(words)
+    .map(([word, entry]) => ({ word: word === '' ? '(silence)' : word, ...entry }))
+    .sort((a, b) => b.transfers - a.transfers || a.word.localeCompare(b.word));
+  if (lessons.length === 0 && rows.length === 0) {
+    return <p className="tempty">{t.noLessons}</p>;
+  }
+  return (
+    <>
+      <ul className="lessons">
+        {lessons.map((lesson) => (
+          <li key={`${lesson.ts}|${lesson.persona}|${lesson.sims}`}>
+            {`${lesson.ts} · ${lesson.persona} · ${lesson.sims} ${t.sims}, ${lesson.transfers} ${t.transfers}, ${lesson.served} ${t.served}, ✓${lesson.matched.length} ${t.matched}`}
+          </li>
+        ))}
+      </ul>
+      <h2>{t.learnedWords}</h2>
+      <table className="words">
+        <thead>
+          <tr>
+            <th title={t.hintWord}>{t.word}</th>
+            <th title={t.hintTries}>{t.tries}</th>
+            <th title={t.hintTransfers}>{t.transfers}</th>
+            <th aria-label="result" title={t.hintResult} />
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const { glyph, cls } = mark(row);
+            return (
+              <tr key={row.word}>
+                <td>{row.word}</td>
+                <td>{row.tries}</td>
+                <td>{row.transfers}</td>
+                <td><span className={cls}>{glyph}</span></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </>
+  );
+}
+
+LessonsView.propTypes = {
+  lessons: PropTypes.arrayOf(PropTypes.shape({
+    ts: PropTypes.string.isRequired,
+    persona: PropTypes.string.isRequired,
+    sims: PropTypes.number.isRequired,
+    transfers: PropTypes.number.isRequired,
+    served: PropTypes.number.isRequired,
+    matched: PropTypes.arrayOf(PropTypes.string).isRequired,
+  })).isRequired,
+  words: PropTypes.objectOf(PropTypes.shape({
+    tries: PropTypes.number.isRequired,
+    transfers: PropTypes.number.isRequired,
+  })).isRequired,
+  t: PropTypes.shape({
+    noLessons: PropTypes.string.isRequired,
+    hintWord: PropTypes.string.isRequired,
+    hintTries: PropTypes.string.isRequired,
+    hintTransfers: PropTypes.string.isRequired,
+    hintResult: PropTypes.string.isRequired,
+    sims: PropTypes.string.isRequired,
+    transfers: PropTypes.string.isRequired,
+    served: PropTypes.string.isRequired,
+    matched: PropTypes.string.isRequired,
+    learnedWords: PropTypes.string.isRequired,
+    word: PropTypes.string.isRequired,
+    tries: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
+export default LessonsView;

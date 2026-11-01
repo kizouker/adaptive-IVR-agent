@@ -29,6 +29,12 @@ def load_lines(path: str | Path) -> list[str]:
     return [entry[LINE_TEXT_KEY] for entry in raw[LINES_KEY]]
 
 
+def load_indexed_lines(path: str | Path) -> dict[str, str]:
+    """Load doorkeeper lines keyed by id (L01, L02, ...) for scripted calls."""
+    raw = json.loads(Path(path).read_text(encoding=ENCODING))
+    return {entry["id"]: entry[LINE_TEXT_KEY] for entry in raw[LINES_KEY]}
+
+
 class PracticeRobot:
     """Plays lines through an injected speaker and records a step file."""
 

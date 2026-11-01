@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -32,6 +34,7 @@ jobs:
       - name: Build with sample data
         run: |
           cp ui/board/public/board-state.sample.json ui/board/public/board-state.json
+          printf '{"version":"%s","built":"%s"}\n' "$(git describe --tags --always --dirty)" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > ui/board/public/version.json
           npm run build --prefix ui/board
 
       - name: Upload Pages artifact

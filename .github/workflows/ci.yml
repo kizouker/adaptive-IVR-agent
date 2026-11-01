@@ -25,7 +25,7 @@ jobs:
           shellcheck -S warning sh/*.sh
 
       - name: Structure and security
-        run: ./sh/check-structure.sh && ./sh/check-security.sh
+        run: ./sh/check-structure.sh && ./sh/check-security.sh && ./sh/check-prompts.sh
 
       - uses: actions/setup-node@v4
         with:
@@ -39,6 +39,28 @@ jobs:
           npm run lint --prefix ui/board
           npm audit --prefix ui/board --omit=dev --audit-level=high
 
+      - name: Python security audit
+        run: |
+          pip install bandit pip-audit
+          bandit -r src -ll -q
+          pip-audit
+
       - name: Tests
         run: |
-          if [ -d tests ]; then pip install pytest && pytest -q; else echo "no tests yet"; fi
+          if [ -d tests ]; then pip install pytest coverage && coverage run --source=src -m pytest -q 2>&1 | tee /tmp/pytest.log; else echo "no tests yet"; fi
+
+      - name: Test stats
+        if: always()
+        run: |
+          TESTS="$(grep -E 'passed|failed|error' /tmp/pytest.log 2>/dev/null | tail -1 | sed 's/^ *//')"
+          [ -n "$TESTS" ] || TESTS="n/a"
+          COV="$(coverage report 2>/dev/null | awk '$1 == "TOTAL" { print $NF }')"
+          [ -n "$COV" ] || COV="n/a"
+          {
+            echo "## Test stats"
+            echo ""
+            echo "| Measure | Value |"
+            echo "|---|---|"
+            echo "| Tests (pytest) | $TESTS |"
+            echo "| Coverage (src) | $COV |"
+          } >> "$GITHUB_STEP_SUMMARY"

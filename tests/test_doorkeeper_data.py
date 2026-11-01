@@ -31,4 +31,38 @@ def test_role_phrasebooks_have_roles_with_words():
     assert len(roles) >= MIN_ROLES
     for role in roles:
         assert role["id"] and role["af_sections"] and role["vocabulary"]
-        assert role["goal"] and role["errand"]
+        assert role["goal"] and role["errand"] and role["errand_en"]
+
+
+def test_served_and_english_lines_have_verbatim_flags():
+    raw = json.loads((DATA_DIR / DOORKEEPER_LINES_NAME).read_text(encoding="utf-8"))
+    by_id = {line["id"]: line for line in raw["lines"]}
+    assert by_id["L30"]["text"] == "Jag ska strax koppla fram dig till en ledig handläggare."
+    assert by_id["L30"]["verbatim"] is False
+    for line_id in ("L31", "L32", "L33", "L34", "L35"):
+        assert by_id[line_id]["verbatim"] is True
+        assert by_id[line_id]["lang"] == "en"
+    assert by_id["L36"]["verbatim"] is False  # cut off: "in the..."
+    assert by_id["L37"]["verbatim"] is False  # no English served line on tape
+    assert by_id["L38"]["verbatim"] is False  # no English success line on tape
+    assert by_id["L39"]["verbatim"] is False  # invented officer opening
+    assert "handläggare" in by_id["L39"]["text"]
+    assert by_id["L40"]["verbatim"] is False
+    assert by_id["L40"]["lang"] == "en"
+    assert by_id["L41"]["text"] == "Var god svara ja eller nej."
+    assert by_id["L41"]["verbatim"] is False  # Rickard-specified, confirm Monday
+    assert by_id["L42"]["lang"] == "en"
+    assert by_id["L42"]["verbatim"] is False  # invented approve step, UNVERIFIED
+    assert "Press 1 when done" in by_id["L42"]["text"]
+    assert by_id["L43"]["text"].startswith("För att vi ska kunna hjälpa dig")
+    assert by_id["L43"]["verbatim"] is False  # mirrors L32, UNVERIFIED
+    assert "For English, press 0." in by_id["L01"]["text"]
+    assert by_id["L01"]["verbatim"] is True
+
+
+def test_spoken_swedish_lines_have_english():
+    raw = json.loads((DATA_DIR / DOORKEEPER_LINES_NAME).read_text(encoding="utf-8"))
+    by_id = {line["id"]: line for line in raw["lines"]}
+    for line_id in ("L01", "L02", "L03", "L09", "L10", "L11", "L12", "L13",
+                    "L19", "L22", "L29", "L30", "L39", "L41", "L43"):
+        assert by_id[line_id]["en"].strip()
