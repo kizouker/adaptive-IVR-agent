@@ -30,6 +30,9 @@ sound_label() {
   esac
 }
 sync_sound
+if [ -f "$ROOT/.talk-quiet" ] && [ "$(cat "$ROOT/.talk-quiet" 2>/dev/null)" = "1" ]; then
+  SOUND="quiet"; SOUND_DIRTY=1    # remembered from the last talk (t-toggle/--quiet)
+fi
 for arg in "$@"; do
   case "$arg" in
     check|--check) MODE="check" ;;

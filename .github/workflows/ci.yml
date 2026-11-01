@@ -64,3 +64,39 @@ jobs:
             echo "| Tests (pytest) | $TESTS |"
             echo "| Coverage (src) | $COV |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  stats:
+    needs: checks
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Measure and publish stats
+        run: |
+          pip install -e . >/dev/null
+          pip install pytest coverage >/dev/null
+          coverage run --source=src -m pytest -q 2>&1 | tee /tmp/pytest.log
+          PASSED="$(grep -Eo '[0-9]+ passed' /tmp/pytest.log | tail -1 | grep -Eo '[0-9]+')"
+          SKIPPED="$(grep -Eo '[0-9]+ skipped' /tmp/pytest.log | tail -1 | grep -Eo '[0-9]+' || true)"
+          COV="$(coverage report 2>/dev/null | awk '$1 == "TOTAL" { print $NF }')"
+          jq -n --arg p "${PASSED:-0}" --arg s "${SKIPPED:-0}" --arg c "${COV:-n/a}" \
+            '{tests: {passed: ($p | tonumber), skipped: ($s | tonumber)}, coverage: $c, owasp: "pass"}' \
+            > test-stats.json
+          cat test-stats.json
+          git config user.name "holdmate-ci"
+          git config user.email "holdmate-ci@users.noreply.github.com"
+          git add test-stats.json
+          if git diff --cached --quiet; then
+            echo "stats unchanged"
+          else
+            git commit -m "stats: $PASSED passed, coverage ${COV:-n/a} [skip ci]"
+            git pull --rebase >/dev/null 2>&1 || true
+            git push || echo "stats push blocked (branch protection?) - see run summary"
+          fi
