@@ -47,6 +47,18 @@ def test_every_map_state_has_both_languages():
             assert set(STATE_NAMES[state.id]) == {"sv", "en"}
 
 
+def test_live_call_can_switch_map_and_voice():
+    call = LiveCall(map_name="english", robot_name="AF Agda (Samantha)")
+    call.add_turn("(pressed 0)", "Welcome to Arbetsförmedlingen.", True, "english_menu")
+    shot = call.snapshot()
+    assert shot["map"] == "english"
+    assert shot["robot_name"] == "AF Agda (Samantha)"
+    assert shot["position"] == "english_menu"
+    board = build_live_board([call])
+    assert board["calls"][0]["map"] == "english"
+    assert board["maps"]["english"]["states"][-1]["en"] == "Officer"
+
+
 def test_missing_placeholder_is_rejected(tmp_path):
     bad = tmp_path / "bad.html"
     bad.write_text("<html></html>", encoding="utf-8")

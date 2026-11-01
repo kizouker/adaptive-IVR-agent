@@ -1,4 +1,4 @@
-# v1 walking skeleton – design note
+ # v1 walking skeleton – design note
 
 Goal: one run creates a step file (FN-REQ-IVR-003 + FN-REQ-IVR-004 + FN-REQ-IVR-006).
 

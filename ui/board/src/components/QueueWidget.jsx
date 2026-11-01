@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 
 function QueueWidget({ place, total, label }) {
-  const empty = place == null;
-  const showBar = !empty && total != null && total > 0;
+  if (place == null) return null;
+  const showBar = total != null && total > 0;
   const done = showBar ? Math.min(100, Math.max(0, ((total - place) / total) * 100)) : 0;
   return (
     <div className="queue">
-      <div className={empty ? 'flap dim' : 'flap'}>
+      <div className="flap">
         <div className="half top" />
         <div className="half bottom" />
-        <div key={empty ? 'none' : place} className="fdigit tick">
-          {empty ? '–' : place}
+        <div key={place} className="fdigit tick">
+          {place}
         </div>
         <div className="split" />
       </div>

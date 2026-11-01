@@ -32,3 +32,16 @@ def test_role_phrasebooks_have_roles_with_words():
     for role in roles:
         assert role["id"] and role["af_sections"] and role["vocabulary"]
         assert role["goal"] and role["errand"]
+
+
+def test_served_and_english_lines_have_verbatim_flags():
+    raw = json.loads((DATA_DIR / DOORKEEPER_LINES_NAME).read_text(encoding="utf-8"))
+    by_id = {line["id"]: line for line in raw["lines"]}
+    assert by_id["L30"]["text"] == "Jag ska strax koppla fram dig till en ledig handläggare."
+    assert by_id["L30"]["verbatim"] is False
+    for line_id in ("L31", "L32", "L33", "L34", "L35"):
+        assert by_id[line_id]["verbatim"] is True
+        assert by_id[line_id]["lang"] == "en"
+    assert by_id["L36"]["verbatim"] is False  # cut off: "in the..."
+    assert by_id["L37"]["verbatim"] is False  # no English served line on tape
+    assert by_id["L38"]["verbatim"] is False  # no English success line on tape

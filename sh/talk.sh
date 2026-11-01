@@ -5,7 +5,8 @@
 #   --queue N (simulate a queue of N, 1-99; default is a random short one).
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
-# Keys during record/playback: any key skips ahead, + / - adjusts her volume.
+# Keys during record/playback: any key skips ahead, 0 jumps to the English
+# menu (full call-5 path on DTMF digits), + / - adjusts her volume.
 # Each round records ~5s from the MacBook mic, transcribes with whisper.cpp,
 # and the robot answers aloud (Alva). Output goes through the IVR_Agent device
 # (speakers + BlackHole) and everything is switched back on exit.
@@ -196,6 +197,7 @@ quit_call() {
 }
 
 wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 = quit
+  KEY_PRESSED=""
   if [ ! -t 0 ]; then
     return 1
   fi
@@ -205,11 +207,33 @@ wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 =
   while [ "$SECONDS" -lt "$end" ]; do
     if [ -n "$2" ]; then kill -0 "$2" 2>/dev/null || return 1; fi
     if read -t 1 -n 1 -s key; then
+      KEY_PRESSED="$key"
       case "$key" in
         +) volume_step +0.1 ;;
         -) volume_step -0.1 ;;
         q|Q|"$ETX"|"$EOT") return 2 ;;
         *) return 0 ;;
+      esac
+    fi
+  done
+  return 1
+}
+
+wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
+  DIGIT=""
+  if [ ! -t 0 ]; then
+    return 1
+  fi
+  ETX="$(printf '\003')"
+  EOT="$(printf '\004')"
+  end=$((SECONDS + $1))
+  while [ "$SECONDS" -lt "$end" ]; do
+    if read -t 1 -n 1 -s key; then
+      case "$key" in
+        +) volume_step +0.1 ;;
+        -) volume_step -0.1 ;;
+        q|Q|"$ETX"|"$EOT") return 2 ;;
+        [0-9]) DIGIT="$key"; return 0 ;;
       esac
     fi
   done
@@ -232,11 +256,11 @@ play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
 }
 
 agda_says() {
-  # $1 = opening|round|identified|queue, $2 = transcript (round only),
-  # $3 = aiff file, $4 = caller wav (round only).
+  # $1 = opening|round|identified|queue|english, $2 = transcript (round only),
+  # $3 = aiff file, $4 = caller wav (round only), $5 = voice override (or "").
   # Speaks Agda's line, saves the audio, publishes the board state,
   # prints the exchange plus TALK_DONE / TALK_MISSES.
-  TALK_ROOT="$ROOT" TALK_TXT="${2:-}" TALK_AIFF="$3" TALK_VOICE="$VOICE" TALK_MISSES="$MISSES" \
+  TALK_ROOT="$ROOT" TALK_TXT="${2:-}" TALK_AIFF="$3" TALK_VOICE="${5:-$VOICE}" TALK_MISSES="$MISSES" \
     TALK_CALL="$CALL_STAMP" TALK_ROUND="${ROUND:-0}" \
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
@@ -249,7 +273,13 @@ import shutil
 import subprocess
 import sys
 from datetime import datetime
-from adaptive_ivr_agent.live_view import LiveCall, build_live_board, write_captions
+from adaptive_ivr_agent.live_view import (
+    LIVE_MAP,
+    LIVE_ROBOT_NAME,
+    LiveCall,
+    build_live_board,
+    write_captions,
+)
 from adaptive_ivr_agent.reactive import ReactiveRobot
 from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines
 from adaptive_ivr_agent.talk import AgdaCall, with_aliases
@@ -270,10 +300,9 @@ forced = int(forced_start) if forced_start.isdigit() else None
 # L01 keeps the verbatim line (that IS what AF says); only speech drops it.
 welcome = lines["L01"].split(" For English, press 0.")[0]
 assert "press" not in welcome.lower(), f"English slipped into opening: {welcome}"
-# UNVERIFIED paraphrase (Rickard, 1 Nov): no transcript captured Agda's exact
-# served line (L08 is from call 1 step 3, wrong spot). Replace with verbatim
+# L30: Rickard's pick 1 Nov (UNVERIFIED memory). Replace with verbatim
 # from Monday's sampling.
-SERVED_LINE = "Jag ska se om det finns en ledig handläggare."
+SERVED_LINE = lines["L30"]
 agda = AgdaCall(
     opening=f"{welcome} {lines['L02']}",
     examples=lines["L03"],
@@ -332,7 +361,10 @@ def state_after(done, misses, identify):
 
 
 def load_call():
-    call = LiveCall()
+    call = LiveCall(
+        map_name=os.environ.get("TALK_MAP", LIVE_MAP),
+        robot_name=os.environ.get("TALK_ROBOT_NAME", LIVE_ROBOT_NAME),
+    )
     path = os.environ["TALK_TURNS_FILE"]
     if os.path.exists(path):
         for line in open(path, encoding="utf-8"):
@@ -454,7 +486,135 @@ elif sys.argv[1] == "queue":
     print(f"ROBOT: {answer.reply}")
     print(f"TALK_PLACE={answer.queue_place}")
     print(f"TALK_DONE={'yes' if answer.done else 'no'}")
+elif sys.argv[1] == "english":
+    heard = os.environ.get("TALK_EN_CALLER", "")
+    ids = os.environ["TALK_EN_IDS"].split()
+    text = " ".join(lines[line_id] for line_id in ids)
+    sub = os.environ.get("TALK_EN_SUB", "")
+    if sub:
+        text = text.replace("1", sub, 1)
+    state = os.environ["TALK_EN_STATE"]
+    digit = os.environ.get("TALK_EN_DIGIT", "")
+    if heard and state not in ("queue", "officer"):
+        log_round(heard, f"dtmf:{digit}" if digit else None)
+    render_reply(text)
+    audio_dir = os.environ["TALK_AUDIO_DIR"]
+    os.makedirs(audio_dir, exist_ok=True)
+    base = os.environ["TALK_EN_BASE"]
+    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    aiff = os.environ["TALK_AIFF"]
+    to_mp3(aiff, os.path.join(audio_dir, agda_name))
+    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    call = load_call()
+    place = os.environ.get("TALK_EN_PLACE", "")
+    total = os.environ.get("TALK_EN_TOTAL", "")
+    call.add_turn(heard, text, bool(digit), state,
+                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  queue_place=int(place) if place else None,
+                  queue_total=int(total) if total else None)
+    with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
+        handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
+    write_board(call)
+    print(f"YOU:   {heard}")
+    print(f"ROBOT: {text}")
+    if place:
+        print(f"TALK_PLACE={place}")
+    print(f"TALK_DONE={'yes' if os.environ.get('TALK_EN_DONE', '') == '1' else 'no'}")
 EOF
+}
+
+pick_english_voice() {
+  # First decent installed English voice, else the Swedish default.
+  _found="$(say -v '?' 2>/dev/null | grep -oE '^(Samantha|Karen|Moira|Daniel|Tessa|Fiona|Serena)' | head -1)"
+  printf '%s' "${_found:-$VOICE}"
+}
+
+digit_caller() {
+  # $1 = wait_digit return code. Sets DC_CALLER/DC_DIGIT, quits on 2.
+  if [ "$1" = 2 ]; then quit_call; fi
+  if [ "$1" = 0 ]; then
+    DC_CALLER="(pressed $DIGIT)"; DC_DIGIT="$DIGIT"
+  else
+    DC_CALLER="(silence)"; DC_DIGIT=""
+  fi
+}
+
+en_turn() {
+  # $1 caller, $2 line ids, $3 digit sub (or ""), $4 state, $5 audio base,
+  # $6 place (or ""), $7 total (or ""), $8 done 1/0, $9 digit (or "").
+  EN_AIFF="$REC_DIR/talk-$CALL_STAMP-e$5.aiff"
+  EN_ROBOT="AF Agda ($EN_VOICE)"
+  EN_OUT="$(TALK_MAP=english TALK_ROBOT_NAME="$EN_ROBOT" \
+    TALK_EN_CALLER="$1" TALK_EN_IDS="$2" TALK_EN_SUB="$3" TALK_EN_STATE="$4" \
+    TALK_EN_BASE="talk-$CALL_STAMP-e$5" TALK_EN_PLACE="$6" TALK_EN_TOTAL="$7" \
+    TALK_EN_DONE="$8" TALK_EN_DIGIT="$9" \
+    agda_says english "" "$EN_AIFF" "" "$EN_VOICE")" || fail "Agda failed in English ($4)"
+  printf '%s\n' "$EN_OUT" | grep -v '^TALK_'
+  [ -s "$EN_AIFF" ] || fail "English audio missing: $EN_AIFF"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-agda.mp3" ] || fail "English board audio missing: e$5"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-agda.vtt" ] || fail "English board captions missing: e$5"
+  ok "English turn on board: e$5 ($4)"
+  run "Agda speaks English (any key skips, q quits, +/- volume)"
+  play_skippable "$EN_AIFF"
+}
+
+run_english() {
+  title "English menu (pressed 0)"
+  what "Full call-5 path: key menu, sub-menu, SMS offer, identification, queue. Digits answer; silence moves on."
+  EN_VOICE="$(pick_english_voice)"
+  info "English voice: $EN_VOICE"
+  en_turn "(pressed 0)" "L17" "" english_menu e01 "" "" 0 0
+  run "wait for 1/2/4 (12 s, silence moves on)"
+  wait_digit 12; digit_caller $?
+  en_turn "$DC_CALLER" "L18" "" english_submenu e02 "" "" 0 "$DC_DIGIT"
+  run "wait for 1/2 (12 s, silence moves on)"
+  wait_digit 12; digit_caller $?
+  en_turn "$DC_CALLER" "L31" "" sms e03 "" "" 0 "$DC_DIGIT"
+  run "wait for 1 (12 s, silence moves on)"
+  wait_digit 12; digit_caller $?
+  en_turn "$DC_CALLER" "L32" "" identification e04 "" "" 0 "$DC_DIGIT"
+  run "wait for BankID 1 / Freja 2 (12 s)"
+  wait_digit 12; EN_RC=$?
+  if [ "$EN_RC" = 2 ]; then quit_call; fi
+  if [ "$EN_RC" = 0 ]; then
+    ID_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"
+  else
+    en_turn "(silence)" "L33" "" identification e05 "" "" 0 ""
+    run "wait again for 1/2 (12 s)"
+    wait_digit 12; EN_RC=$?
+    if [ "$EN_RC" = 2 ]; then quit_call; fi
+    if [ "$EN_RC" = 0 ]; then
+      ID_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"
+    else
+      ID_OK=0; ID_CALLER="(silence)"; ID_DIGIT=""
+    fi
+  fi
+  if [ -n "$QUEUE_START" ]; then PLACE="$QUEUE_START"; else PLACE=$((RANDOM % 4 + 2)); fi
+  START="$PLACE"
+  if [ "$ID_OK" = 1 ]; then
+    en_turn "$ID_CALLER" "L38 L35 L36" "$PLACE" queue e06 "$PLACE" "$START" 0 "$ID_DIGIT"
+  else
+    en_turn "$ID_CALLER" "L34 L35 L36" "$PLACE" queue e06 "$PLACE" "$START" 0 ""
+  fi
+  while [ "$PLACE" -gt 0 ]; do
+    title "Queue: place $PLACE of $START (any key hurries, q quits, +/- volume)"
+    if [ -t 0 ]; then
+      wait_keys "$QUEUE_TICK" ""; EN_RC=$?
+      [ "$EN_RC" = 2 ] && quit_call
+    else
+      sleep "$QUEUE_TICK"
+    fi
+    NEXT=$((PLACE - 1))
+    if [ "$NEXT" = 0 ]; then
+      en_turn "" "L37" "" officer eserv 0 "$START" 1 ""
+      PLACE=0
+    else
+      en_turn "" "L36" "$NEXT" queue "q$NEXT" "$NEXT" "$START" 0 ""
+      PLACE="$NEXT"
+    fi
+  done
+  title "Call over — an officer is connecting you. Your audio setup is restored on exit."
+  exit 0
 }
 
 title "Agda is calling..."
@@ -468,6 +628,10 @@ OPENING_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r0-agda.mp3"
 ok "opening on board: $OPENING_MP3"
 run "Agda speaks (any key skips, q quits, +/- volume)"
 play_skippable "$OPENING_AIFF"
+if [ "${KEY_PRESSED:-}" = "0" ]; then
+  info "pressed 0: switching to the English menu"
+  run_english
+fi
 
 run_identification() {
   title "Identification (faked, human in the loop)"
@@ -541,6 +705,12 @@ while [ "$ROUND" -lt 6 ]; do
     quit_call
   elif [ "$RC" = 0 ]; then
     kill -INT "$FFPID" 2>/dev/null
+    if [ "${KEY_PRESSED:-}" = "0" ]; then
+      wait "$FFPID" 2>/dev/null || true
+      rm -f "$WAV"
+      info "pressed 0: switching to the English menu"
+      run_english
+    fi
     info "stopped early"
   fi
   wait "$FFPID"; RC=$?
@@ -581,6 +751,10 @@ while [ "$ROUND" -lt 6 ]; do
   ok "board updated: $BOARD_FILE"
   run "Agda speaks (any key skips, q quits, +/- volume)"
   play_skippable "$ROBOT_AIFF"
+  if [ "${KEY_PRESSED:-}" = "0" ]; then
+    info "pressed 0: switching to the English menu"
+    run_english
+  fi
   if printf '%s\n' "$OUT" | grep -qx 'TALK_IDENTIFY=yes'; then
     run_identification
   fi

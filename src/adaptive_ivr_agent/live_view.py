@@ -19,6 +19,7 @@ STATE_NAMES = {
     "queue": {"sv": "Kö", "en": "Queue"},
     "english_menu": {"sv": "Engelsk knappmeny", "en": "English key menu"},
     "english_submenu": {"sv": "Engelsk undermeny", "en": "English sub-menu"},
+    "sms": {"sv": "SMS-erbjudande", "en": "SMS offer"},
     "officer": {"sv": "Handläggare", "en": "Officer"},
 }
 
@@ -107,8 +108,16 @@ class LiveCall:
         persona: str = LIVE_PERSONA,
         label: str = LIVE_LABEL,
         errand: str = LIVE_ERRAND,
+        map_name: str = LIVE_MAP,
+        robot_name: str = LIVE_ROBOT_NAME,
     ) -> None:
-        self._meta = {"persona": persona, "label": label, "errand": errand}
+        self._meta = {
+            "persona": persona,
+            "label": label,
+            "errand": errand,
+            "map": map_name,
+            "robot_name": robot_name,
+        }
         self.turns: list[dict] = []
 
     def add_turn(
@@ -155,10 +164,8 @@ class LiveCall:
         """Board-shaped call: build_call keys plus speaker names and media."""
         return {
             **self._meta,
-            "map": LIVE_MAP,
             "position": self.position,
             "caller_name": LIVE_CALLER_NAME,
-            "robot_name": LIVE_ROBOT_NAME,
             "turns": self.turns,
         }
 

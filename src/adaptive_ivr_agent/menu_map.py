@@ -86,17 +86,24 @@ AF_AGDA_EDGES = [
 
 NO_INPUT_EDGE_LABEL = "silence"
 
-# English branch from call 5 + Rickard's 2026-10-31 silence run: pressing 0
-# skips all speech; staying silent through the key menus ends at an officer.
+# English branch from call 5 part 4: pressing 0 skips all speech, then the
+# key menus, SMS offer, identification and queue follow in order. Pressed
+# digits are recorded but the path is the same; failed ID still queues.
 ENGLISH_STATES = [
     State("english_menu", "English key menu (1, 2, 4)"),
     State("english_submenu", "Register? Press 1. Other? Press 2."),
+    State("sms", "SMS with a link? Press 1."),
+    State("identification", "Identify: mobile BankID or Freja?"),
+    State("queue", "Placed in a queue for an officer."),
     State("officer", "Connecting you to an officer."),
 ]
 
 ENGLISH_EDGES = [
     Edge("english_menu", "english_submenu", "silence"),
-    Edge("english_submenu", "officer", "silence"),
+    Edge("english_submenu", "sms", "1/2/4/silence"),
+    Edge("sms", "identification", "1/silence"),
+    Edge("identification", "queue", "identified"),
+    Edge("queue", "officer", "served"),
 ]
 
 PRESS_ZERO_LABEL = "press 0"

@@ -55,3 +55,9 @@ Feature: Practice robot
     Given a talk call is recording or Agda is speaking
     When Rickard presses any key
     Then recording stops early or playback skips, and + / - adjusts her volume within the call
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S07
+  Scenario: Pressing 0 opens the English branch
+    Given a talk call in the Swedish flow
+    When Rickard presses 0
+    Then Agda speaks the call-5 English path (menu, sub-menu, SMS, identification, queue) on DTMF digits with an English voice, and the board follows the english map to an officer

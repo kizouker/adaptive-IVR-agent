@@ -34,11 +34,22 @@ def test_unknown_state_is_rejected():
 
 def test_english_branch_walks_to_officer_on_silence():
     shown = MenuMap.english_branch()
+    assert [s.id for s in shown.states] == [
+        "english_menu",
+        "english_submenu",
+        "sms",
+        "identification",
+        "queue",
+        "officer",
+    ]
     assert shown.position() == 1
     shown.move_to("english_submenu")
     assert shown.position() == 2
+    shown.move_to("sms")
+    shown.move_to("identification")
+    shown.move_to("queue")
     shown.move_to("officer")
-    assert shown.position() == 3
+    assert shown.position() == 6
     marked = [line for line in shown.render_ascii().splitlines() if line.startswith(CURRENT_MARKER)]
     assert len(marked) == 1
     assert "officer" in marked[0].lower()
@@ -154,7 +165,10 @@ def test_mermaid_edges_and_node_labels():
     text = MenuMap.english_branch().render_mermaid()
     assert 'english_menu["English key menu (1, 2, 4)"]' in text
     assert "english_menu -->|silence| english_submenu" in text
-    assert "english_submenu -->|silence| officer" in text
+    assert "english_submenu -->|1/2/4/silence| sms" in text
+    assert "sms -->|1/silence| identification" in text
+    assert "identification -->|identified| queue" in text
+    assert "queue -->|served| officer" in text
     assert "style english_menu" in text
 
 
