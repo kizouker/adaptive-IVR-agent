@@ -61,3 +61,9 @@ Feature: Practice robot
     Given a talk call in the Swedish flow
     When Rickard presses 0
     Then Agda speaks the call-5 English path (menu, sub-menu, SMS, identification, queue) on DTMF digits with an English voice, and the board follows the english map to an officer
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S08
+  Scenario: Handover beeps, then the officer answers
+    Given a talk call that reaches the handover line
+    When Agda finishes the served line
+    Then DTMF beeps play while connecting and an officer answers in a different voice with its own speaker label on the board

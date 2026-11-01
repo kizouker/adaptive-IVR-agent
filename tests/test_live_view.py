@@ -47,6 +47,16 @@ def test_every_map_state_has_both_languages():
             assert set(STATE_NAMES[state.id]) == {"sv", "en"}
 
 
+def test_officer_turn_carries_own_speaker():
+    call = LiveCall()
+    call.add_turn("", "Welcome, officer here.", False, "officer",
+                  speaker="Officer (Daniel)")
+    assert call.turns[-1]["speaker"] == "Officer (Daniel)"
+    plain = LiveCall()
+    plain.add_turn("", "Hi.", False, "open_question")
+    assert "speaker" not in plain.turns[-1]
+
+
 def test_live_call_can_switch_map_and_voice():
     call = LiveCall(map_name="english", robot_name="AF Agda (Samantha)")
     call.add_turn("(pressed 0)", "Welcome to Arbetsförmedlingen.", True, "english_menu")

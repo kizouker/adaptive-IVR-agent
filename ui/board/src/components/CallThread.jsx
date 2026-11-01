@@ -36,10 +36,14 @@ function CallThread({ call, lang, t }) {
             </div>
           )}
           <div className="turn robot">
-            <div className="who">{call.robot_name || t.robot}</div>
+            <div className="who">{turn.speaker || call.robot_name || t.robot}</div>
             <div className="bubble"><Typewriter text={turn.robot} /></div>
             {turn.robot_audio && (
-              <audio controls src={turn.robot_audio} aria-label={call.robot_name || t.robot}>
+              <audio
+                controls
+                src={turn.robot_audio}
+                aria-label={turn.speaker || call.robot_name || t.robot}
+              >
                 <track kind="captions" src={turn.robot_captions} srcLang={lang} label={t.captions} />
               </audio>
             )}
@@ -79,6 +83,7 @@ CallThread.propTypes = {
       caller_captions: PropTypes.string,
       robot_captions: PropTypes.string,
       queue_place: PropTypes.number,
+      speaker: PropTypes.string,
       state_name: PropTypes.shape({
         sv: PropTypes.string.isRequired,
         en: PropTypes.string.isRequired,

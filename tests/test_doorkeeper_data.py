@@ -45,3 +45,7 @@ def test_served_and_english_lines_have_verbatim_flags():
     assert by_id["L36"]["verbatim"] is False  # cut off: "in the..."
     assert by_id["L37"]["verbatim"] is False  # no English served line on tape
     assert by_id["L38"]["verbatim"] is False  # no English success line on tape
+    assert by_id["L39"]["verbatim"] is False  # invented officer opening
+    assert "handläggare" in by_id["L39"]["text"]
+    assert by_id["L40"]["verbatim"] is False
+    assert by_id["L40"]["lang"] == "en"

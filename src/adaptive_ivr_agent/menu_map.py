@@ -74,6 +74,7 @@ AF_AGDA_STATES = [
     State("transfer", "Kopplar dig direkt till kön."),
     State("identification", "Identifiering: BankID eller Freja?"),
     State("queue", "Du blir nu placerad i kö."),
+    State("officer", "En handläggare svarar."),
 ]
 
 AF_AGDA_EDGES = [
@@ -82,6 +83,7 @@ AF_AGDA_EDGES = [
     Edge("yes_no", "transfer", "ja/nej"),
     Edge("transfer", "identification", "kopplar"),
     Edge("identification", "queue", "legitimerad"),
+    Edge("queue", "officer", "served"),
 ]
 
 NO_INPUT_EDGE_LABEL = "silence"

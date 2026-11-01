@@ -98,6 +98,7 @@ def test_transfer_path_marks_queue_ticks_observed():
     by_label = {(e.source, e.target, e.label): e for e in lesson.knowledge.shown.edges}
     assert by_label[("queue", "queue", "tick")].evidence.tries == FIXED_PLACE - 1
     assert by_label[("transfer", "identification", "kopplar")].evidence.successes == 1
+    assert by_label[("queue", "officer", "served")].evidence.successes == 1
 
 
 def test_knowledge_save_load_roundtrip_accumulates(tmp_path):
@@ -113,6 +114,10 @@ def test_knowledge_save_load_roundtrip_accumulates(tmp_path):
     assert second.words["kw"]["tries"] == 2
     edge = next(e for e in second.shown.edges if e.label == "kw")
     assert edge.evidence.tries == 2
+    base = [e for e in second.shown.edges
+            if (e.source, e.target, e.label) == ("transfer", "identification", "kopplar")]
+    assert len(base) == 1
+    assert base[0].evidence.tries == 2
 
 
 def test_lesson_log_appends_one_record_per_sim(tmp_path):

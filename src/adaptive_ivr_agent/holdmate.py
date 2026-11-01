@@ -179,6 +179,7 @@ class Knowledge:
             self.shown.observe("identification", "queue", "legitimerad", origin)
             for _ in range(FIXED_PLACE - 1):
                 self.shown.observe("queue", "queue", "tick", origin)
+            self.shown.observe("queue", "officer", "served", origin)
         else:
             target = MISS_STATE[result.misses + 1]
             self.shown.observe(source, target, label, origin, success=False)
@@ -229,13 +230,15 @@ class Knowledge:
         known.words = raw.get("words", {})
         known.lessons = raw.get("lessons", [])
         for saved in raw.get("map", {}).get("edges", []):
-            edge = Edge(saved["source"], saved["target"], saved["label"])
+            edge = known.shown._edge(saved["source"], saved["target"], saved["label"])
+            if edge is None:
+                edge = Edge(saved["source"], saved["target"], saved["label"])
+                known.shown.edges.append(edge)
             edge.evidence = Evidence(
                 status=saved.get("status", "untested"),
                 tries=saved.get("tries", 0),
                 successes=saved.get("successes", 0),
             )
-            known.shown.edges.append(edge)
         return known
 
 

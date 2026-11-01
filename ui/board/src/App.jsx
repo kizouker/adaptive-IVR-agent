@@ -152,7 +152,7 @@ function App() {
           <Subtitle
             key={subtitleKey}
             text={latest && latest.robot}
-            who={live.robot_name || t.robot}
+            who={(latest && latest.speaker) || live.robot_name || t.robot}
           />
           <h2>{t.tree}</h2>
           <TreeView

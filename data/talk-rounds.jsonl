@@ -16,3 +16,9 @@
 {"ts": "2026-11-01T12:55:12", "call": "20261101-125456", "round": 1, "persona": "", "heard": "Jag vill bytskriven.\nJag vill skriva ut mig.", "matched": null}
 {"ts": "2026-11-01T12:55:29", "call": "20261101-125456", "round": 2, "persona": "", "heard": "Ja, det är så här Alberta.", "matched": null}
 {"ts": "2026-11-01T12:55:39", "call": "20261101-125456", "round": 3, "persona": "", "heard": "Ja.", "matched": null}
+{"ts": "2026-11-01T12:57:52", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "Jag kommer från Alabama.", "matched": null}
+{"ts": "2026-11-01T12:58:03", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "(pressed 0)", "matched": "dtmf:0"}
+{"ts": "2026-11-01T12:58:24", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "(pressed 1)", "matched": "dtmf:1"}
+{"ts": "2026-11-01T12:58:47", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-01T12:58:59", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "(pressed 1)", "matched": "dtmf:1"}
+{"ts": "2026-11-01T12:59:22", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "(silence)", "matched": null}

@@ -124,14 +124,17 @@ def test_mermaid_highlights_current_state():
     assert "no_match" in text
 
 
-def test_full_walk_ends_at_queue_position_six():
+def test_full_walk_ends_at_officer_position_seven():
     shown = MenuMap.af_agda()
     for state_id in ("example_words", "yes_no", "transfer", "identification", "queue"):
         shown.move_to(state_id)
     assert shown.position() == 6
     assert shown.current == "queue"
+    shown.move_to("officer")
+    assert shown.position() == 7
+    assert shown.last_edge == ("queue", "officer")
     marked = [line for line in shown.render_ascii().splitlines() if line.startswith(CURRENT_MARKER)]
-    assert marked == ["* Du blir nu placerad i kö."]
+    assert marked == ["* En handläggare svarar."]
 
 
 def test_jump_without_edge_keeps_last_edge_unset():

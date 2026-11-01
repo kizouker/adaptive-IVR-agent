@@ -256,7 +256,7 @@ play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
 }
 
 agda_says() {
-  # $1 = opening|round|identified|queue|english, $2 = transcript (round only),
+  # $1 = opening|round|identified|queue|english|officer, $2 = transcript (round only),
   # $3 = aiff file, $4 = caller wav (round only), $5 = voice override (or "").
   # Speaks Agda's line, saves the audio, publishes the board state,
   # prints the exchange plus TALK_DONE / TALK_MISSES.
@@ -520,6 +520,24 @@ elif sys.argv[1] == "english":
     if place:
         print(f"TALK_PLACE={place}")
     print(f"TALK_DONE={'yes' if os.environ.get('TALK_EN_DONE', '') == '1' else 'no'}")
+elif sys.argv[1] == "officer":
+    text = lines[os.environ["TALK_OFF_ID"]]
+    render_reply(text)
+    audio_dir = os.environ["TALK_AUDIO_DIR"]
+    os.makedirs(audio_dir, exist_ok=True)
+    base = os.environ["TALK_OFF_BASE"]
+    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    aiff = os.environ["TALK_AIFF"]
+    to_mp3(aiff, os.path.join(audio_dir, agda_name))
+    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    call = load_call()
+    call.add_turn("", text, False, "officer",
+                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  speaker=os.environ.get("TALK_OFF_SPEAKER") or None)
+    with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
+        handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
+    write_board(call)
+    print(f"ROBOT: {text}")
 EOF
 }
 
@@ -613,8 +631,64 @@ run_english() {
       PLACE="$NEXT"
     fi
   done
-  title "Call over — an officer is connecting you. Your audio setup is restored on exit."
+  officer_scene en
+  title "Call over — the officer answered. Your audio setup is restored on exit."
   exit 0
+}
+
+pick_sv_officer() {
+  # Klara answers, unless Agda already uses her voice.
+  if [ "$VOICE" != "Klara" ] && say -v '?' 2>/dev/null | grep -q '^Klara '; then
+    printf 'Klara'
+  else
+    printf '%s' "$VOICE"
+  fi
+}
+
+pick_en_officer() {
+  # First installed English voice that is not Agda's English voice.
+  for _v in Daniel Karen Moira Samantha Tessa Fiona Serena; do
+    if [ "$_v" != "$EN_VOICE" ] && say -v '?' 2>/dev/null | grep -q "^$_v "; then
+      printf '%s' "$_v"
+      return 0
+    fi
+  done
+  printf '%s' "$EN_VOICE"
+}
+
+officer_scene() {
+  # $1 = sv|en. Touch-tone beeps while connecting, then the officer answers.
+  if [ "$1" = "en" ]; then
+    OFF_VOICE="$(pick_en_officer)"; OFF_ID="L40"; OFF_BASE="oen"
+    OFF_MAP="english"; OFF_SPEAKER="Officer ($OFF_VOICE)"
+  else
+    OFF_VOICE="$(pick_sv_officer)"; OFF_ID="L39"; OFF_BASE="osv"
+    OFF_MAP="swedish"; OFF_SPEAKER="Handläggare ($OFF_VOICE)"
+  fi
+  info "officer voice: $OFF_VOICE"
+  step "Connecting"
+  what "Touch-tone beeps while the call goes through, then the officer answers."
+  BEEPS_WAV="$REC_DIR/talk-$CALL_STAMP-beeps.wav"
+  run "write DTMF beeps to $BEEPS_WAV"
+  PYTHONPATH="$ROOT/src" python3 - "$BEEPS_WAV" <<'EOF' || fail "Could not make beeps"
+import sys
+from adaptive_ivr_agent.tones import write_beeps
+write_beeps(sys.argv[1])
+EOF
+  [ -s "$BEEPS_WAV" ] || fail "Beeps missing: $BEEPS_WAV"
+  run "play beeps (any key skips, q quits, +/- volume)"
+  play_skippable "$BEEPS_WAV"
+  OFF_AIFF="$REC_DIR/talk-$CALL_STAMP-officer.aiff"
+  run "render officer ($OFF_VOICE)"
+  OFF_OUT="$(TALK_MAP="$OFF_MAP" TALK_OFF_ID="$OFF_ID" \
+    TALK_OFF_BASE="talk-$CALL_STAMP-$OFF_BASE" TALK_OFF_SPEAKER="$OFF_SPEAKER" \
+    agda_says officer "" "$OFF_AIFF" "" "$OFF_VOICE")" || fail "Officer failed to answer"
+  printf '%s\n' "$OFF_OUT" | grep -v '^TALK_'
+  [ -s "$OFF_AIFF" ] || fail "Officer audio missing: $OFF_AIFF"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-$OFF_BASE-agda.mp3" ] || fail "Officer board audio missing"
+  ok "officer on board: $OFF_BASE"
+  run "Officer speaks (any key skips, q quits, +/- volume)"
+  play_skippable "$OFF_AIFF"
 }
 
 title "Agda is calling..."
@@ -684,7 +758,8 @@ run_identification() {
   if [ "$(printf '%s\n' "$OUT3" | sed -n 's/^TALK_DONE=//p')" != "yes" ]; then
     fail "Queue did not finish"
   fi
-  title "Call over — an officer is connecting you. Your audio setup is restored on exit."
+  officer_scene sv
+  title "Call over — the officer answered. Your audio setup is restored on exit."
   exit 0
 }
 
