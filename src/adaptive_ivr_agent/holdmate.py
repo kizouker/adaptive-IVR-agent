@@ -123,10 +123,11 @@ class Exchange(NamedTuple):
     state: str
 
 
-def build_agda(lines: dict[str, str], respond) -> AgdaCall:
+def build_agda(lines: dict[str, str], respond, busy: bool = False) -> AgdaCall:
     """Scripted Agda with the recorded lines; fixed queue place for lessons."""
+    welcome = lines["L44"] if busy else lines["L01"]
     return AgdaCall(
-        opening=f"{lines['L01']} {lines['L02']}",
+        opening=f"{welcome} {lines['L02']}",
         examples=lines["L03"],
         yesno=lines["L22"],
         yesno_reprompt=lines["L41"],
@@ -139,6 +140,8 @@ def build_agda(lines: dict[str, str], respond) -> AgdaCall:
         place_template=lines["L29"],
         respond=respond,
         queue_place=lambda: FIXED_PLACE,
+        survey_line=lines["L15"],
+        survey_done=lines["L16"],
     )
 
 
@@ -169,6 +172,10 @@ def run_call(
             exchanges.append(Exchange("", tick.reply, False, "queue"))
             served = tick.done
             place = tick.queue_place or 0
+        if served:
+            survey = agda.after_served(answer.misses)
+            turns.append(f"AGDA: {survey.reply}")
+            exchanges.append(Exchange("1", survey.reply, False, "survey"))
     return (
         SimResult("", misses, word, [], answer.matched, transferred, served,
                   tuple(exchanges)),

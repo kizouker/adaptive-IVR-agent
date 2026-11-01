@@ -58,6 +58,10 @@ def test_served_and_english_lines_have_verbatim_flags():
     assert by_id["L43"]["verbatim"] is False  # mirrors L32, UNVERIFIED
     assert "For English, press 0." in by_id["L01"]["text"]
     assert by_id["L01"]["verbatim"] is True
+    assert by_id["L44"]["text"].startswith("Välkommen till Arbetsförmedlingen")
+    assert "försenade" in by_id["L44"]["text"]
+    assert by_id["L44"]["verbatim"] is True
+    assert by_id["L44"]["en"].strip()
 
 
 def test_spoken_swedish_lines_have_english():

@@ -59,6 +59,8 @@ class AgdaCall:
         respond: Callable[[str], tuple[str, str | None]],
         queue_place: Callable[[], int] | None = None,
         failed_line: str = "",
+        survey_line: str = "",
+        survey_done: str = "",
     ) -> None:
         self.opening = opening
         self._examples = examples
@@ -68,6 +70,8 @@ class AgdaCall:
         self._identify_line = identify_line
         self._identified_line = identified_line
         self._failed_line = failed_line
+        self._survey_line = survey_line
+        self._survey_done = survey_done
         self._served_line = served_line
         self._queue_line = queue_line
         self._place_template = place_template
@@ -115,3 +119,11 @@ class AgdaCall:
         if place <= 1:
             return AgdaReply(self._served_line, None, True, misses, False, 0)
         return AgdaReply(self._placed(place - 1), None, False, misses, False, place - 1)
+
+    def after_served(self, misses: int, join: bool = True) -> AgdaReply:
+        """Survey offer after handover; joining plays the accept line."""
+        if join and self._survey_done:
+            line = f"{self._survey_line} {self._survey_done}"
+        else:
+            line = self._survey_line
+        return AgdaReply(line, None, True, misses, False, 0)

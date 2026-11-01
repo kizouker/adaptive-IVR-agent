@@ -4,7 +4,8 @@
 # Flags: --airpods (physical AirPods; must be connected), --as <persona> (role-play + tag rounds for Holdmate training),
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
 #   --quiet (type + read instead of speak + listen), --sound (force sound on),
-#   --floor (level the system volume first; default leaves it untouched).
+#   --floor (level the system volume first; default leaves it untouched),
+#   --busy (delay-notice welcome instead of the plain one).
 # The quiet/sound choice is remembered in .talk-quiet; flags override it and save.
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
@@ -29,6 +30,7 @@ PERSONA=""
 QUIET=0
 QUIET_FORCED=""
 FLOOR=0
+BUSY=0
 QUEUE_START=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -37,6 +39,7 @@ while [ $# -gt 0 ]; do
     --quiet) QUIET=1; QUIET_FORCED=1 ;;
     --sound) QUIET=0; QUIET_FORCED=0 ;;
     --floor) FLOOR=1 ;;
+    --busy) BUSY=1 ;;
     --as)
       PERSONA="${2:-}"
       [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
@@ -52,7 +55,7 @@ while [ $# -gt 0 ]; do
       fi
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor)" ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor, --busy)" ;;
   esac
   shift
 done
@@ -530,7 +533,7 @@ agda_says() {
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
     TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
-    TALK_QUEUE_START="$QUEUE_START" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
+    TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
 import json
 import os
@@ -566,7 +569,8 @@ else:
 forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
 forced = int(forced_start) if forced_start.isdigit() else None
 # Full verbatim L01: the English sentence is spoken by an English voice.
-welcome = lines["L01"]
+# --busy swaps in the L44 delay notice; the rest is identical (call 5 part 3).
+welcome = lines["L44"] if os.environ.get("TALK_BUSY") == "1" else lines["L01"]
 # L30: Rickard's pick 1 Nov (UNVERIFIED memory). Replace with verbatim
 # from Monday's sampling.
 SERVED_LINE = lines["L30"]

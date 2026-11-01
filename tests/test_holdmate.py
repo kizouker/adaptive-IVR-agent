@@ -35,6 +35,9 @@ FAKE_LINES = {
     "L13": "Queued.",
     "L29": "Place 1.",
     "L41": "Please answer yes or no.",
+    "L15": "Survey? Press 1.",
+    "L16": "Thanks, noted.",
+    "L44": "Busy welcome.",
 }
 
 
@@ -67,7 +70,8 @@ def test_transfer_runs_to_handover():
     assert result.matched == "kw"
     assert result.served is True
     assert turns[0] == "YOU: kw"
-    assert turns[-1] == "AGDA: Served."
+    assert turns[-2] == "AGDA: Served."
+    assert turns[-1] == "AGDA: Survey? Press 1. Thanks, noted."
 
 
 def test_miss_stays_unserved_until_transfer():
@@ -77,12 +81,29 @@ def test_miss_stays_unserved_until_transfer():
     assert result.served is False
 
 
+def test_busy_day_uses_delay_welcome():
+    calm = build_agda(FAKE_LINES, fake_respond)
+    busy = build_agda(FAKE_LINES, fake_respond, busy=True)
+    assert calm.opening.startswith("Welcome.")
+    assert busy.opening.startswith("Busy welcome.")
+
+
+def test_survey_decline_skips_accept_line():
+    agda = build_agda(FAKE_LINES, fake_respond)
+    joined = agda.after_served(0)
+    skipped = agda.after_served(0, join=False)
+    assert joined.reply == "Survey? Press 1. Thanks, noted."
+    assert skipped.reply == "Survey? Press 1."
+    assert joined.done is True
+
+
 def test_run_call_returns_board_exchanges_with_states():
     agda = build_agda(FAKE_LINES, fake_respond)
     result, turns, exchanges = run_call(agda, "kw", 0)
     assert turns[0] == "YOU: kw"
     assert exchanges[0] == ("kw", result and exchanges[0].robot, True, "transfer")
-    assert [e.state for e in exchanges[1:]] == ["queue"] * (FIXED_PLACE + 1)
+    assert [e.state for e in exchanges[1:]] == ["queue"] * (FIXED_PLACE + 1) + ["survey"]
+    assert exchanges[-1].caller == "1"
     assert result.exchanges == tuple(exchanges)
     missed, _, missed_ex = run_call(agda, "eh", 0)
     assert [(e.caller, e.state) for e in missed_ex] == [("eh", "example_words")]
