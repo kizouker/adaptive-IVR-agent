@@ -69,13 +69,14 @@ function VolumeWidget({ label, quieter, louder }) {
   };
 
   return (
-    <label className="vol" htmlFor="vol-slider">
-      {`${label} ${volume.toFixed(1)}`}
+    <div className="vol">
+      <span id="vol-text">{`${label} ${volume.toFixed(1)}`}</span>
       <button type="button" className="volbtn" onClick={() => nudge(-STEP)} aria-label={quieter}>
         −
       </button>
       <input
         id="vol-slider"
+        aria-labelledby="vol-text"
         type="range"
         min={MIN}
         max={MAX}
@@ -86,7 +87,7 @@ function VolumeWidget({ label, quieter, louder }) {
       <button type="button" className="volbtn" onClick={() => nudge(STEP)} aria-label={louder}>
         +
       </button>
-    </label>
+    </div>
   );
 }
 
