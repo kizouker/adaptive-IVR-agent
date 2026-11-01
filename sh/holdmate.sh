@@ -119,6 +119,16 @@ open_board() {
   fi
 }
 
+open_github() {
+  GH="https://github.com/kizouker/adaptive-IVR-agent"
+  if command -v open >/dev/null 2>&1; then
+    open "$GH"
+    ok "opened $GH in your browser"
+  else
+    info "open this in your browser: $GH"
+  fi
+}
+
 cleanup() {
   tput cnorm 2>/dev/null || true
   stop_server
@@ -303,6 +313,7 @@ while true; do
     "Teach Agda new words" \
     "Holdmate phones Agda alone (BFS)" \
     "Sound: $(sound_label) (change...)" \
+    "GitHub: open repo in browser" \
     "Quit")"
   case "$choice" in
     1) run_all ;;
@@ -310,7 +321,8 @@ while true; do
     3) "$HERE/learn-words.sh" ;;
     4) "$HERE/holdmate-call.sh" ;;
     5) sound_menu ;;
-    6|q|Q) title "Bye"; exit 0 ;;
-    *) warn "pick with arrows + Enter (or type 1-6)" ;;
+    6) open_github ;;
+    7|q|Q) title "Bye"; exit 0 ;;
+    *) warn "pick with arrows + Enter (or type 1-7)" ;;
   esac
 done
