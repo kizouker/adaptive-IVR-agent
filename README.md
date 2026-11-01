@@ -8,7 +8,14 @@ Oskar, the officer as Klara.
 
 ## Quick start
 
-Run the launcher (works from any folder) and pick with arrows + Enter:
+One command (works from any folder): starts the board server, opens the page,
+and talks:
+
+```bash
+~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/start.sh
+```
+
+For the full menu instead (talk options, teach words, BFS lessons, sound):
 
 ```bash
 ~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/holdmate.sh
