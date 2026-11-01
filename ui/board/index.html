@@ -60,11 +60,34 @@
       .flvl { fill: #9aa3af; font-size: 10px; text-anchor: middle; }
       .caret { display: inline-block; width: 7px; height: 14px;
         background: #7ee2a8; vertical-align: -2px; margin-left: 1px; }
+      .queue { display: flex; justify-content: center; margin: 6px 0 10px; }
+      .flap { position: relative; width: 190px; height: 150px; }
+      .half { position: absolute; left: 0; right: 0; height: 50%; }
+      .half.top { top: 0; background: #242d3a;
+        border-radius: 12px 12px 0 0; border: 1px solid #39424f;
+        border-bottom: none; }
+      .half.bottom { bottom: 0; background: #161c25;
+        border-radius: 0 0 12px 12px; border: 1px solid #39424f;
+        border-top: none; }
+      .fdigit { position: absolute; inset: 0; display: flex;
+        align-items: center; justify-content: center;
+        font-size: 104px; font-weight: 700; color: #f2f4f7;
+        font-variant-numeric: tabular-nums; }
+      .flap.dim .fdigit { color: #4b5563; }
+      .split { position: absolute; top: 50%; left: 0; right: 0;
+        height: 2px; margin-top: -1px; background: #0b0e12; }
+      .split::before, .split::after { content: ""; position: absolute;
+        top: -4px; width: 10px; height: 10px; border-radius: 50%;
+        background: #0b0e12; }
+      .split::before { left: -5px; }
+      .split::after { right: -5px; }
       @media (prefers-reduced-motion: no-preference) {
         .fcurrent { animation: fpulse 1.6s infinite; }
         @keyframes fpulse { 50% { opacity: 0.55; } }
         .caret { animation: blink 0.8s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
+        .fdigit.tick { animation: tick 0.35s ease-out; }
+        @keyframes tick { from { transform: scale(1.18); opacity: 0.4; } }
       }
     </style>
   </head>

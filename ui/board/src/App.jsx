@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import FlowGraph from './components/FlowGraph';
+import QueueWidget from './components/QueueWidget';
 import CallThread from './components/CallThread';
 import { fetchBoard, setLang } from './store/boardSlice';
 
@@ -71,6 +72,7 @@ function App() {
   }
   const live = data.calls[data.calls.length - 1];
   const { states } = data.maps[live.map];
+  const queued = [...live.turns].reverse().find((turn) => turn.queue_place != null);
   return (
     <div className="wrap">
       <div className="top">
@@ -98,6 +100,8 @@ function App() {
         levelWord={t.level}
         paths={data.calls.map((call) => call.turns.map((turn) => turn.state))}
       />
+      <h2>{t.queuePlace}</h2>
+      <QueueWidget place={queued ? queued.queue_place : null} />
       <h2>{t.calls}</h2>
       {data.calls.map((call) => (
         <CallThread key={call.persona} call={call} lang={lang} t={t} />
