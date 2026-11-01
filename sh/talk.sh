@@ -3,7 +3,9 @@
 # Runs on: Rickard's Mac (M4). Modes: talk (default) | check.
 # Flags: --airpods (physical AirPods; must be connected), --as <persona> (role-play + tag rounds for Holdmate training),
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
-#   --quiet (type + read instead of speak + listen).
+#   --quiet (type + read instead of speak + listen), --sound (force sound on),
+#   --floor (level the system volume first; default leaves it untouched).
+# The quiet/sound choice is remembered in .talk-quiet; flags override it and save.
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
 # Keys during record/playback: any key skips ahead, 0 jumps to the English
@@ -25,12 +27,16 @@ MODE="talk"
 AIRPODS=0
 PERSONA=""
 QUIET=0
+QUIET_FORCED=""
+FLOOR=0
 QUEUE_START=""
 while [ $# -gt 0 ]; do
   case "$1" in
     check|--check) MODE="check" ;;
     --airpods) AIRPODS=1 ;;
-    --quiet) QUIET=1 ;;
+    --quiet) QUIET=1; QUIET_FORCED=1 ;;
+    --sound) QUIET=0; QUIET_FORCED=0 ;;
+    --floor) FLOOR=1 ;;
     --as)
       PERSONA="${2:-}"
       [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
@@ -46,7 +52,7 @@ while [ $# -gt 0 ]; do
       fi
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet)" ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor)" ;;
   esac
   shift
 done
@@ -57,7 +63,7 @@ MIC="MacBook Pro-mikrofon"
 RECORD_SECONDS="${RECORD_SECONDS:-5}"
 MIC_INDEX="${MIC_INDEX:-}"             # empty = auto-detect; set to force an avfoundation index
 VOICE="${VOICE:-Alva}"
-FLOOR_LEVEL=70                        # talk mode raises a quieter physical output to this (merged devices can't be raised later)
+FLOOR_LEVEL=70                        # with --floor, talk mode raises a quieter output to this (merged devices can't be raised later); default leaves it untouched
 FLOOR_CHANGED=0
 FLOOR_TARGET=""
 ORIG_SYS_VOL=""
@@ -67,6 +73,14 @@ if [ -z "${TALK_VOLUME+x}" ]; then
   if [ -f "$ROOT/.talk-volume" ] && grep -Eq '^(0\.[0-9]+|[1-3](\.[0-9]+)?|4(\.0+)?)$' "$ROOT/.talk-volume"; then
     TALK_VOLUME="$(cat "$ROOT/.talk-volume")"
   fi
+fi
+QUIET_FILE="${TALK_QUIET_FILE:-$ROOT/.talk-quiet}"
+save_quiet() { printf '%s' "$QUIET" > "$QUIET_FILE"; }
+if [ -n "$QUIET_FORCED" ]; then
+  QUIET="$QUIET_FORCED"                   # flags win for the session and are remembered
+  save_quiet
+elif [ -f "$QUIET_FILE" ] && grep -Eq '^[01]$' "$QUIET_FILE"; then
+  QUIET="$(cat "$QUIET_FILE")"            # remembered t-toggle/flag from last run
 fi
 AGDA_FORGIVING="${AGDA_FORGIVING:-0}"     # 1 = Agda's bad memory (learned aliases); 0 = exact AF words
 QUEUE_TICK="${QUEUE_TICK:-8}"             # seconds between queue numbers (any key hurries)
@@ -201,8 +215,12 @@ if command -v osascript >/dev/null 2>&1; then
     *) if [ "$SYS_LEVEL" -lt 40 ]; then warn "macOS system volume is $SYS_LEVEL (raise it to hear Agda well)"; fi ;;
   esac
 fi
-if [ "$MODE" = "check" ] && command -v osascript >/dev/null 2>&1; then
-  info "check: talk mode would unmute + raise below $FLOOR_LEVEL to $FLOOR_LEVEL (now: ${SYS_LEVEL:-unknown})"
+if [ "$MODE" = "check" ]; then
+  if [ "$FLOOR" = 1 ]; then
+    info "check: talk mode would unmute + raise below $FLOOR_LEVEL to $FLOOR_LEVEL (now: ${SYS_LEVEL:-unknown})"
+  else
+    info "check: talk mode leaves the system volume untouched (use --floor to level it first)"
+  fi
 fi
 if [ "$QUIET" = 1 ]; then
   info "quiet mode: type + read, t toggles sound back on"
@@ -237,7 +255,7 @@ fi
 [ "$MODE" = "check" ] && { title "Check only: nothing changed"; exit 0; }
 
 step "Switch audio"
-what "Level the physical output first (merged devices can't be raised later), then route through $MULTI_OUTPUT. Originals are restored on exit."
+what "Route audio through $MULTI_OUTPUT (--floor levels the physical output first). Originals are restored on exit."
 ORIGINAL_OUTPUT="$(SwitchAudioSource -c -t output)"
 case "$ORIGINAL_OUTPUT" in
   IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
@@ -254,14 +272,18 @@ switch_back() {
 }
 trap switch_back EXIT
 trap 'exit 130' INT TERM
-if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then _floor_target="$NORMAL_OUTPUT"
-else _floor_target="$MULTI_OUTPUT"; fi
-if [ "$(SwitchAudioSource -c -t output)" != "$_floor_target" ]; then
-  SwitchAudioSource -s "$_floor_target" -t output >/dev/null \
-    || fail "Could not switch output to $_floor_target"
-  ok "output -> $_floor_target (level check)"
+if [ "$FLOOR" = 1 ]; then
+  if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then _floor_target="$NORMAL_OUTPUT"
+  else _floor_target="$MULTI_OUTPUT"; fi
+  if [ "$(SwitchAudioSource -c -t output)" != "$_floor_target" ]; then
+    SwitchAudioSource -s "$_floor_target" -t output >/dev/null \
+      || fail "Could not switch output to $_floor_target"
+    ok "output -> $_floor_target (level check)"
+  fi
+  floor_system_volume "$_floor_target"
+else
+  info "system volume left untouched (use --floor to level it first)"
 fi
-floor_system_volume "$_floor_target"
 SwitchAudioSource -s "$MULTI_OUTPUT" -t output >/dev/null
 [ "$(SwitchAudioSource -c -t output)" = "$MULTI_OUTPUT" ] \
   || fail "Could not switch output to $MULTI_OUTPUT"
@@ -349,6 +371,7 @@ toggle_quiet() {
   # $1 = pid to hush (or ""). Flips QUIET; 0 = skip ahead, 1 = keep waiting.
   if [ "$QUIET" = 1 ]; then QUIET=0; info "sound on"
   else QUIET=1; info "quiet: type + read from here"; fi
+  save_quiet
   if [ -n "${1:-}" ]; then kill "$1" 2>/dev/null; return 0; fi
   return 1
 }
@@ -1145,7 +1168,7 @@ while [ "$ROUND" -lt 6 ]; do
     printf 'Type now (q quits, /sound for sound, empty skips): '
     read -r typed || typed=""
     if [ "$typed" = "q" ] || [ "$typed" = "Q" ]; then quit_call; fi
-    if [ "$typed" = "/sound" ]; then QUIET=0; info "sound on"; continue; fi
+    if [ "$typed" = "/sound" ]; then QUIET=0; save_quiet; info "sound on"; continue; fi
     if [ -z "${typed//[[:space:]]/}" ]; then warn "nothing typed, skipping this round"; continue; fi
     printf '%s\n' "$typed" > "$TXT"
     run "ffmpeg silent stand-in $WAV"
