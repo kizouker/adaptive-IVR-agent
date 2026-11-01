@@ -194,6 +194,23 @@ def test_wintitle_is_silent_without_a_tty():
     assert True  # must not raise where /dev/tty is missing
 
 
+def test_interrupt_mid_lesson_keeps_partial_knowledge():
+    seen = []
+
+    def exploding(heard):
+        seen.append(heard)
+        if len(seen) > 2:
+            raise KeyboardInterrupt
+        return ("nope", None)
+
+    agda = build_agda(FAKE_LINES, exploding)
+    lesson = Lesson("quit-persona", ["a", "b", "c"], agda, Knowledge(), 0)
+    with pytest.raises(KeyboardInterrupt):
+        lesson.run()
+    assert len(lesson.sims) == 2
+    assert set(lesson.knowledge.words) == {"a", "b"}
+
+
 def test_run_prints_live_line_per_sim(capsys):
     lesson = make_lesson(["kw", "eh"], max_misses=0)
     lesson.run()

@@ -306,25 +306,43 @@ page() { # stdin pager: one screen, space = more, q quits (stays put)
   if command -v less >/dev/null 2>&1; then less -RX; else cat; fi
 }
 
+lessons_stopped() { # $1 = producer rc; an INT stop was already noted
+  trap - INT
+  if [ "${LESSON_STOP:-0}" = 1 ]; then
+    info "stopped early, partial knowledge saved (back to menu)"
+  elif [ "${1:-0}" != 0 ]; then
+    warn "lessons ended early (see above)"
+  fi
+  return 0
+}
+
 lessons_menu() {
   while true; do
     wintitle "lessons"
     title "Holdmate phones Agda alone (arrows + Enter, Esc goes back)"
     choice="$(choose \
-      "All personas, silent (space = more)" \
-      "All personas, spoken (Oskar + Alva)" \
-      "One persona, spoken (pick...)" \
+      "All personas, silent (space = more, q = stop)" \
+      "All personas, spoken (Oskar + Alva, Ctrl+C = stop)" \
+      "One persona, spoken (pick..., Ctrl+C = stop)" \
       "Back")"
     case "$choice" in
-      1) HOLDEMATE_COLOR=1 "$HERE/holdmate-call.sh" --all 2>&1 | page
-        [ "${PIPESTATUS[0]}" = 0 ] || warn "lessons ended early (see above)"
+      1) trap 'LESSON_STOP=1' INT; LESSON_STOP=0
+        HOLDEMATE_COLOR=1 "$HERE/holdmate-call.sh" --all 2>&1 | page
+        lessons_stopped "${PIPESTATUS[0]}"
         return 0
         ;;
-      2) "$HERE/holdmate-call.sh" --all --speak; return 0 ;;
+      2) trap 'LESSON_STOP=1' INT; LESSON_STOP=0
+        "$HERE/holdmate-call.sh" --all --speak
+        lessons_stopped "$?"
+        return 0
+        ;;
       3)
         persona="$(pick_persona)"
         if [ -n "$persona" ] && [ "$persona" != "q" ]; then
-          "$HERE/holdmate-call.sh" --as "$persona" --speak; return 0
+          trap 'LESSON_STOP=1' INT; LESSON_STOP=0
+          "$HERE/holdmate-call.sh" --as "$persona" --speak
+          lessons_stopped "$?"
+          return 0
         fi
         ;;
       4|q|Q|b|B) return 0 ;;

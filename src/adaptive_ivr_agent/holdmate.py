@@ -220,11 +220,18 @@ class Lesson:
 
 
 def speak_turns(turns: list[str]) -> None:
-    """Say one call aloud; Ctrl-C stops after the current line."""
+    """Say one call aloud; Ctrl-C stops at once instead of trailing off."""
     for line in turns:
         voice = CALLER_VOICE if line.startswith("YOU:") else AGDA_VOICE
         print(line, flush=True)
-        subprocess.run(["say", "-v", voice, line.split(": ", 1)[1]], check=True)
+        proc = subprocess.Popen(["say", "-v", voice, line.split(": ", 1)[1]])
+        try:
+            proc.wait()
+        except KeyboardInterrupt:
+            proc.kill()
+            raise
+        if proc.returncode != 0:
+            raise subprocess.CalledProcessError(proc.returncode, "say")
 
 
 class Knowledge:
