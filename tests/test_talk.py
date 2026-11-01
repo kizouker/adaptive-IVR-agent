@@ -16,6 +16,7 @@ def make_call(respond, queue_place=None):
         transfer="transferring you.",
         identify_line="identify with bankid or freja.",
         identified_line="identification worked.",
+        failed_line="identification failed.",
         served_line="connecting you now.",
         queue_line="you are placed in queue.",
         place_template="you are place 1 in queue.",
@@ -78,6 +79,14 @@ def test_after_identified_enters_queue_with_place_number():
     answer = call.after_identified(2)
     assert (answer.done, answer.identify, answer.queue_place) == (False, False, 3)
     assert answer.reply == ("identification worked. you are placed in queue. "
+                            "you are place 3 in queue.")
+
+
+def test_failed_identification_still_queues_with_failed_line():
+    call = make_call(lambda heard: MISS, queue_place=lambda: 3)
+    answer = call.after_identified(2, ok=False)
+    assert (answer.done, answer.identify, answer.queue_place) == (False, False, 3)
+    assert answer.reply == ("identification failed. you are placed in queue. "
                             "you are place 3 in queue.")
 
 

@@ -117,13 +117,14 @@ class Exchange(NamedTuple):
 def build_agda(lines: dict[str, str], respond) -> AgdaCall:
     """Scripted Agda with the recorded lines; fixed queue place for lessons."""
     return AgdaCall(
-        opening=f"{lines['L01'].split(' For English, press 0.')[0]} {lines['L02']}",
+        opening=f"{lines['L01']} {lines['L02']}",
         examples=lines["L03"],
         yesno=lines["L22"],
         yesno_reprompt=lines["L41"],
         transfer=lines["L19"],
         identify_line=f"{lines['L43']} {lines['L09']}",
         identified_line=lines["L11"],
+        failed_line=lines["L12"],
         served_line=lines["L30"],
         queue_line=lines["L13"],
         place_template=lines["L29"],

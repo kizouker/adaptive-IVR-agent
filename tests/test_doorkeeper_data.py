@@ -56,3 +56,5 @@ def test_served_and_english_lines_have_verbatim_flags():
     assert "Press 1 when done" in by_id["L42"]["text"]
     assert by_id["L43"]["text"].startswith("För att vi ska kunna hjälpa dig")
     assert by_id["L43"]["verbatim"] is False  # mirrors L32, UNVERIFIED
+    assert "For English, press 0." in by_id["L01"]["text"]
+    assert by_id["L01"]["verbatim"] is True

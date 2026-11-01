@@ -58,6 +58,7 @@ class AgdaCall:
         place_template: str,
         respond: Callable[[str], tuple[str, str | None]],
         queue_place: Callable[[], int] | None = None,
+        failed_line: str = "",
     ) -> None:
         self.opening = opening
         self._examples = examples
@@ -66,6 +67,7 @@ class AgdaCall:
         self._transfer = transfer
         self._identify_line = identify_line
         self._identified_line = identified_line
+        self._failed_line = failed_line
         self._served_line = served_line
         self._queue_line = queue_line
         self._place_template = place_template
@@ -94,10 +96,14 @@ class AgdaCall:
         """Transfer and ask for identification (verified order: ID before queue)."""
         return AgdaReply(f"{prefix} {self._identify_line}", matched, False, misses, True, None)
 
-    def after_identified(self, misses: int) -> AgdaReply:
-        """Confirm the (faked) identification and enter the simulated queue."""
+    def after_identified(self, misses: int, ok: bool = True) -> AgdaReply:
+        """Confirm the identification (or its failure) and enter the queue."""
         place = self._queue_place()
-        line = f"{self._identified_line} {self._queue_line} {self._placed(place)}"
+        if ok:
+            first = self._identified_line
+        else:
+            first = self._failed_line or self._identified_line
+        line = f"{first} {self._queue_line} {self._placed(place)}"
         return AgdaReply(line, None, False, misses, False, place)
 
     def _placed(self, place: int) -> str:

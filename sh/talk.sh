@@ -511,10 +511,8 @@ else:
     aliases = {}
 forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
 forced = int(forced_start) if forced_start.isdigit() else None
-# Rickard 1 Nov: Alva mangles the English sentence, so Agda skips it.
-# L01 keeps the verbatim line (that IS what AF says); only speech drops it.
-welcome = lines["L01"].split(" For English, press 0.")[0]
-assert "press" not in welcome.lower(), f"English slipped into opening: {welcome}"
+# Full verbatim L01: the English sentence is spoken by an English voice.
+welcome = lines["L01"]
 # L30: Rickard's pick 1 Nov (UNVERIFIED memory). Replace with verbatim
 # from Monday's sampling.
 SERVED_LINE = lines["L30"]
@@ -526,6 +524,7 @@ agda = AgdaCall(
     transfer=lines["L19"],
     identify_line=f"{lines['L43']} {lines['L09']}",
     identified_line=lines["L11"],
+    failed_line=lines["L12"],
     served_line=SERVED_LINE,
     queue_line=lines["L13"],
     place_template=lines["L29"],
@@ -614,7 +613,24 @@ def write_board(call):
 
 
 if sys.argv[1] == "opening":
-    render_reply(agda.opening)
+    marker = "For English, press 0."
+    out_aiff = os.environ["TALK_AIFF"]
+    if marker in agda.opening:
+        sv1, _, rest = agda.opening.partition(marker)
+        sv1_aiff, en_aiff, sv2_aiff = out_aiff + ".sv1", out_aiff + ".en", out_aiff + ".sv2"
+        subprocess.run(["say", "-v", voice, "-o", sv1_aiff, sv1.strip()], check=True)
+        en_voice = os.environ.get("TALK_EN_VOICE", voice)
+        subprocess.run(["say", "-v", en_voice, "-o", en_aiff, marker], check=True)
+        subprocess.run(["say", "-v", voice, "-o", sv2_aiff, rest.strip()], check=True)
+        subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                        "-i", sv1_aiff, "-i", en_aiff, "-i", sv2_aiff,
+                        "-filter_complex", "[0:a][1:a][2:a]concat=n=3:v=0:a=1",
+                        out_aiff], check=True)
+        os.remove(sv1_aiff)
+        os.remove(en_aiff)
+        os.remove(sv2_aiff)
+    else:
+        render_reply(agda.opening)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r0"
@@ -662,7 +678,8 @@ elif sys.argv[1] == "round":
     print(f"TALK_MISSES={answer.misses}")
     print(f"TALK_IDENTIFY={'yes' if answer.identify else 'no'}")
 elif sys.argv[1] == "identified":
-    answer = agda.after_identified(int(os.environ["TALK_MISSES"]))
+    ok = os.environ.get("TALK_ID_OK", "1") == "1"
+    answer = agda.after_identified(int(os.environ["TALK_MISSES"]), ok=ok)
     render_reply(answer.reply)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
@@ -680,6 +697,25 @@ elif sys.argv[1] == "identified":
     write_board(call)
     print(f"ROBOT: {answer.reply}")
     print(f"TALK_PLACE={answer.queue_place}")
+    print("TALK_DONE=no")
+elif sys.argv[1] == "idline":
+    line_id = os.environ["TALK_ID_LINE"]
+    text = lines[line_id]
+    render_reply(text)
+    audio_dir = os.environ["TALK_AUDIO_DIR"]
+    os.makedirs(audio_dir, exist_ok=True)
+    base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}{line_id.lower()}"
+    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    aiff = os.environ["TALK_AIFF"]
+    to_mp3(aiff, os.path.join(audio_dir, agda_name))
+    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    call = load_call()
+    call.add_turn("", text, False, "identification",
+                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}")
+    with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
+        handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
+    write_board(call)
+    print(f"ROBOT: {text}")
     print("TALK_DONE=no")
 elif sys.argv[1] == "queue":
     answer = agda.queue_tick(int(os.environ["TALK_PLACE"]), int(os.environ["TALK_MISSES"]))
@@ -934,9 +970,11 @@ EOF
 }
 
 title "Agda is calling..."
-run "render opening ($VOICE)"
+run "render opening ($VOICE + English voice)"
 OPENING_AIFF="$REC_DIR/talk-$CALL_STAMP-robot0.aiff"
-agda_says opening "" "$OPENING_AIFF" || fail "Agda failed to speak the opening"
+EN_OPEN_VOICE="$(pick_english_voice)"
+info "English voice: $EN_OPEN_VOICE"
+TALK_EN_VOICE="$EN_OPEN_VOICE" agda_says opening "" "$OPENING_AIFF" || fail "Agda failed to speak the opening"
 [ -s "$OPENING_AIFF" ] || fail "Opening audio missing: $OPENING_AIFF"
 ok "opening saved: $OPENING_AIFF"
 OPENING_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r0-agda.mp3"
@@ -949,21 +987,45 @@ if [ "${KEY_PRESSED:-}" = "0" ]; then
   run_english
 fi
 
+id_say_line() { # $1 = L10|L12: Agda speaks it and boards it
+  IDLINE_AIFF="$REC_DIR/talk-$CALL_STAMP-$1.aiff"
+  OUTL="$(TALK_ID_LINE="$1" agda_says idline "" "$IDLINE_AIFF")" || fail "Agda failed ($1)"
+  printf '%s\n' "$OUTL" | grep -v '^TALK_'
+  [ -s "$IDLINE_AIFF" ] || fail "ID line audio missing: $IDLINE_AIFF"
+  run "Agda speaks (any key skips, q quits, +/- volume)"
+  play_skippable "$IDLINE_AIFF"
+}
+
 run_identification() {
   wintitle "identification"
   title "Identification (faked, human in the loop)"
-  what "Agda asked for BankID/Freja. Enter uses the TEST number; anything else reprompts and digits are never logged."
-  while true; do
-    printf 'Personnummer [%s] (Enter = test number, q quits): ' "$FAKE_PERSONNUMMER"
-    read -r typed || typed=""
-    if [ "$typed" = "q" ] || [ "$typed" = "Q" ]; then quit_call; fi
-    if [ -z "$typed" ] || [ "$typed" = "$FAKE_PERSONNUMMER" ]; then break; fi
-    warn "only the test number is accepted (nothing real ever flows)"
-  done
-  ok "identified with test number"
+  what "BankID (1) or Freja (2) first, then the TEST number. Enter uses it; anything else reprompts and digits are never logged."
+  run "wait for BankID 1 / Freja 2 (12 s)"
+  digit_or_wait; ID_RC=$?
+  if [ "$ID_RC" = 2 ]; then quit_call; fi
+  if [ "$ID_RC" != 0 ]; then
+    id_say_line L10
+    run "wait again for 1/2 (12 s)"
+    digit_or_wait; ID_RC=$?
+    if [ "$ID_RC" = 2 ]; then quit_call; fi
+  fi
+  if [ "$ID_RC" = 0 ]; then
+    ID_OK=1
+    while true; do
+      printf 'Personnummer [%s] (Enter = test number, q quits): ' "$FAKE_PERSONNUMMER"
+      read -r typed || typed=""
+      if [ "$typed" = "q" ] || [ "$typed" = "Q" ]; then quit_call; fi
+      if [ -z "$typed" ] || [ "$typed" = "$FAKE_PERSONNUMMER" ]; then break; fi
+      warn "only the test number is accepted (nothing real ever flows)"
+    done
+    ok "identified with test number"
+  else
+    ID_OK=0
+    id_say_line L12
+  fi
   run "render confirmation ($VOICE)"
   ID_AIFF="$REC_DIR/talk-$CALL_STAMP-rid.aiff"
-  OUT2="$(agda_says identified "" "$ID_AIFF")" || fail "Agda failed after identification"
+  OUT2="$(TALK_ID_OK="$ID_OK" agda_says identified "" "$ID_AIFF")" || fail "Agda failed after identification"
   printf '%s\n' "$OUT2" | grep -v '^TALK_'
   [ -s "$ID_AIFF" ] || fail "Confirmation audio missing: $ID_AIFF"
   ID_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}id-agda.mp3"
