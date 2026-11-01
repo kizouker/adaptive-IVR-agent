@@ -199,6 +199,13 @@ def test_queue_turn_carries_start_total_for_progress():
     assert (turn["queue_place"], turn["queue_total"]) == (7, 30)
 
 
+def test_map_blob_ships_edges_for_option_lists():
+    state = build_board([("ny-arbetslos", 1)], PHRASEBOOKS)
+    edges = state["maps"]["swedish"]["edges"]
+    assert {"source": "yes_no", "target": "transfer", "label": "ja/nej"} in edges
+    assert all(set(edge) == {"source", "target", "label"} for edge in edges)
+
+
 def test_live_call_carries_captions_and_speaker_names():
     call = LiveCall()
     call.add_turn("vab", "reply", True, "transfer",

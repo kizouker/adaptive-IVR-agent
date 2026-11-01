@@ -18,8 +18,29 @@ function nodeTop(i) {
   return i * ROW_H + 8;
 }
 
+function edgeWordsOf(calls) {
+  const words = new Map();
+  calls.forEach((call) => {
+    const { turns } = call;
+    for (let i = 1; i < turns.length; i += 1) {
+      const from = turns[i - 1].state;
+      const to = turns[i].state;
+      if (from !== to) {
+        const key = `${from}>${to}`;
+        if (!words.has(key)) words.set(key, []);
+        if (turns[i].caller) words.get(key).push(turns[i].caller);
+      }
+    }
+  });
+  return words;
+}
+
+function normalize(word) {
+  return word.toLowerCase().replace(/[()]/g, '').replace('pressed ', '');
+}
+
 function FlowGraph({
-  states, positionId, lang, levelWord, paths,
+  states, positionId, lang, levelWord, paths, edges, calls,
 }) {
   const indexOf = (id) => states.findIndex((s) => s.id === id);
   const visited = new Set();
@@ -28,14 +49,22 @@ function FlowGraph({
       if (indexOf(id) >= 0) visited.add(id);
     });
   });
-  const edges = new Set();
+  const edgeset = new Set();
   paths.forEach((path) => {
     for (let i = 1; i < path.length; i += 1) {
       const a = indexOf(path[i - 1]);
       const b = indexOf(path[i]);
-      if (a >= 0 && b >= 0 && a !== b) edges.add(`${a}>${b}`);
+      if (a >= 0 && b >= 0 && a !== b) edgeset.add(`${a}>${b}`);
     }
   });
+  const words = edgeWordsOf(calls);
+  const outgoing = (id) => edges.filter((e) => e.source === id);
+  const taken = (edge, option) => {
+    const clean = option.trim().toLowerCase();
+    if (!clean) return false;
+    return (words.get(`${edge.source}>${edge.target}`) || [])
+      .some((word) => normalize(word).includes(clean));
+  };
   const pos = indexOf(positionId);
   const height = states.length * ROW_H;
   const statusOf = (id, i) => {
@@ -78,48 +107,67 @@ function FlowGraph({
   };
   return (
     <div className="flow">
-      <svg
-        width={WIDTH}
-        height={height}
-        viewBox={`0 0 ${WIDTH} ${height}`}
-        role="img"
-        aria-label={pos >= 0 ? states[pos][lang] : levelWord}
-      >
-        <defs>
-          <marker id="farrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6 Z" fill={FLOW_COLOR} />
-          </marker>
-        </defs>
-        <line
-          x1={CX}
-          y1={nodeTop(0) + NODE_H}
-          x2={CX}
-          y2={nodeTop(states.length - 1)}
-          stroke="#39424f"
-          strokeWidth="2"
-        />
-        {[...edges].map(renderEdge)}
-        {states.map((state, i) => {
-          const status = statusOf(state.id, i);
-          const fill = FILLS[status];
-          return (
-            <g key={state.id} className={status === 'current' ? 'fcurrent' : undefined}>
-              <rect
-                x={CX - NODE_W / 2}
-                y={nodeTop(i)}
-                width={NODE_W}
-                height={NODE_H}
-                rx="8"
-                fill={fill.box}
-                stroke={fill.edge}
-                strokeWidth="2"
-              />
-              <text x={CX} y={nodeTop(i) + 19} className="fname">{state[lang]}</text>
-              <text x={CX} y={nodeTop(i) + 34} className="flvl">{`${levelWord} ${i + 1}`}</text>
-            </g>
-          );
-        })}
-      </svg>
+      <div className="flowrow">
+        <svg
+          width={WIDTH}
+          height={height}
+          viewBox={`0 0 ${WIDTH} ${height}`}
+          role="img"
+          aria-label={pos >= 0 ? states[pos][lang] : levelWord}
+        >
+          <defs>
+            <marker id="farrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill={FLOW_COLOR} />
+            </marker>
+          </defs>
+          <line
+            x1={CX}
+            y1={nodeTop(0) + NODE_H}
+            x2={CX}
+            y2={nodeTop(states.length - 1)}
+            stroke="#39424f"
+            strokeWidth="2"
+          />
+          {[...edgeset].map(renderEdge)}
+          {states.map((state, i) => {
+            const status = statusOf(state.id, i);
+            const fill = FILLS[status];
+            return (
+              <g key={state.id} className={status === 'current' ? 'fcurrent' : undefined}>
+                <rect
+                  x={CX - NODE_W / 2}
+                  y={nodeTop(i)}
+                  width={NODE_W}
+                  height={NODE_H}
+                  rx="8"
+                  fill={fill.box}
+                  stroke={fill.edge}
+                  strokeWidth="2"
+                />
+                <text x={CX} y={nodeTop(i) + 19} className="fname">{state[lang]}</text>
+                <text x={CX} y={nodeTop(i) + 34} className="flvl">{`${levelWord} ${i + 1}`}</text>
+              </g>
+            );
+          })}
+        </svg>
+        <div className="fopts">
+          {states.map((state) => (
+            <div key={state.id} className="fcell" style={{ height: ROW_H }}>
+              {outgoing(state.id).map((edge) => edge.label.split('/').map((option) => {
+                const on = taken(edge, option);
+                return (
+                  <div key={`${edge.target}-${option}`} className="fopt">
+                    <span className={on ? 'tickbox on' : 'tickbox'} aria-hidden="true">
+                      {on ? '✓' : ''}
+                    </span>
+                    <span>{option}</span>
+                  </div>
+                );
+              }))}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -134,6 +182,17 @@ FlowGraph.propTypes = {
   lang: PropTypes.oneOf(['sv', 'en']).isRequired,
   levelWord: PropTypes.string.isRequired,
   paths: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  edges: PropTypes.arrayOf(PropTypes.shape({
+    source: PropTypes.string.isRequired,
+    target: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+  })).isRequired,
+  calls: PropTypes.arrayOf(PropTypes.shape({
+    turns: PropTypes.arrayOf(PropTypes.shape({
+      caller: PropTypes.string.isRequired,
+      state: PropTypes.string.isRequired,
+    })).isRequired,
+  })).isRequired,
 };
 
 export default FlowGraph;

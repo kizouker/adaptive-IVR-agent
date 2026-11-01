@@ -30,6 +30,10 @@ def _map_blob(shown: MenuMap) -> dict:
         "states": [
             {"id": s.id, **STATE_NAMES[s.id]} for s in shown.states
         ],
+        "edges": [
+            {"source": e.source, "target": e.target, "label": e.label}
+            for e in shown.edges
+        ],
     }
 
 

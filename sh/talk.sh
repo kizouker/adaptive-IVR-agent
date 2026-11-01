@@ -771,6 +771,17 @@ digit_caller() {
   fi
 }
 
+digit_or_wait() { # a digit pressed during playback counts; else wait 12 s
+  case "${KEY_PRESSED:-}" in
+    [0-9])
+      DIGIT="$KEY_PRESSED"; KEY_PRESSED=""
+      info "using pressed digit $DIGIT"
+      return 0
+      ;;
+  esac
+  wait_digit 12
+}
+
 en_turn() {
   # $1 caller, $2 line ids, $3 digit sub (or ""), $4 state, $5 audio base,
   # $6 place (or ""), $7 total (or ""), $8 done 1/0, $9 digit (or "").
@@ -797,23 +808,23 @@ run_english() {
   info "English voice: $EN_VOICE"
   en_turn "(pressed 0)" "L17" "" english_menu e01 "" "" 0 0
   run "wait for 1/2/4 (12 s, silence moves on)"
-  wait_digit 12; digit_caller $?
+  digit_or_wait; digit_caller $?
   en_turn "$DC_CALLER" "L18" "" english_submenu e02 "" "" 0 "$DC_DIGIT"
   run "wait for 1/2 (12 s, silence moves on)"
-  wait_digit 12; digit_caller $?
+  digit_or_wait; digit_caller $?
   en_turn "$DC_CALLER" "L31" "" sms e03 "" "" 0 "$DC_DIGIT"
   run "wait for 1 (12 s, silence moves on)"
-  wait_digit 12; digit_caller $?
+  digit_or_wait; digit_caller $?
   en_turn "$DC_CALLER" "L32" "" identification e04 "" "" 0 "$DC_DIGIT"
   run "wait for BankID 1 / Freja 2 (12 s)"
-  wait_digit 12; EN_RC=$?
+  digit_or_wait; EN_RC=$?
   if [ "$EN_RC" = 2 ]; then quit_call; fi
   if [ "$EN_RC" = 0 ]; then
     ID_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"
   else
     en_turn "(silence)" "L33" "" identification e05 "" "" 0 ""
     run "wait again for 1/2 (12 s)"
-    wait_digit 12; EN_RC=$?
+    digit_or_wait; EN_RC=$?
     if [ "$EN_RC" = 2 ]; then quit_call; fi
     if [ "$EN_RC" = 0 ]; then
       ID_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"

@@ -140,22 +140,28 @@ function App() {
         </button>
       </div>
       {tab === 'overview' ? (
-        <>
-          <h2>{t.queuePlace}</h2>
-          <QueueWidget
-            place={queued?.queue_place ?? null}
-            total={queued?.queue_total ?? null}
-            label={t.queuePlace}
-          />
-          <h2>{t.process}</h2>
-          <FlowGraph
-            states={states}
-            positionId={live.position}
-            lang={lang}
-            levelWord={t.level}
-            paths={data.calls.map((call) => call.turns.map((turn) => turn.state))}
-          />
-        </>
+        <div className="ovrow">
+          <div className="ovflow">
+            <h2>{t.process}</h2>
+            <FlowGraph
+              states={states}
+              positionId={live.position}
+              lang={lang}
+              levelWord={t.level}
+              paths={data.calls.map((call) => call.turns.map((turn) => turn.state))}
+              edges={data.maps[live.map].edges ?? []}
+              calls={data.calls}
+            />
+          </div>
+          <div className="ovqueue">
+            <h2>{t.queuePlace}</h2>
+            <QueueWidget
+              place={queued?.queue_place ?? null}
+              total={queued?.queue_total ?? null}
+              label={t.queuePlace}
+            />
+          </div>
+        </div>
       ) : (
         <>
           <h2>{t.now}</h2>
