@@ -818,7 +818,7 @@ ROUND=0
 while [ "$ROUND" -lt 6 ]; do
   ROUND=$((ROUND + 1))
   if [ "$QUIET" = 1 ]; then
-    title "Round $ROUND: type instead of speaking (q quits, t for sound)"
+    title "Round $ROUND: type instead of speaking (q quits, /sound for sound)"
   else
     title "Round $ROUND: speak now ($RECORD_SECONDS s; any key stops, q quits, +/- volume)"
   fi
@@ -826,9 +826,10 @@ while [ "$ROUND" -lt 6 ]; do
   TXT="${WAV%.wav}.txt"
   ROBOT_AIFF="${WAV%.wav}-robot.aiff"
   if [ "$QUIET" = 1 ]; then
-    printf 'Type now (q quits, empty skips): '
+    printf 'Type now (q quits, /sound for sound, empty skips): '
     read -r typed || typed=""
     if [ "$typed" = "q" ] || [ "$typed" = "Q" ]; then quit_call; fi
+    if [ "$typed" = "/sound" ]; then QUIET=0; info "sound on"; continue; fi
     if [ -z "${typed//[[:space:]]/}" ]; then warn "nothing typed, skipping this round"; continue; fi
     printf '%s\n' "$typed" > "$TXT"
     run "ffmpeg silent stand-in $WAV"
