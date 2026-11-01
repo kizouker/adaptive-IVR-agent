@@ -135,6 +135,7 @@ case "$ORIGINAL_OUTPUT" in
 esac
 ORIGINAL_INPUT="$(SwitchAudioSource -c -t input)"
 switch_back() {
+  stty sane 2>/dev/null || true
   SwitchAudioSource -s "$ORIGINAL_OUTPUT" -t output >/dev/null
   SwitchAudioSource -s "$ORIGINAL_INPUT" -t input >/dev/null
   info "Audio restored: output='$ORIGINAL_OUTPUT' input='$ORIGINAL_INPUT'"
@@ -189,17 +190,17 @@ volume_step() { # $1 = +0.1 | -0.1; clamps to 0.1..1.0 and remembers
   info "volume $TALK_VOLUME"
 }
 
-flush_keys() {
-  [ -t 0 ] || return 0
-  while read -t 0.05 -n 1000 -s _flush 2>/dev/null; do :; done
-  return 0
+quit_call() {
+  title "Quitting — your audio setup is restored on exit."
+  exit 0
 }
 
-wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip key, 1 = time out
+wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 = quit
   if [ ! -t 0 ]; then
     return 1
   fi
-  flush_keys
+  ETX="$(printf '\003')"
+  EOT="$(printf '\004')"
   end=$((SECONDS + $1))
   while [ "$SECONDS" -lt "$end" ]; do
     if [ -n "$2" ]; then kill -0 "$2" 2>/dev/null || return 1; fi
@@ -207,6 +208,7 @@ wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip key, 1 = time out
       case "$key" in
         +) volume_step +0.1 ;;
         -) volume_step -0.1 ;;
+        q|Q|"$ETX"|"$EOT") return 2 ;;
         *) return 0 ;;
       esac
     fi
@@ -218,7 +220,11 @@ play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
   DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$1" 2>/dev/null)" || DUR="8"
   SECS=$((${DUR%.*} + 2))
   afplay -v "$TALK_VOLUME" "$1" & APID=$!
-  if wait_keys "$SECS" "$APID"; then
+  wait_keys "$SECS" "$APID"; RC=$?
+  if [ "$RC" = 2 ]; then
+    kill "$APID" 2>/dev/null
+    quit_call
+  elif [ "$RC" = 0 ]; then
     kill "$APID" 2>/dev/null
     info "skipped ahead"
   fi
@@ -260,12 +266,16 @@ else:
     aliases = {}
 forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
 forced = int(forced_start) if forced_start.isdigit() else None
+# Rickard 1 Nov: Alva mangles the English sentence, so Agda skips it.
+# L01 keeps the verbatim line (that IS what AF says); only speech drops it.
+welcome = lines["L01"].split(" For English, press 0.")[0]
+assert "press" not in welcome.lower(), f"English slipped into opening: {welcome}"
 # UNVERIFIED paraphrase (Rickard, 1 Nov): no transcript captured Agda's exact
 # served line (L08 is from call 1 step 3, wrong spot). Replace with verbatim
 # from Monday's sampling.
 SERVED_LINE = "Jag ska se om det finns en ledig handläggare."
 agda = AgdaCall(
-    opening=f"{lines['L01']} {lines['L02']}",
+    opening=f"{welcome} {lines['L02']}",
     examples=lines["L03"],
     yesno=lines["L22"],
     transfer=lines["L19"],
@@ -456,14 +466,15 @@ ok "opening saved: $OPENING_AIFF"
 OPENING_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r0-agda.mp3"
 [ -s "$OPENING_MP3" ] || fail "Opening board audio missing: $OPENING_MP3"
 ok "opening on board: $OPENING_MP3"
-run "Agda speaks (any key skips, +/- volume)"
+run "Agda speaks (any key skips, q quits, +/- volume)"
 play_skippable "$OPENING_AIFF"
 
 run_identification() {
   title "Identification (faked, human in the loop)"
   what "Agda asked for BankID/Freja. A TEST number is pre-filled; typed input is ignored and digits are never logged."
-  printf 'Personnummer [%s]: ' "$FAKE_PERSONNUMMER"
+  printf 'Personnummer [%s] (q quits): ' "$FAKE_PERSONNUMMER"
   read -r typed || typed=""
+  if [ "$typed" = "q" ] || [ "$typed" = "Q" ]; then quit_call; fi
   if [ -n "$typed" ] && [ "$typed" != "$FAKE_PERSONNUMMER" ]; then
     info "ignoring typed input, using test number"
   fi
@@ -476,7 +487,7 @@ run_identification() {
   ID_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}id-agda.mp3"
   [ -s "$ID_MP3" ] || fail "Confirmation board audio missing: $ID_MP3"
   ok "confirmation on board: $ID_MP3"
-  run "Agda speaks (any key skips, +/- volume)"
+  run "Agda speaks (any key skips, q quits, +/- volume)"
   play_skippable "$ID_AIFF"
   START="$(printf '%s\n' "$OUT2" | sed -n 's/^TALK_PLACE=//p')"
   case "$START" in
@@ -484,9 +495,10 @@ run_identification() {
   esac
   PLACE="$START"
   while [ "$PLACE" -gt 0 ]; do
-    title "Queue: place $PLACE of $START (any key moves faster, Ctrl+C quits)"
+    title "Queue: place $PLACE of $START (any key hurries, q quits, +/- volume)"
     if [ -t 0 ]; then
-      wait_keys "$QUEUE_TICK" ""
+      wait_keys "$QUEUE_TICK" ""; RC=$?
+      [ "$RC" = 2 ] && quit_call
     else
       sleep "$QUEUE_TICK"
     fi
@@ -502,7 +514,7 @@ run_identification() {
     Q_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}q${PLACE}-agda.mp3"
     [ -s "$Q_MP3" ] || fail "Queue board audio missing: $Q_MP3"
     ok "queue number on board: $Q_MP3"
-    run "Agda speaks (any key skips, +/- volume)"
+    run "Agda speaks (any key skips, q quits, +/- volume)"
     play_skippable "$Q_AIFF"
   done
   if [ "$(printf '%s\n' "$OUT3" | sed -n 's/^TALK_DONE=//p')" != "yes" ]; then
@@ -515,7 +527,7 @@ run_identification() {
 ROUND=0
 while [ "$ROUND" -lt 6 ]; do
   ROUND=$((ROUND + 1))
-  title "Round $ROUND: speak now ($RECORD_SECONDS s; any key stops, +/- volume, Ctrl+C quits)"
+  title "Round $ROUND: speak now ($RECORD_SECONDS s; any key stops, q quits, +/- volume)"
   WAV="$REC_DIR/talk-$CALL_STAMP-r$ROUND.wav"
   TXT="${WAV%.wav}.txt"
   ROBOT_AIFF="${WAV%.wav}-robot.aiff"
@@ -523,7 +535,11 @@ while [ "$ROUND" -lt 6 ]; do
   ffmpeg -hide_banner -loglevel error -f avfoundation -i ":$MIC_INDEX" \
     -t "$RECORD_SECONDS" -ar 16000 -ac 1 -y "$WAV" &
   FFPID=$!
-  if wait_keys "$RECORD_SECONDS" "$FFPID"; then
+  wait_keys "$RECORD_SECONDS" "$FFPID"; RC=$?
+  if [ "$RC" = 2 ]; then
+    kill -INT "$FFPID" 2>/dev/null
+    quit_call
+  elif [ "$RC" = 0 ]; then
     kill -INT "$FFPID" 2>/dev/null
     info "stopped early"
   fi
@@ -563,7 +579,7 @@ while [ "$ROUND" -lt 6 ]; do
   ok "round logged for Holdmate training"
   [ -f "$BOARD_FILE" ] || fail "Board state missing: $BOARD_FILE"
   ok "board updated: $BOARD_FILE"
-  run "Agda speaks (any key skips, +/- volume)"
+  run "Agda speaks (any key skips, q quits, +/- volume)"
   play_skippable "$ROBOT_AIFF"
   if printf '%s\n' "$OUT" | grep -qx 'TALK_IDENTIFY=yes'; then
     run_identification

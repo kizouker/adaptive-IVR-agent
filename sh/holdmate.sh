@@ -111,8 +111,8 @@ can_fancy() {
 choose() { # options as args; echoes 1-based index, or "q" on Esc/EOF
   if ! can_fancy; then
     i=1
-    for opt in "$@"; do info "$i) $opt"; i=$((i + 1)); done
-    printf 'Type a number: '
+    for opt in "$@"; do info "$i) $opt" >&2; i=$((i + 1)); done
+    printf 'Type a number: ' >&2
     read -r line || line="q"
     printf '%s\n' "$line"
     return 0
@@ -137,7 +137,7 @@ choose() { # options as args; echoes 1-based index, or "q" on Esc/EOF
     IFS= read -rsn1 key || { tput cnorm >&2; printf 'q\n'; return 0; }
     case "$key" in
       "$ESC")
-        if read -rsn2 -t 0.2 rest; then
+        if read -rsn2 -t 1 rest; then
           if [ "$rest" = "[A" ] && [ "$sel" -gt 1 ]; then sel=$((sel - 1)); fi
           if [ "$rest" = "[B" ] && [ "$sel" -lt "$count" ]; then sel=$((sel + 1)); fi
         else
