@@ -1,7 +1,7 @@
 #!/bin/bash
 # Talk to the practice robot with your own voice (push-to-talk loop).
 # Runs on: Rickard's Mac (M4). Modes: talk (default) | check.
-# Flags: --airpods, --as <persona> (role-play + tag rounds for Holdmate training),
+# Flags: --airpods (physical AirPods; must be connected), --as <persona> (role-play + tag rounds for Holdmate training),
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
 #   --quiet (type + read instead of speak + listen).
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
@@ -52,8 +52,7 @@ while [ $# -gt 0 ]; do
 done
 
 OUTPUT_SPEAKERS="IVR_Agent_Speakers"   # MacBook speakers + BlackHole (default)
-OUTPUT_AIRPODS="IVR_Agent_Output"      # AirPods + BlackHole (with --airpods)
-NORMAL_OUTPUT="Högtalare i MacBook Pro" # switch back to this if we start on an IVR_Agent device
+NORMAL_OUTPUT="Högtalare i MacBook Pro" # physical fallback (also the AirPods-off target)
 MIC="MacBook Pro-mikrofon"
 RECORD_SECONDS="${RECORD_SECONDS:-5}"
 MIC_INDEX="${MIC_INDEX:-}"             # empty = auto-detect; set to force an avfoundation index
@@ -79,8 +78,16 @@ MISS_FILE="$ROOT/data/talk-misses.jsonl"
 LEARNED_FILE="$ROOT/data/learned-words.json"
 ROUNDS_FILE="$ROOT/data/talk-rounds.jsonl"
 
+find_airpods() {
+  # Print the physical AirPods output device name, or empty if none connected.
+  SwitchAudioSource -a -t output 2>/dev/null | grep -i -m1 'airpods' || true
+}
+
 MULTI_OUTPUT="$OUTPUT_SPEAKERS"
-[ "$AIRPODS" = 1 ] && MULTI_OUTPUT="$OUTPUT_AIRPODS"
+if [ "$AIRPODS" = 1 ]; then
+  MULTI_OUTPUT="$(find_airpods)"
+  [ -n "$MULTI_OUTPUT" ] || fail "No AirPods found among output devices (connect them first, then retry)"
+fi
 
 audio_index_for() {
   # Print the avfoundation audio index for a device name (exact match first,
@@ -160,12 +167,17 @@ ok "phrasebooks: $PHRASEBOOKS"
 SwitchAudioSource -a -t output | grep -Fxq "$MULTI_OUTPUT" \
   || fail "Output device '$MULTI_OUTPUT' not found (open Audio MIDI Setup and check the Multi-Output device)"
 ok "output device: $MULTI_OUTPUT"
-if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then ALT_CHECK="$OUTPUT_AIRPODS"
-else ALT_CHECK="$OUTPUT_SPEAKERS"; fi
-if SwitchAudioSource -a -t output | grep -Fxq "$ALT_CHECK"; then
-  ok "toggle target: $ALT_CHECK (press a during the call)"
+if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then
+  ALT_CHECK="$(find_airpods)"
+  if [ -n "$ALT_CHECK" ]; then
+    ok "toggle target: $ALT_CHECK (press a during the call)"
+  else
+    warn "no AirPods connected (mid-call a-key stays put)"
+  fi
+elif SwitchAudioSource -a -t output | grep -Fxq "$OUTPUT_SPEAKERS"; then
+  ok "toggle target: $OUTPUT_SPEAKERS (press a during the call)"
 else
-  warn "toggle target '$ALT_CHECK' not found (mid-call a-key stays put)"
+  warn "toggle target '$OUTPUT_SPEAKERS' not found (mid-call a-key stays put)"
 fi
 if command -v osascript >/dev/null 2>&1; then
   SYS_VOL="$(osascript -e "get volume settings" 2>/dev/null || true)"
@@ -231,7 +243,7 @@ trap switch_back EXIT
 trap 'exit 130' INT TERM
 _floor_target="$NORMAL_OUTPUT"
 if [ "$AIRPODS" = 1 ]; then
-  _pods="$(SwitchAudioSource -a -t output 2>/dev/null | grep -i -m1 'airpods' || true)"
+  _pods="$(find_airpods)"
   [ -n "$_pods" ] && _floor_target="$_pods"
 fi
 if [ "$(SwitchAudioSource -c -t output)" != "$_floor_target" ]; then
@@ -301,8 +313,13 @@ quit_call() {
 }
 
 toggle_output() {
-  # Switch system output between speakers and AirPods; never fails the call.
-  if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then ALT_TARGET="$OUTPUT_AIRPODS"
+  # Switch system output between speakers and physical AirPods; never fails.
+  if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then
+    ALT_TARGET="$(find_airpods)"
+    if [ -z "$ALT_TARGET" ]; then
+      warn "no AirPods connected, staying put"
+      return 0
+    fi
   else ALT_TARGET="$OUTPUT_SPEAKERS"; fi
   if ! SwitchAudioSource -a -t output | grep -Fxq "$ALT_TARGET"; then
     warn "device '$ALT_TARGET' not found, staying put"
@@ -404,6 +421,12 @@ play_skippable() { # $1 = file; any key skips, + / - and slider act live
   PLAY_SRC="$1"
   prepare_playback
   afplay -v "$PLAY_VOL" "$PLAY_FILE" & APID=$!
+  HAVE_SWITCHER=0
+  command -v SwitchAudioSource >/dev/null 2>&1 && HAVE_SWITCHER=1
+  CUR_DEV=""
+  if [ "$HAVE_SWITCHER" = 1 ]; then
+    CUR_DEV="$(SwitchAudioSource -c -t output 2>/dev/null || true)"
+  fi
   LEFT="$SECS"
   while [ "$LEFT" -gt 0 ]; do
     kill -0 "$APID" 2>/dev/null || break
@@ -418,9 +441,18 @@ play_skippable() { # $1 = file; any key skips, + / - and slider act live
     fi
     kill -0 "$APID" 2>/dev/null || break
     load_volume
-    if [ "$TALK_VOLUME" != "$PLAY_FROM" ]; then
+    RESTART=""
+    if [ "$TALK_VOLUME" != "$PLAY_FROM" ]; then RESTART="volume $TALK_VOLUME"; fi
+    if [ "$HAVE_SWITCHER" = 1 ]; then
+      NEW_DEV="$(SwitchAudioSource -c -t output 2>/dev/null || true)"
+      if [ -n "$NEW_DEV" ] && [ "$NEW_DEV" != "$CUR_DEV" ]; then
+        CUR_DEV="$NEW_DEV"
+        RESTART="output $CUR_DEV"
+      fi
+    fi
+    if [ -n "$RESTART" ]; then
       kill "$APID" 2>/dev/null
-      info "volume $TALK_VOLUME (replaying line)"
+      info "$RESTART (replaying line)"
       prepare_playback
       afplay -v "$PLAY_VOL" "$PLAY_FILE" & APID=$!
     fi

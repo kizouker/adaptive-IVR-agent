@@ -91,3 +91,9 @@ Feature: Practice robot
     Given Agda is speaking a line
     When the volume changes via + / - key or board slider
     Then the line restarts at the new volume within a second
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S13
+  Scenario: AirPods switch targets the physical device
+    Given AirPods are connected
+    When the call starts with --airpods or Rickard presses a
+    Then output goes to the physical AirPods (missing AirPods fails fast or warns), and the line replays on the new device
