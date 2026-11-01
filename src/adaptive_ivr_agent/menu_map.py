@@ -5,6 +5,7 @@ edges are what moves the call on (an answer, a key press, silence).
 Renders as ASCII (terminal, the `*` marks where we are), Mermaid,
 or Graphviz DOT (real graphics: SVG/PNG, left to right, colored levels).
 """
+import copy
 import shutil
 import subprocess
 from dataclasses import dataclass, field
@@ -33,6 +34,26 @@ class State:
     label: str
 
 
+STATUS_OBSERVED = "observed"
+STATUS_INFERRED = "inferred"
+STATUS_UNTESTED = "untested"
+
+
+@dataclass
+class Evidence:
+    """What backs a map entry: status, counts, and source runs (FN-REQ-IVR-029)."""
+
+    status: str = STATUS_UNTESTED
+    tries: int = 0
+    successes: int = 0
+    sources: list[str] = field(default_factory=list)
+
+    @property
+    def confidence(self) -> float:
+        """Share of tries that led onward; 0.0 until the first try."""
+        return self.successes / self.tries if self.tries else 0.0
+
+
 @dataclass
 class Edge:
     """One way the call moves from a state to the next."""
@@ -40,6 +61,7 @@ class Edge:
     source: str
     target: str
     label: str
+    evidence: Evidence = field(default_factory=Evidence)
 
 
 # Rickard's 4-level call chain (2026-11-01): open question, example
@@ -92,8 +114,8 @@ class MenuMap:
     def af_agda(cls) -> "MenuMap":
         """The documented AF Agda fallback chain, starting at the open question."""
         return cls(
-            states=list(AF_AGDA_STATES),
-            edges=list(AF_AGDA_EDGES),
+            states=copy.deepcopy(AF_AGDA_STATES),
+            edges=copy.deepcopy(AF_AGDA_EDGES),
             current=AF_AGDA_STATES[0].id,
             title=SWEDISH_TITLE,
         )
@@ -102,8 +124,8 @@ class MenuMap:
     def english_branch(cls) -> "MenuMap":
         """English key-menu branch (press 0), ending at an officer on silence."""
         return cls(
-            states=list(ENGLISH_STATES),
-            edges=list(ENGLISH_EDGES),
+            states=copy.deepcopy(ENGLISH_STATES),
+            edges=copy.deepcopy(ENGLISH_EDGES),
             current=ENGLISH_STATES[0].id,
             title=ENGLISH_TITLE,
         )
@@ -152,6 +174,36 @@ class MenuMap:
     def position(self) -> int:
         """1-based position of the marker in state order."""
         return [s.id for s in self.states].index(self.current) + 1
+
+    def _edge(self, source: str, target: str) -> Edge | None:
+        found = [e for e in self.edges if (e.source, e.target) == (source, target)]
+        return found[0] if found else None
+
+    def hypothesize(self, source: str, target: str, trigger: str) -> None:
+        """Add an untested edge, unless one already connects the states."""
+        if self._edge(source, target) is None:
+            edge = Edge(source, target, trigger)
+            edge.evidence.status = STATUS_INFERRED
+            self.edges.append(edge)
+
+    def observe(
+        self, source: str, target: str, trigger: str, origin: str, success: bool = True
+    ) -> None:
+        """Record one observed traversal; revise or reject on counter-evidence."""
+        edge = self._edge(source, target)
+        if edge is None:
+            edge = Edge(source, target, trigger)
+            self.edges.append(edge)
+        proof = edge.evidence
+        proof.tries += 1
+        proof.sources.append(origin)
+        if success:
+            proof.successes += 1
+            proof.status = STATUS_OBSERVED
+        elif proof.status == STATUS_INFERRED:
+            self.edges.remove(edge)
+        else:
+            proof.status = STATUS_INFERRED
 
     def render_ascii(self) -> str:
         """Vertical chain; the current state gets the `*` marker."""

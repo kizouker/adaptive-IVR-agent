@@ -70,6 +70,40 @@ def test_walked_edge_is_red_in_dot():
     assert 'open_question -> example_words [label="no_match" color=red penwidth=2];' in dot
 
 
+def test_observation_tagged_with_evidence():
+    shown = MenuMap.af_agda()
+    shown.observe("open_question", "example_words", "no_match", origin="run-1", success=True)
+    edge = [e for e in shown.edges if (e.source, e.target) == ("open_question", "example_words")][0]
+    assert edge.evidence.status == "observed"
+    assert edge.evidence.sources == ["run-1"]
+    assert edge.evidence.tries == 1
+
+
+def test_hypothesis_rejected_on_counter_evidence():
+    shown = MenuMap.af_agda()
+    shown.hypothesize("example_words", "queue", "shortcut?")
+    shown.observe("example_words", "queue", "shortcut?", origin="run-2", success=False)
+    assert all((e.source, e.target) != ("example_words", "queue") for e in shown.edges)
+
+
+def test_observed_revised_on_counter_evidence():
+    shown = MenuMap.af_agda()
+    shown.observe("open_question", "example_words", "no_match", origin="run-1", success=True)
+    shown.observe("open_question", "example_words", "no_match", origin="run-2", success=False)
+    edge = [e for e in shown.edges if (e.source, e.target) == ("open_question", "example_words")][0]
+    assert edge.evidence.status == "inferred"
+    assert (edge.evidence.tries, edge.evidence.successes) == (2, 1)
+    assert edge.evidence.confidence == 0.5
+
+
+def test_evidence_does_not_leak_between_maps():
+    first, second = MenuMap.af_agda(), MenuMap.af_agda()
+    first.observe("open_question", "example_words", "no_match", origin="run-1", success=True)
+    edge = [e for e in second.edges if (e.source, e.target) == ("open_question", "example_words")][0]
+    assert edge.evidence.status == "untested"
+    assert (edge.evidence.tries, edge.evidence.successes) == (0, 0)
+
+
 def test_mermaid_highlights_current_state():
     shown = MenuMap.af_agda()
     shown.move_to("transfer")

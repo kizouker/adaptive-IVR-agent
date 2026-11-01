@@ -110,6 +110,6 @@ Rules:
 | Step log | `steps.py` | built |
 | Dialog graph + position | `menu_map.py` | built (Swedish + English) |
 | Robot script | `doorkeeper-lines.json` | built (19 lines) |
-| Evidence on edges | — | **next (FN-REQ-IVR-029)** |
+| Evidence on edges | `menu_map.py` (`Evidence`, `hypothesize`, `observe`) | built (FN-REQ-IVR-029) |
 | Explorer (explore/exploit) | — | **next (FN-REQ-IVR-009)** |
 | Counters → keyword auto-fill | — | after 029 |
