@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Holdmate live board</title>
+    <style>
+      body { background: #101418; color: #e8eaed; margin: 0;
+        font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      .wrap { max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; }
+      .top { display: flex; align-items: center; gap: 12px; margin-bottom: 2px; }
+      .top h1 { font-size: 20px; margin: 0; font-weight: 650; }
+      .live { display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
+        color: #7ee2a8; }
+      .dot { width: 9px; height: 9px; border-radius: 50%; background: #34d399; }
+      @media (prefers-reduced-motion: no-preference) {
+        .dot { animation: pulse 1.6s infinite; }
+        @keyframes pulse { 50% { opacity: 0.35; } }
+      }
+      .spacer { flex: 1; }
+      .lang button { background: #1c232e; color: #e8eaed;
+        border: 1px solid #39424f; padding: 5px 12px; font-size: 13px;
+        cursor: pointer; }
+      .lang button.on { background: #0f766e; border-color: #0f766e; }
+      .sub { color: #9aa3af; font-size: 13px; margin: 4px 0 16px; }
+      h2 { font-size: 14px; font-weight: 600; color: #c8cfd8;
+        margin: 22px 0 10px; }
+      .pipe { display: flex; align-items: stretch; margin-bottom: 6px; }
+      .node { flex: 1; text-align: center; padding: 10px 6px; font-size: 13px;
+        background: #1c232e; border: 1px solid #39424f; }
+      .node:first-child { border-radius: 8px 0 0 8px; }
+      .node:last-child { border-radius: 0 8px 8px 0; }
+      .node .n { display: block; font-size: 11px; color: #9aa3af;
+        margin-bottom: 2px; }
+      .node.done { background: #123b36; border-color: #0f766e; }
+      .node.current { background: #3d2f10; border: 2px solid #f59e0b;
+        padding: 9px 5px; }
+      .card { background: #1a2029; border: 1px solid #2c3542;
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+      .card h3 { margin: 0 0 2px; font-size: 16px; }
+      .card .errand { color: #9aa3af; font-size: 13px; margin-bottom: 10px; }
+      .turn { margin: 10px 0; }
+      .who { font-size: 12px; color: #9aa3af; margin-bottom: 3px; }
+      .bubble { display: inline-block; max-width: 85%; padding: 8px 12px;
+        font-size: 14px; }
+      .caller .bubble { background: #243447;
+        border-radius: 4px 14px 14px 14px; }
+      .robot { text-align: right; }
+      .robot .bubble { background: #1f3d2b;
+        border-radius: 14px 14px 4px 14px; text-align: left; }
+      .meta { margin-top: 4px; display: flex; gap: 8px; font-size: 12px;
+        color: #9aa3af; align-items: center; }
+      .robot .meta { justify-content: flex-end; }
+      .badge { background: #39424f; color: #e8eaed; padding: 2px 8px;
+        border-radius: 20px; }
+      .kw-ok { color: #7ee2a8; }
+      .kw-miss { color: #9aa3af; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

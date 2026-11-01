@@ -16,7 +16,13 @@ OUTPUT_AIRPODS="IVR_Agent_Output"      # AirPods + BlackHole (with --airpods)
 NORMAL_OUTPUT="Högtalare i MacBook Pro" # switch back to this if the script started on an IVR_Agent device
 BLACKHOLE="BlackHole 16ch"          # ffmpeg records from this (both outputs above send sound into it)
 MIC="MacBook Pro-mikrofon"
-CALL_NUMBER="+46771416416"          # Arbetsförmedlingen, job seekers
+# CALL_NUMBER comes from .env in the repo root (not in git, see .env.example)
+ENV_FILE="$(cd "$(dirname "$0")/.." && pwd)/.env"
+if [ -f "$ENV_FILE" ]; then
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+fi
+CALL_NUMBER="${CALL_NUMBER:-}"
 TEST_SOUND="/System/Library/Sounds/Ping.aiff"
 SILENT_BELOW_DB=-60
 
@@ -144,6 +150,10 @@ fi
 # ---------- 5. The call ----------
 step "5. The call"
 if $PLACE_CALL; then
+  if [ -z "$CALL_NUMBER" ]; then
+    echo "CALL_NUMBER is empty. Set it in .env (see .env.example)."
+    exit 1
+  fi
   open "tel:$CALL_NUMBER"
   ok "Call to $CALL_NUMBER sent to FaceTime"
   warn "Click 'Ring' in the box on the Mac if it asks"

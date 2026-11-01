@@ -1,4 +1,4 @@
-## Idea: Train a model to recognize IVR system like AF, FK or the Swedish Police
+## Idea: Train a model to recognize IVR system like the employment service, the social insurance agency or the Swedish police
 
  ### Goals:
 

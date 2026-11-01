@@ -12,7 +12,7 @@ Picture only, not a command:
 FaceTime (robot voice) → Multi-Output Device → headphones   (you hear the call)
                                              → BlackHole   → ffmpeg → robot-....wav
 ```
-- **FaceTime** We call using open "tel:+46771416416" after changing settings on iphone and mac.
+- **FaceTime** We call using open "tel:$CALL_NUMBER" after changing settings on iphone and mac.
 - **BlackHole** is a fake audio cable inside the Mac. Sound sent into it doesn't reach your speakers.
 - **Multi-Output Device** sends the same sound to two places at once: your headphones and BlackHole.
 - **ffmpeg** sees BlackHole as a normal microphone and records it.
@@ -24,7 +24,7 @@ BlackHole only carries the *other side* of the call. Your own mic is not recorde
 1. Settings on iphone
 2. Settings on mac
 3. Try calling someone you know with this from terminal :
-``open "tel:+46771416416"``
+``open "tel:$CALL_NUMBER"``
 
 
 ## 0. Go to the project folder

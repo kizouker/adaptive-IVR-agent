@@ -4,3 +4,14 @@ venv/
 
 ## recordings
 data/recordings/
+.env
+
+## web board
+ui/board/node_modules/
+ui/board/dist/
+ui/board/public/board-state.json
+
+## generated + scratch
+__pycache__/
+research_notes/
+reports/
