@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-const CHAR_MS = 15;
+const CHAR_MS = 7;
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined'

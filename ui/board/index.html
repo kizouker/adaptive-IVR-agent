@@ -16,6 +16,7 @@
       @media (prefers-reduced-motion: no-preference) {
         .dot { animation: pulse 1.6s infinite; }
         @keyframes pulse { 50% { opacity: 0.35; } }
+        .tdot { animation: pulse 1.6s infinite; }
       }
       .spacer { flex: 1; }
       .lang button { background: #1c232e; color: #e8eaed;
@@ -85,6 +86,28 @@
         background: #0b0e12; }
       .split::before { left: -5px; }
       .split::after { right: -5px; }
+      .tabs { display: flex; gap: 8px; margin: 12px 0 4px; }
+      .tabs button { background: #1c232e; color: #e8eaed;
+        border: 1px solid #39424f; padding: 6px 16px; font-size: 14px;
+        cursor: pointer; border-radius: 8px; }
+      .tabs button.on { background: #0f766e; border-color: #0f766e; }
+      .linklike { background: none; border: none; color: #2dd4bf;
+        cursor: pointer; font-size: 13px; padding: 6px 0 0; }
+      .tree, .tree ul { list-style: none; margin: 0; padding-left: 0; }
+      .tree ul { padding-left: 22px; border-left: 1px solid #2c3542;
+        margin-left: 7px; }
+      .tree li { margin: 6px 0; }
+      .ttoggle { background: #1c232e; color: #e8eaed;
+        border: 1px solid #39424f; width: 22px; height: 22px;
+        cursor: pointer; margin-right: 8px; font-size: 13px;
+        line-height: 1; padding: 0; }
+      .tnode { font-size: 14px; }
+      .tnode.current { color: #f59e0b; font-weight: 600; }
+      .tdot { display: inline-block; width: 8px; height: 8px;
+        border-radius: 50%; background: #f59e0b; margin-left: 8px; }
+      .tedge { display: block; font-size: 12px; color: #7ee2a8;
+        margin: 2px 0 2px 30px; font-style: italic; }
+      .tleaf { font-size: 13px; color: #9aa3af; }
       @media (prefers-reduced-motion: no-preference) {
         .fcurrent { animation: fpulse 1.6s infinite; }
         @keyframes fpulse { 50% { opacity: 0.55; } }

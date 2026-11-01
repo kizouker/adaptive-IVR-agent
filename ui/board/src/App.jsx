@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import FlowGraph from './components/FlowGraph';
 import QueueWidget from './components/QueueWidget';
+import TreeView from './components/TreeView';
 import CallThread from './components/CallThread';
 import { fetchBoard, setLang } from './store/boardSlice';
 
@@ -25,6 +26,12 @@ const STRINGS = {
     level: 'Nivå',
     loading: 'Laddar…',
     failed: 'Kunde inte hämta data',
+    overview: 'Översikt',
+    details: 'Detaljer',
+    tree: 'Samtalsträd',
+    showAll: 'Visa alla',
+    showLess: 'Visa färre',
+    seenAbove: 'se ovan',
   },
   en: {
     title: 'Holdmate live board',
@@ -43,6 +50,12 @@ const STRINGS = {
     level: 'Level',
     loading: 'Loading…',
     failed: 'Could not fetch data',
+    overview: 'Overview',
+    details: 'Details',
+    tree: 'Call tree',
+    showAll: 'Show all',
+    showLess: 'Show less',
+    seenAbove: 'see above',
   },
 };
 
@@ -51,6 +64,7 @@ const selectBoard = (state) => state.board;
 function App() {
   const dispatch = useDispatch();
   const { data, lang, status } = useSelector(selectBoard);
+  const [tab, setTab] = useState('overview');
   const t = STRINGS[lang];
 
   useEffect(() => {
@@ -92,24 +106,55 @@ function App() {
         </span>
       </div>
       <div className="sub">{`${t.generated} ${data.generated}`}</div>
-      <h2>{t.process}</h2>
-      <FlowGraph
-        states={states}
-        positionId={live.position}
-        lang={lang}
-        levelWord={t.level}
-        paths={data.calls.map((call) => call.turns.map((turn) => turn.state))}
-      />
-      <h2>{t.queuePlace}</h2>
-      <QueueWidget
-        place={queued?.queue_place ?? null}
-        total={queued?.queue_total ?? null}
-        label={t.queuePlace}
-      />
-      <h2>{t.calls}</h2>
-      {data.calls.map((call) => (
-        <CallThread key={call.persona} call={call} lang={lang} t={t} />
-      ))}
+      <div className="tabs">
+        <button
+          type="button"
+          className={tab === 'overview' ? 'on' : ''}
+          onClick={() => setTab('overview')}
+        >
+          {t.overview}
+        </button>
+        <button
+          type="button"
+          className={tab === 'details' ? 'on' : ''}
+          onClick={() => setTab('details')}
+        >
+          {t.details}
+        </button>
+      </div>
+      {tab === 'overview' ? (
+        <>
+          <h2>{t.queuePlace}</h2>
+          <QueueWidget
+            place={queued?.queue_place ?? null}
+            total={queued?.queue_total ?? null}
+            label={t.queuePlace}
+          />
+          <h2>{t.process}</h2>
+          <FlowGraph
+            states={states}
+            positionId={live.position}
+            lang={lang}
+            levelWord={t.level}
+            paths={data.calls.map((call) => call.turns.map((turn) => turn.state))}
+          />
+        </>
+      ) : (
+        <>
+          <h2>{t.tree}</h2>
+          <TreeView
+            states={states}
+            calls={data.calls}
+            positionId={live.position}
+            lang={lang}
+            seenAbove={t.seenAbove}
+          />
+          <h2>{t.calls}</h2>
+          {data.calls.map((call) => (
+            <CallThread key={call.persona} call={call} lang={lang} t={t} />
+          ))}
+        </>
+      )}
     </div>
   );
 }

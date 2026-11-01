@@ -49,3 +49,15 @@ Feature: Menu map
     Given a new turn arrives on the board
     When it is shown the first time
     Then its text types out, or appears instantly with reduced motion
+
+  @FN-REQ-IVR-005 @FN-REQ-IVR-005-S04
+  Scenario: Details tab shows the traveled path as a tree
+    Given a call with turns across several states
+    When the details tab draws the tree
+    Then visited states nest rightward with counts, edges carry the caller's words, and the live position is marked
+
+  @FN-REQ-IVR-005 @FN-REQ-IVR-005-S05
+  Scenario: Conversation shows latest first with show all
+    Given a call with more than two turns
+    When the thread renders
+    Then the two latest turns show first with fast typing, and a button reveals the rest
