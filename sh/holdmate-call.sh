@@ -44,6 +44,7 @@ PHRASEBOOKS="$ROOT/data/role-phrasebooks.json"
 LINES="$ROOT/data/doorkeeper-lines.json"
 KNOWLEDGE="$ROOT/data/holdmate-knowledge.json"
 LESSONS="$ROOT/data/holdmate-lessons.jsonl"
+BOARD="$ROOT/ui/board/public/board-state.json"
 
 title "Holdmate calls by itself ($MODE)"
 
@@ -77,7 +78,7 @@ info "depth: $DEPTH miss levels"
 
 step "Run lessons"
 what "Breadth-first over every alternative; every sim runs to handover."
-ARGS="--phrasebooks $PHRASEBOOKS --lines $LINES --knowledge $KNOWLEDGE --lessons $LESSONS --depth $DEPTH"
+ARGS="--phrasebooks $PHRASEBOOKS --lines $LINES --knowledge $KNOWLEDGE --lessons $LESSONS --depth $DEPTH --board-out $BOARD"
 [ -n "$PERSONA" ] && ARGS="$ARGS --as $PERSONA"
 [ "$SPEAK" = 1 ] && ARGS="$ARGS --speak"
 [ "$FRESH" = 1 ] && ARGS="$ARGS --fresh"
@@ -89,6 +90,11 @@ PYTHONPATH="$ROOT/src" python3 -m adaptive_ivr_agent.holdmate $ARGS \
 ok "knowledge: $KNOWLEDGE"
 [ -s "$LESSONS" ] || fail "Lesson history missing: $LESSONS"
 ok "history: $LESSONS"
+if [ -s "$BOARD" ]; then
+  ok "board: $BOARD"
+else
+  warn "board file missing: $BOARD (display only)"
+fi
 
 step "Learned table"
 what "Show which words transfer and which miss, per the saved knowledge."

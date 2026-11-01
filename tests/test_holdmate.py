@@ -59,7 +59,7 @@ def test_bfs_tries_every_pair_once_in_level_order():
 
 def test_transfer_runs_to_handover():
     agda = build_agda(FAKE_LINES, fake_respond)
-    result, turns = run_call(agda, "kw", 0)
+    result, turns, _ = run_call(agda, "kw", 0)
     assert result.transferred is True
     assert result.matched == "kw"
     assert result.served is True
@@ -69,9 +69,21 @@ def test_transfer_runs_to_handover():
 
 def test_miss_stays_unserved_until_transfer():
     agda = build_agda(FAKE_LINES, fake_respond)
-    result, _ = run_call(agda, "eh", 0)
+    result, _, _ = run_call(agda, "eh", 0)
     assert result.transferred is False
     assert result.served is False
+
+
+def test_run_call_returns_board_exchanges_with_states():
+    agda = build_agda(FAKE_LINES, fake_respond)
+    result, turns, exchanges = run_call(agda, "kw", 0)
+    assert turns[0] == "YOU: kw"
+    assert exchanges[0] == ("kw", result and exchanges[0].robot, True, "transfer")
+    assert [e.state for e in exchanges[1:]] == ["queue"] * (FIXED_PLACE + 1)
+    assert result.exchanges == tuple(exchanges)
+    missed, _, missed_ex = run_call(agda, "eh", 0)
+    assert [(e.caller, e.state) for e in missed_ex] == [("eh", "example_words")]
+    assert missed.exchanges == tuple(missed_ex)
 
 
 def test_word_table_records_tries_transfers_keywords():
@@ -205,3 +217,24 @@ def test_main_prints_plan_and_lesson_progress(capsys, tmp_path):
     assert "plan: 1 lessons, up to " in out
     assert "lesson 1/1: ny-arbetslos" in out
     assert "matched " in out and " words: " in out
+
+
+def test_main_writes_lesson_board_with_words(tmp_path):
+    board = tmp_path / "board.json"
+    code = main([
+        "--phrasebooks", str(PHRASEBOOKS),
+        "--lines", str(LINES),
+        "--knowledge", str(tmp_path / "k.json"),
+        "--lessons", str(tmp_path / "l.jsonl"),
+        "--as", "ny-arbetslos",
+        "--depth", "0",
+        "--fresh",
+        "--board-out", str(board),
+    ])
+    assert code == 0
+    raw = json.loads(board.read_text(encoding="utf-8"))
+    assert raw["calls"][0]["persona"] == "ny-arbetslos"
+    assert raw["calls"][0]["errand_en"] == "Register as a job seeker"
+    assert set(raw["calls"][0]["turns"][0]["state_name"]) == {"sv", "en"}
+    assert raw["lessons"][0]["persona"] == "ny-arbetslos"
+    assert raw["words"]["skriva in mig"]["transfers"] == 1

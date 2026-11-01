@@ -115,11 +115,13 @@ class LiveCall:
         errand: str = LIVE_ERRAND,
         map_name: str = LIVE_MAP,
         robot_name: str = LIVE_ROBOT_NAME,
+        errand_en: str | None = None,
     ) -> None:
         self._meta = {
             "persona": persona,
             "label": label,
             "errand": errand,
+            "errand_en": errand_en or errand,
             "map": map_name,
             "robot_name": robot_name,
         }

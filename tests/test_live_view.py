@@ -207,6 +207,13 @@ def test_map_blob_ships_edges_for_option_lists():
     assert all(set(edge) == {"source", "target", "label"} for edge in edges)
 
 
+def test_live_call_defaults_english_errand_to_errand():
+    call = LiveCall()
+    assert call.snapshot()["errand_en"] == "Talking to Agda right now"
+    translated = LiveCall(errand="Skriva in mig", errand_en="Register")
+    assert translated.snapshot()["errand_en"] == "Register"
+
+
 def test_live_call_carries_captions_and_speaker_names():
     call = LiveCall()
     call.add_turn("vab", "reply", True, "transfer",

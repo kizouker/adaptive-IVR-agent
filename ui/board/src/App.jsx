@@ -7,6 +7,7 @@ import CallThread from './components/CallThread';
 import Subtitle from './components/Subtitle';
 import VolumeWidget from './components/VolumeWidget';
 import CIWidget from './components/CIWidget';
+import LessonsView from './components/LessonsView';
 import { fetchBoard, setLang } from './store/boardSlice';
 
 const POLL_MS = 3000;
@@ -34,6 +35,15 @@ const STRINGS = {
     failed: 'Kunde inte hämta data',
     overview: 'Översikt',
     details: 'Detaljer',
+    lessons: 'Lektioner',
+    lessonsRun: 'Körda lektioner',
+    learnedWords: 'Inlärda ord',
+    sims: 'simuleringar',
+    transfers: 'kopplingar',
+    served: 'framme',
+    matched: 'träffar',
+    word: 'Ord',
+    tries: 'Försök',
     tree: 'Samtalsträd',
     treeStates: 'Tillstånd',
     treeAnswers: 'Svar',
@@ -64,6 +74,15 @@ const STRINGS = {
     failed: 'Could not fetch data',
     overview: 'Overview',
     details: 'Details',
+    lessons: 'Lessons',
+    lessonsRun: 'Lessons run',
+    learnedWords: 'Learned words',
+    sims: 'sims',
+    transfers: 'transfers',
+    served: 'served',
+    matched: 'matched',
+    word: 'Word',
+    tries: 'Tries',
     tree: 'Call tree',
     treeStates: 'States',
     treeAnswers: 'Answers',
@@ -143,8 +162,15 @@ function App() {
         >
           {t.details}
         </button>
+        <button
+          type="button"
+          className={tab === 'lessons' ? 'on' : ''}
+          onClick={() => setTab('lessons')}
+        >
+          {t.lessons}
+        </button>
       </div>
-      {tab === 'overview' ? (
+      {tab === 'overview' && (
         <div className="ovrow">
           <div className="ovflow">
             <h2>{t.process}</h2>
@@ -167,7 +193,8 @@ function App() {
             />
           </div>
         </div>
-      ) : (
+      )}
+      {tab === 'details' && (
         <>
           <h2>{t.now}</h2>
           <Subtitle
@@ -204,6 +231,16 @@ function App() {
           {data.calls.map((call) => (
             <CallThread key={call.persona} call={call} lang={lang} t={t} />
           ))}
+        </>
+      )}
+      {tab === 'lessons' && (
+        <>
+          <h2>{t.lessonsRun}</h2>
+          <LessonsView
+            lessons={data.lessons ?? []}
+            words={data.words ?? {}}
+            t={t}
+          />
         </>
       )}
     </div>

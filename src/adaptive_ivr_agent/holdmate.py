@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
+from adaptive_ivr_agent.live_view import LiveCall, build_live_board
 from adaptive_ivr_agent.menu_map import (
     AF_AGDA_STATES,
     Edge,
@@ -101,6 +102,16 @@ class SimResult(NamedTuple):
     matched: str | None
     transferred: bool
     served: bool
+    exchanges: tuple = ()
+
+
+class Exchange(NamedTuple):
+    """One board turn inside a sim: who said what, and the state after."""
+
+    caller: str
+    robot: str
+    matched: bool
+    state: str
 
 
 def build_agda(lines: dict[str, str], respond) -> AgdaCall:
@@ -121,28 +132,38 @@ def build_agda(lines: dict[str, str], respond) -> AgdaCall:
     )
 
 
-def run_call(agda: AgdaCall, word: str, misses: int) -> tuple[SimResult | None, list[str]]:
+def run_call(
+    agda: AgdaCall, word: str, misses: int
+) -> tuple[SimResult, list[str], list[Exchange]]:
     """Say WORD at MISS_COUNT misses; on transfer run to handover.
 
-    Returns the result (None never happens; kept simple) and the turns said.
+    Returns the result, the turns said, and board exchanges with states.
     """
     turns = [f"YOU: {display(word)}"]
     answer = agda.reply_to(word, misses)
     turns.append(f"AGDA: {answer.reply}")
     transferred = answer.identify or answer.done
+    first_state = "transfer" if transferred else MISS_STATE.get(answer.misses, "yes_no")
+    exchanges = [
+        Exchange(display(word), answer.reply, answer.matched is not None, first_state)
+    ]
     served = False
     if answer.identify:
         entered = agda.after_identified(answer.misses)
         turns.append(f"AGDA: {entered.reply}")
+        exchanges.append(Exchange("", entered.reply, False, "queue"))
         place = entered.queue_place or 0
         while place > 0:
             tick = agda.queue_tick(place, answer.misses)
             turns.append(f"AGDA: {tick.reply}")
+            exchanges.append(Exchange("", tick.reply, False, "queue"))
             served = tick.done
             place = tick.queue_place or 0
     return (
-        SimResult("", misses, word, [], answer.matched, transferred, served),
+        SimResult("", misses, word, [], answer.matched, transferred, served,
+                  tuple(exchanges)),
         turns,
+        exchanges,
     )
 
 
@@ -174,7 +195,7 @@ class Lesson:
                 if (misses, word) in visited:
                     continue
                 visited.add((misses, word))
-                result, turns = run_call(self.agda, word, misses)
+                result, turns, _ = run_call(self.agda, word, misses)
                 result = result._replace(persona=self.persona_id, path=[*path, word])
                 self.sims.append(result)
                 self.knowledge.observe(result)
@@ -319,6 +340,34 @@ def lesson_log(path: str | Path, result: SimResult) -> None:
         handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
+def lesson_call(role: dict, lesson: Lesson) -> LiveCall:
+    """One lesson as a board call: every sim exchange becomes a turn."""
+    call = LiveCall(
+        persona=role["id"],
+        label=role["label"],
+        errand=role["errand"],
+        errand_en=role.get("errand_en"),
+        robot_name="AF Agda (lesson)",
+    )
+    for sim in lesson.sims:
+        for exchange in sim.exchanges:
+            call.add_turn(exchange.caller, exchange.robot, exchange.matched,
+                          exchange.state)
+    return call
+
+
+def write_lesson_board(path: str | Path, calls: list[LiveCall],
+                       knowledge: "Knowledge") -> None:
+    """Board state with lesson calls plus the run log and word table."""
+    board = build_live_board(calls)
+    board["lessons"] = knowledge.lessons
+    board["words"] = {
+        word: {"tries": entry["tries"], "transfers": entry["transfers"]}
+        for word, entry in knowledge.words.items()
+    }
+    Path(path).write_text(json.dumps(board, ensure_ascii=False), encoding=ENCODING)
+
+
 def main(argv: list[str] | None = None) -> int:
     """Run BFS lessons for one or all personas; save knowledge."""
     parser = argparse.ArgumentParser(description="Holdmate calls Agda by itself (BFS).")
@@ -330,6 +379,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--depth", type=int, default=MAX_MISSES)
     parser.add_argument("--speak", action="store_true")
     parser.add_argument("--fresh", action="store_true")
+    parser.add_argument("--board-out", default="")
     args = parser.parse_args(argv)
 
     if args.depth < 0 or args.depth > MAX_MISSES:
@@ -350,6 +400,7 @@ def main(argv: list[str] | None = None) -> int:
     ]
     total = sum(len(candidates) * (args.depth + 1) for _, candidates in planned)
     print(bold(f"plan: {len(planned)} lessons, up to {total} sims (depth 0..{args.depth})"))
+    live_calls: list[LiveCall] = []
     try:
         for index, (role, candidates) in enumerate(planned, 1):
             print(bold(f"lesson {index}/{len(planned)}: {role['id']} ({len(candidates)} words)"))
@@ -366,6 +417,9 @@ def main(argv: list[str] | None = None) -> int:
                 f"{summary['transfers']} transfers, {summary['served']} served, "
                 f"matched {len(summary['matched'])} words: {italic(words)}"
             )
+            if args.board_out:
+                live_calls.append(lesson_call(role, lesson))
+                write_lesson_board(args.board_out, live_calls, knowledge)
     except KeyboardInterrupt:
         print("stopped early; saving what was learned so far")
     except BrokenPipeError:
