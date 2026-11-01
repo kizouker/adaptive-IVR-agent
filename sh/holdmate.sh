@@ -149,6 +149,14 @@ choose() { # options as args; echoes 1-based index, or "q" on Esc/EOF
       "")
         tput cnorm >&2; printf '%s\n' "$sel"; return 0
         ;;
+      [1-9])
+        if [ "$key" -le "$count" ]; then
+          tput cnorm >&2; printf '%s\n' "$key"; return 0
+        fi
+        ;;
+      q|Q)
+        tput cnorm >&2; printf 'q\n'; return 0
+        ;;
     esac
     tput cuu "$count" >&2
     draw "$@"
@@ -164,13 +172,22 @@ talk_sound() {
   esac
 }
 
-cycle_sound() {
-  case "$SOUND" in
-    speakers) SOUND="airpods" ;;
-    airpods) SOUND="quiet" ;;
-    *) SOUND="speakers" ;;
-  esac
-  info "sound: $SOUND"
+sound_menu() {
+  while true; do
+    title "Sound (now: $SOUND)"
+    choice="$(choose \
+      "speakers" \
+      "AirPods" \
+      "quiet (type + read)" \
+      "back")"
+    case "$choice" in
+      1) SOUND="speakers"; info "sound: $SOUND"; return 0 ;;
+      2) SOUND="airpods"; info "sound: $SOUND"; return 0 ;;
+      3) SOUND="quiet"; info "sound: $SOUND"; return 0 ;;
+      4|q|Q|b|B) return 0 ;;
+      *) warn "pick with arrows + Enter (or type 1-4)" ;;
+    esac
+  done
 }
 
 run_all() {
@@ -262,14 +279,14 @@ while true; do
     "talk options (server already runs)" \
     "teach Agda words" \
     "Holdmate calls Agda by itself (BFS lessons)" \
-    "sound: $SOUND (tap to change)" \
+    "sound: $SOUND (change...)" \
     "quit")"
   case "$choice" in
     1) run_all ;;
     2) talk_menu ;;
     3) "$HERE/learn-words.sh" ;;
     4) "$HERE/holdmate-call.sh" ;;
-    5) cycle_sound ;;
+    5) sound_menu ;;
     6|q|Q) title "Bye"; exit 0 ;;
     *) warn "pick with arrows + Enter (or type 1-6)" ;;
   esac
