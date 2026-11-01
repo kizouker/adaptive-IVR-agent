@@ -248,6 +248,7 @@ switch_back() {
   SwitchAudioSource -s "$ORIGINAL_OUTPUT" -t output >/dev/null
   SwitchAudioSource -s "$ORIGINAL_INPUT" -t input >/dev/null
   wintitle "done"
+  rm -f "$DTMF_FILE"
   info "Audio restored: output='$ORIGINAL_OUTPUT' input='$ORIGINAL_INPUT'"
   restore_system_volume
 }
@@ -298,6 +299,7 @@ TURNS_FILE="$REC_DIR/talk-$CALL_STAMP-turns.jsonl"
 BOARD_FILE="$ROOT/ui/board/public/board-state.json"
 AUDIO_DIR="$ROOT/ui/board/public/audio"
 VOLUME_FILE="$ROOT/.talk-volume"
+DTMF_FILE="$ROOT/.talk-dtmf"
 
 save_volume() {
   printf '%s' "$TALK_VOLUME" > "$VOLUME_FILE"
@@ -351,6 +353,30 @@ toggle_quiet() {
   return 1
 }
 
+poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, beeps, consumes file
+  DTMF_DIGIT=""
+  [ -n "${CALL_STAMP:-}" ] || return 1
+  [ -f "$DTMF_FILE" ] || return 1
+  _d="$(cat "$DTMF_FILE" 2>/dev/null)" || return 1
+  rm -f "$DTMF_FILE"
+  case "$_d" in
+    [0-9*#]) ;;
+    *) return 1 ;;
+  esac
+  DTMF_DIGIT="$_d"
+  if [ "${QUIET:-0}" != 1 ]; then
+    _beep="$REC_DIR/dtmf-$CALL_STAMP-$_d.wav"
+    if PYTHONPATH="$ROOT/src" python3 - "$_beep" "$_d" <<'EOF' 2>/dev/null; then
+import sys
+from adaptive_ivr_agent.tones import write_beeps
+write_beeps(sys.argv[1], sys.argv[2], 1, 0.25, 0)
+EOF
+      afplay "$_beep" 2>/dev/null &
+    fi
+  fi
+  return 0
+}
+
 wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 = quit
   KEY_PRESSED=""
   if [ ! -t 0 ]; then
@@ -371,6 +397,10 @@ wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 =
         q|Q|"$ETX"|"$EOT") return 2 ;;
         *) return 0 ;;
       esac
+    fi
+    if poll_dtmf; then
+      KEY_PRESSED="$DTMF_DIGIT"
+      return 0
     fi
   done
   return 1
@@ -394,6 +424,12 @@ wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
         q|Q|"$ETX"|"$EOT") return 2 ;;
         [0-9]) DIGIT="$key"; return 0 ;;
       esac
+    fi
+    if poll_dtmf; then
+      case "$DTMF_DIGIT" in
+        [0-9]) DIGIT="$DTMF_DIGIT"; return 0 ;;
+      esac
+      info "web key $DTMF_DIGIT is no choice here"
     fi
   done
   return 1
@@ -970,6 +1006,7 @@ EOF
 }
 
 title "Agda is calling..."
+rm -f "$DTMF_FILE"
 run "render opening ($VOICE + English voice)"
 OPENING_AIFF="$REC_DIR/talk-$CALL_STAMP-robot0.aiff"
 EN_OPEN_VOICE="$(pick_english_voice)"

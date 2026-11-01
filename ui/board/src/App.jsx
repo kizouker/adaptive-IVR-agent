@@ -8,6 +8,7 @@ import Subtitle from './components/Subtitle';
 import VolumeWidget from './components/VolumeWidget';
 import CIWidget from './components/CIWidget';
 import LessonsView from './components/LessonsView';
+import KeypadWidget from './components/KeypadWidget';
 import { fetchBoard, setLang } from './store/boardSlice';
 
 const POLL_MS = 3000;
@@ -26,6 +27,7 @@ const STRINGS = {
     robot: 'AF Agda (Alva)',
     captions: 'Textning',
     queuePlace: 'Köplats',
+    keypad: 'Knappsats',
     generated: 'Uppdaterad',
     volume: 'Volym',
     quieter: 'Sänk',
@@ -67,6 +69,7 @@ const STRINGS = {
     robot: 'AF Agda (Alva)',
     captions: 'Subtitles',
     queuePlace: 'Queue place',
+    keypad: 'Keypad',
     generated: 'Updated',
     volume: 'Volume',
     quieter: 'Quieter',
@@ -195,6 +198,8 @@ function App() {
               total={queued?.queue_total ?? null}
               label={t.queuePlace}
             />
+            <h2>{t.keypad}</h2>
+            <KeypadWidget label={t.keypad} />
           </div>
         </div>
       )}

@@ -83,6 +83,13 @@
         justify-content: center; font-size: 11px; color: #7ee2a8;
         flex: none; }
       .tickbox.on { border-color: #0f766e; background: #123b36; }
+      .keypad { display: grid; grid-template-columns: repeat(3, 64px);
+        gap: 8px; justify-content: center; margin: 4px 0 10px; }
+      .kkey { background: #1c232e; color: #e8eaed;
+        border: 1px solid #39424f; border-radius: 8px; font-size: 20px;
+        padding: 10px 0; cursor: pointer;
+        font-variant-numeric: tabular-nums; }
+      .kkey.hit { border-color: #2dd4bf; color: #2dd4bf; }
       .ovrow { display: flex; gap: 28px; align-items: flex-start;
         flex-wrap: wrap; }
       .ovflow { flex: 1 1 460px; min-width: 0; }
