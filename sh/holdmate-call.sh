@@ -95,6 +95,7 @@ ok "knowledge: ${KNOWLEDGE#$ROOT/}"
 [ -s "$LESSONS" ] || fail "Lesson history missing: $LESSONS"
 ok "history: ${LESSONS#$ROOT/}"
 if [ -s "$BOARD" ]; then
+  python3 "$ROOT/sh/bake-board.py" --board "$BOARD" --lines "$LINES"
   ok "board: ${BOARD#$ROOT/}"
 else
   warn "board file missing: $BOARD (display only)"

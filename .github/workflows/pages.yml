@@ -22,6 +22,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -31,9 +35,18 @@ jobs:
       - name: Install board deps
         run: npm ci --prefix ui/board
 
-      - name: Build with sample data
+      - name: Build with generated lessons
         run: |
-          cp ui/board/public/board-state.sample.json ui/board/public/board-state.json
+          pip install -e .
+          PYTHONPATH=src python3 -m adaptive_ivr_agent.holdmate \
+            --phrasebooks data/role-phrasebooks.json \
+            --lines data/doorkeeper-lines.json \
+            --knowledge /tmp/pages-knowledge.json \
+            --lessons /tmp/pages-lessons.jsonl \
+            --fresh --depth 2 \
+            --board-out ui/board/public/board-state.json \
+            || cp ui/board/public/board-state.sample.json ui/board/public/board-state.json
+          python3 sh/bake-board.py --board ui/board/public/board-state.json --lines data/doorkeeper-lines.json
           printf '{"version":"%s","built":"%s"}\n' "$(git describe --tags --always --dirty)" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > ui/board/public/version.json
           npm run build --prefix ui/board
 

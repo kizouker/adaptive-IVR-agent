@@ -111,7 +111,7 @@ def test_turns_are_capped_by_walk_and_vocabulary():
 
 def test_board_timestamp_format_and_both_maps():
     state = build_board([("sjukskriven", 1)], PHRASEBOOKS)
-    assert re.fullmatch(r"\d{2}:\d{2}:\d{2}", state["generated"])
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC", state["generated"])
     assert set(state["maps"]) == {"swedish", "english"}
     assert state["maps"]["english"]["states"][-1]["en"] == "Officer"
     assert state["maps"]["swedish"]["title"] == "AF Agda - svenska kedjan"
@@ -162,7 +162,7 @@ def test_live_board_matches_board_shape():
     assert set(state) == {"generated", "maps", "calls"}
     assert set(state["maps"]) == {"swedish", "english"}
     assert state["calls"][0]["label"] == "You (live)"
-    assert re.fullmatch(r"\d{2}:\d{2}:\d{2}", state["generated"])
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC", state["generated"])
 
 
 def test_vtt_timestamps_cover_minutes_and_hours():

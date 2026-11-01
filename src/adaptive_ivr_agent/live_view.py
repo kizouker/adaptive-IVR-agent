@@ -1,7 +1,7 @@
 """Live call board data + page rendering (T-045)."""
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from adaptive_ivr_agent.menu_map import MenuMap
@@ -10,6 +10,11 @@ from adaptive_ivr_agent.reactive import ReactiveRobot
 ENCODING = "utf-8"
 STATE_PLACEHOLDER = "__STATE_JSON__"
 WALK = ["open_question", "example_words", "yes_no"]
+
+
+def utc_stamp() -> str:
+    """Board clock: UTC date + time so Pages and local show the same thing."""
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 STATE_NAMES = {
     "open_question": {"sv": "Öppen fråga", "en": "Open question"},
@@ -72,7 +77,7 @@ def build_call(persona_id: str, n_turns: int, phrasebooks: str | Path) -> dict:
 def build_board(specs: list[tuple[str, int]], phrasebooks: str | Path) -> dict:
     """Board state for several (persona, turns) calls sharing one process view."""
     return {
-        "generated": datetime.now().strftime("%H:%M:%S"),
+        "generated": utc_stamp(),
         "maps": {
             "swedish": _map_blob(MenuMap.af_agda()),
             "english": _map_blob(MenuMap.english_branch()),
@@ -241,7 +246,7 @@ class LiveCall:
 def build_live_board(calls: list[LiveCall]) -> dict:
     """Board state for live calls. Same top-level shape as build_board."""
     return {
-        "generated": datetime.now().strftime("%H:%M:%S"),
+        "generated": utc_stamp(),
         "maps": {
             "swedish": _map_blob(MenuMap.af_agda()),
             "english": _map_blob(MenuMap.english_branch()),
