@@ -93,7 +93,21 @@ queries demand it.
 
 Russell & Norvig, ch. 2: an agent perceives its environment through
 sensors and acts on it through actuators; the agent–environment loop is
-percepts in, actions out. Here is that loop speaking, with our call:
+percepts in, actions out. Figure 2.1 of the book, drawn with our parts:
+
+```mermaid
+flowchart LR
+    subgraph Agent["Holdmate agent"]
+        P["Perceive + decide"]
+    end
+    subgraph Env["Environment: AF Agda phone line"]
+        R["Speech robot + queue + staff"]
+    end
+    R -- "percepts in: call audio, transcripts, queue-number facts, timer" --> P
+    P -- "actions out: speech, DTMF keys, silence, hang up, alert human" --> R
+```
+
+Here is that loop speaking, with our call:
 
 1. **s (state)** — where the call stands: the robot just asked "Beskriv
    vad du vill ha hjälp med?"
@@ -122,6 +136,14 @@ three — a handful of prompt-states, words/keys/silence as actions, one
 arrow per observed (prompt, answer) pair. Ch. 2's model-based agent
 tracks state through a model of "how the world evolves and what my
 actions do" — our `MenuMap` (position + last edge) is that model.
+Three of our states, concretely (the full chain is diagrammed above):
+
+```mermaid
+stateDiagram-v2
+    open_question --> example_words : no_match ("eh...")
+    example_words --> yes_no : no_match ("aktivitetsrapport")
+    yes_no --> transfer : ja/nej
+```
 
 ### What the Cypher sketch is
 
