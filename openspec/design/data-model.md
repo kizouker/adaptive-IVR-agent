@@ -155,6 +155,97 @@ that our objects move across 1:1 later: today's `State` rows become
 relationships, today's evidence fields become relationship properties.
 Nothing to remodel; the sketch exists so the future move is obvious.
 
+### The thinking, in code
+
+Four snippets from the repo (exact copies), each with why it looks
+that way.
+
+**1. Step — the evidence atom** (`steps.py`). Everything learned must
+cite steps, so the step stays dumb: who, what, in which order. No
+interpretation lives here; interpretation is built on top and can be
+rebuilt from the log at any time.
+
+```python
+@dataclass
+class Step:
+    index: int
+    speaker: str
+    text: str
+```
+
+**2. State + Edge — the FSM made explicit** (`menu_map.py`). A state is
+a prompt-situation; an edge is one observed transition with its trigger
+as the label. The shape forbids what we do not want: no unlabeled
+jumps (every arrow says why), no duplicate states for repeats (the
+builder reuses nodes, so loops show as arrows).
+
+```python
+@dataclass
+class State:
+    """One dialog step the call can be in."""
+    id: str
+    label: str
+
+
+@dataclass
+class Edge:
+    """One way the call moves from a state to the next."""
+    source: str
+    target: str
+    label: str
+```
+
+**3. Evidence — belief with a receipt** (planned, FN-REQ-IVR-029). Counts
+learn `P(s′|s,a)` empirically, and the status separates fact from guess:
+`observed` beat `inferred` beat `untested`. The `sources` list is the
+point — any claim links to the step files that prove it, so nothing is
+believed without a replayable receipt.
+
+```python
+@dataclass
+class Evidence:
+    status: str          # "observed" | "inferred" | "untested"
+    tries: int           # times attempted
+    successes: int       # times it led onward
+    sources: list[str]   # step-file paths that prove it
+```
+
+**4. from_steps — the map derives from the log** (`menu_map.py`). This is
+the anti-hardcode rule made concrete: robot prompts become nodes in
+first-seen order, the caller turn between two prompts labels the edge,
+and a prompt with no caller turn in between is honest about it
+(`"silence"`). Hear the same prompt again and you get an arrow, not a
+second state — loops and reprompts become visible instead of duplicated.
+
+```python
+@classmethod
+def from_steps(cls, steps: "list[Step]", title: str = "") -> "MenuMap":
+    from adaptive_ivr_agent.robot import ROBOT_SPEAKER
+
+    states: list[State] = []
+    by_text: dict[str, str] = {}
+    edges: list[Edge] = []
+    last_robot: str | None = None
+    pending_caller = ""
+    counter = 0
+    for step in steps:
+        if step.speaker == ROBOT_SPEAKER:
+            if step.text not in by_text:
+                counter += 1
+                state_id = f"s{counter}"
+                by_text[step.text] = state_id
+                states.append(State(state_id, step.text))
+            state_id = by_text[step.text]
+            if last_robot is not None and last_robot != state_id:
+                edges.append(Edge(last_robot, state_id, pending_caller or "silence"))
+            last_robot = state_id
+            pending_caller = ""
+        else:
+            pending_caller = step.text
+    current = states[0].id if states else ""
+    return cls(states=states, edges=edges, current=current, title=title)
+```
+
 ### References
 
 - Russell, S. & Norvig, P. (2020). *Artificial Intelligence: A Modern
