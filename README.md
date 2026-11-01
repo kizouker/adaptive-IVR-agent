@@ -75,15 +75,31 @@ works too.
 
 ## Tests and checks
 
+Every block below copies with one click and runs from any folder.
+
 ```bash
-PYTHONPATH=src pytest -q
+PYTHONPATH=~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/src pytest -q ~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/tests
 ```
 
 ```bash
-sh/check-reqs.sh && sh/check-structure.sh && sh/check-security.sh
+~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/check-reqs.sh
 ```
 
-Board: `npm run lint --prefix ui/board`, `npm run build --prefix ui/board`.
+```bash
+~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/check-structure.sh
+```
+
+```bash
+~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/check-security.sh
+```
+
+```bash
+npm run lint --prefix ~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/ui/board
+```
+
+```bash
+npm run build --prefix ~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/ui/board
+```
 
 ## Where things live
 
