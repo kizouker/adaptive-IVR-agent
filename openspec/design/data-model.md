@@ -86,3 +86,56 @@ already properties. Until then, DOT/SVG and the board are our visualization.
 The dropped `claude-requirements-neo4j.md` proposed starting with Neo4j;
 this decision supersedes it: graph thinking now, graph database when the
 queries demand it.
+
+## Concepts in plain words (for readers who want to learn)
+
+### State, action, transition — verbalized
+
+Russell & Norvig, ch. 2: an agent perceives its environment through
+sensors and acts on it through actuators; the agent–environment loop is
+percepts in, actions out. Here is that loop speaking, with our call:
+
+1. **s (state)** — where the call stands: the robot just asked "Beskriv
+   vad du vill ha hjälp med?"
+2. **a (action)** — what Holdmate does: says "aktivitetsrapport", presses
+   a key, or stays silent.
+3. **Transition** — the robot answers and the call now stands in **s′**:
+   maybe onward toward the queue, maybe a "förlåt, jag uppfattade inte".
+   In deterministic worlds (s, a) always yields the same s′; at AF Agda
+   the same (s, a) can yield different s′ — hence stochastic.
+4. **Percept** — Holdmate never sees s′ directly; it only hears the next
+   reply. From that reply it guesses where it is and moves the marker.
+   That is exactly what "partially observable" means.
+
+The transition model is `Result(s, a) = s′` in deterministic form
+(ch. 3); the stochastic form is the probability table `P(s′|s,a)`.
+In our code an **Edge** IS one transition — (s, a) → s′ with the trigger
+as its label — and the **Evidence** counters learn P(s′|s,a) empirically:
+how often each transition worked. The explorer picks untried arrows,
+the exploiter picks proven ones.
+
+### Why this is a finite-state machine
+
+A finite-state machine is: a finite set of states, a finite set of
+actions, and a transition for (state, action). Our dialog has all
+three — a handful of prompt-states, words/keys/silence as actions, one
+arrow per observed (prompt, answer) pair. Ch. 2's model-based agent
+tracks state through a model of "how the world evolves and what my
+actions do" — our `MenuMap` (position + last edge) is that model.
+
+### What the Cypher sketch is
+
+Cypher is the query language of Neo4j, the graph database — SQL's
+cousin for graphs, where you match patterns like
+`(a)-[:KNOWS]->(b)` instead of joining tables. The sketch above shows
+that our objects move across 1:1 later: today's `State` rows become
+`(:State)` nodes, today's `Edge` rows become `[:TRANSITION]`
+relationships, today's evidence fields become relationship properties.
+Nothing to remodel; the sketch exists so the future move is obvious.
+
+### References
+
+- Russell, S. & Norvig, P. (2020). *Artificial Intelligence: A Modern
+  Approach*, 4th ed. Pearson. Ch. 2 (intelligent agents, PEAS,
+  environments), ch. 3 (transition model `Result(s,a)`), ch. 18
+  (learning from examples).
