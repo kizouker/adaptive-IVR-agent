@@ -30,6 +30,7 @@ class Explorer:
         word = remaining[0]
         self._tried.add(word)
         reply, matched = self._robot.respond(word)
-        target = ONWARD_STATE if matched else TOPIC_STATE
-        self.shown.observe(TOPIC_STATE, target, word, origin=origin, success=matched)
-        return {"word": word, "matched": matched, "reply": reply}
+        ok = matched is not None
+        target = ONWARD_STATE if ok else TOPIC_STATE
+        self.shown.observe(TOPIC_STATE, target, word, origin=origin, success=ok)
+        return {"word": word, "matched": ok, "reply": reply}

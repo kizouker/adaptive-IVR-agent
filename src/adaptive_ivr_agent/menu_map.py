@@ -175,13 +175,17 @@ class MenuMap:
         """1-based position of the marker in state order."""
         return [s.id for s in self.states].index(self.current) + 1
 
-    def _edge(self, source: str, target: str) -> Edge | None:
-        found = [e for e in self.edges if (e.source, e.target) == (source, target)]
+    def _edge(self, source: str, target: str, label: str) -> Edge | None:
+        found = [
+            e
+            for e in self.edges
+            if (e.source, e.target, e.label) == (source, target, label)
+        ]
         return found[0] if found else None
 
     def hypothesize(self, source: str, target: str, trigger: str) -> None:
-        """Add an untested edge, unless one already connects the states."""
-        if self._edge(source, target) is None:
+        """Add an untested edge, unless the same labeled edge exists."""
+        if self._edge(source, target, trigger) is None:
             edge = Edge(source, target, trigger)
             edge.evidence.status = STATUS_INFERRED
             self.edges.append(edge)
@@ -190,7 +194,7 @@ class MenuMap:
         self, source: str, target: str, trigger: str, origin: str, success: bool = True
     ) -> None:
         """Record one observed traversal; revise or reject on counter-evidence."""
-        edge = self._edge(source, target)
+        edge = self._edge(source, target, trigger)
         if edge is None:
             edge = Edge(source, target, trigger)
             self.edges.append(edge)
