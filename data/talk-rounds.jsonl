@@ -13,3 +13,6 @@
 {"ts": "2026-11-01T12:42:14", "call": "20261101-124158", "round": 1, "persona": "smabarnsforalder", "heard": "Pappa, familj och arbetssökande.", "matched": null}
 {"ts": "2026-11-01T12:42:31", "call": "20261101-124158", "round": 2, "persona": "smabarnsforalder", "heard": "Aktivitt skriver in mig i ett jobb.", "matched": null}
 {"ts": "2026-11-01T12:42:41", "call": "20261101-124158", "round": 3, "persona": "smabarnsforalder", "heard": "Nej jag vill skriva in mig.", "matched": null}
+{"ts": "2026-11-01T12:55:12", "call": "20261101-125456", "round": 1, "persona": "", "heard": "Jag vill bytskriven.\nJag vill skriva ut mig.", "matched": null}
+{"ts": "2026-11-01T12:55:29", "call": "20261101-125456", "round": 2, "persona": "", "heard": "Ja, det är så här Alberta.", "matched": null}
+{"ts": "2026-11-01T12:55:39", "call": "20261101-125456", "round": 3, "persona": "", "heard": "Ja.", "matched": null}

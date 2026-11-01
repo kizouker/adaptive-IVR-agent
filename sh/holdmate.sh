@@ -1,8 +1,9 @@
 #!/bin/bash
 # Holdmate launcher: board server + talk from one menu, runnable from anywhere.
-# Runs on: Rickard's Mac (M4). Modes: menu (default) | check. Direct: 1, 2, 3.
+# Runs on: Rickard's Mac (M4). Modes: menu (default) | check. Direct: 1, 2, 3, 4.
 # 1 = start the board server, open the page, and talk. 2 = talk options.
-# 3 = teach Agda words. Runs from any folder; paths resolve from this script.
+# 3 = teach Agda words. 4 = Holdmate calls Agda by itself (BFS lessons).
+# Runs from any folder; paths resolve from this script.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=ui.sh
@@ -12,8 +13,8 @@ MODE="menu"
 for arg in "$@"; do
   case "$arg" in
     check|--check) MODE="check" ;;
-    1|2|3) MODE="direct-$arg" ;;
-    *) fail "Unknown argument: $arg (use: check, 1, 2, 3)" ;;
+    1|2|3|4) MODE="direct-$arg" ;;
+    *) fail "Unknown argument: $arg (use: check, 1, 2, 3, 4)" ;;
   esac
 done
 
@@ -220,6 +221,8 @@ talk_menu() {
 if [ "$MODE" = "check" ]; then
   run "sh/talk.sh check"
   "$HERE/talk.sh" check || fail "talk check failed"
+  run "sh/holdmate-call.sh check"
+  "$HERE/holdmate-call.sh" check || fail "holdmate-call check failed"
   title "Check only: nothing changed"
   exit 0
 fi
@@ -228,6 +231,7 @@ case "$MODE" in
   direct-1) run_all; exit 0 ;;
   direct-2) "$HERE/talk.sh"; exit 0 ;;
   direct-3) "$HERE/learn-words.sh"; exit 0 ;;
+  direct-4) "$HERE/holdmate-call.sh"; exit 0 ;;
 esac
 
 while true; do
@@ -236,12 +240,14 @@ while true; do
     "board + talk (start server, open page, talk)" \
     "talk options (server already runs)" \
     "teach Agda words" \
+    "Holdmate calls Agda by itself (BFS lessons)" \
     "quit")"
   case "$choice" in
     1) run_all ;;
     2) talk_menu ;;
     3) "$HERE/learn-words.sh" ;;
-    4|q|Q) title "Bye"; exit 0 ;;
-    *) warn "pick with arrows + Enter (or type 1-4)" ;;
+    4) "$HERE/holdmate-call.sh" ;;
+    5|q|Q) title "Bye"; exit 0 ;;
+    *) warn "pick with arrows + Enter (or type 1-5)" ;;
   esac
 done

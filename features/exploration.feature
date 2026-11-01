@@ -6,15 +6,31 @@ Feature: Exploration
     When Holdmate wants outcome X at a topic step
     Then it says the table's Y for X
 
+  @FN-REQ-IVR-008 @FN-REQ-IVR-008-S02
+  Scenario: Breadth-first tries every alternative level by level
+    Given a persona vocabulary plus small-talk probes
+    When Holdmate runs a lesson
+    Then every (miss count, word) pair is tried exactly once, level 0 before 1 before 2
+
   @FN-REQ-IVR-009 @FN-REQ-IVR-009-S01
   Scenario: Map grows with every call
     When Holdmate tries a word and hears the reply
     Then the new observation is added to the menu map
 
+  @FN-REQ-IVR-009 @FN-REQ-IVR-009-S02
+  Scenario: Lesson observations land in knowledge
+    When a lesson ends
+    Then the word table and map evidence are saved, and the next run accumulates onto them
+
   @FN-REQ-IVR-010 @FN-REQ-IVR-010-S01
   Scenario: Queue reached, no loop
     When Holdmate runs against the practice robot
     Then it reaches the queue with no yes/no loop and no name trap
+
+  @FN-REQ-IVR-010 @FN-REQ-IVR-010-S02
+  Scenario: Every lesson call ends served
+    When Holdmate runs a full lesson headless
+    Then every simulated call transfers, identifies, queues and is served
 
   @FN-REQ-IVR-027 @FN-REQ-IVR-027-S01
   Scenario: No-input versus no-match
