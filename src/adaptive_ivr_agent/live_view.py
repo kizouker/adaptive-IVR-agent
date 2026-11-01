@@ -15,6 +15,7 @@ STATE_NAMES = {
     "example_words": {"sv": "Exempelord", "en": "Example words"},
     "yes_no": {"sv": "Ja/nej-fråga", "en": "Yes/no question"},
     "transfer": {"sv": "Kopplar vidare", "en": "Transferring"},
+    "identification": {"sv": "Identifiering", "en": "Identification"},
     "queue": {"sv": "Kö", "en": "Queue"},
     "english_menu": {"sv": "Engelsk knappmeny", "en": "English key menu"},
     "english_submenu": {"sv": "Engelsk undermeny", "en": "English sub-menu"},

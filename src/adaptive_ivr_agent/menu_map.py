@@ -64,14 +64,15 @@ class Edge:
     evidence: Evidence = field(default_factory=Evidence)
 
 
-# Rickard's 4-level call chain (2026-11-01): open question, example
-# alternatives, yes/no about the requirement letter, then direct transfer.
-# "transfer" is his "no operation" step; final name still open.
+# AF Agda fallback chain, verified against calls 1, 2, 4, 5: open question,
+# example alternatives, yes/no, transfer, then identification (BankID/Freja)
+# before the queue. Failed ID still lands in the queue.
 AF_AGDA_STATES = [
     State("open_question", "Beskriv vad du vill ha hjälp med?"),
     State("example_words", "Du kan till exempel säga... (alt 1, 2, 3)"),
     State("yes_no", "Har du fått ett rekommenderat brev? (ja/nej)"),
     State("transfer", "Kopplar dig direkt till kön."),
+    State("identification", "Identifiering: BankID eller Freja?"),
     State("queue", "Du blir nu placerad i kö."),
 ]
 
@@ -79,7 +80,8 @@ AF_AGDA_EDGES = [
     Edge("open_question", "example_words", "no_match"),
     Edge("example_words", "yes_no", "no_match"),
     Edge("yes_no", "transfer", "ja/nej"),
-    Edge("transfer", "queue", "kopplar"),
+    Edge("transfer", "identification", "kopplar"),
+    Edge("identification", "queue", "legitimerad"),
 ]
 
 NO_INPUT_EDGE_LABEL = "silence"

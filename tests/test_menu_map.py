@@ -113,11 +113,11 @@ def test_mermaid_highlights_current_state():
     assert "no_match" in text
 
 
-def test_full_walk_ends_at_queue_position_five():
+def test_full_walk_ends_at_queue_position_six():
     shown = MenuMap.af_agda()
-    for state_id in ("example_words", "yes_no", "transfer", "queue"):
+    for state_id in ("example_words", "yes_no", "transfer", "identification", "queue"):
         shown.move_to(state_id)
-    assert shown.position() == 5
+    assert shown.position() == 6
     assert shown.current == "queue"
     marked = [line for line in shown.render_ascii().splitlines() if line.startswith(CURRENT_MARKER)]
     assert marked == ["* Du blir nu placerad i kö."]

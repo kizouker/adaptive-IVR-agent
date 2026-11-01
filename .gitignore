@@ -13,6 +13,7 @@ ui/board/public/board-state.json
 ui/board/public/audio/
 ui/board/.vite/
 data/talk-misses.jsonl
+.talk-volume
 
 ## generated + scratch
 __pycache__/

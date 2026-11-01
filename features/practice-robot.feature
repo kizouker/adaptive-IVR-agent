@@ -43,3 +43,15 @@ Feature: Practice robot
     Given a persona with an errand and vocabulary
     When Rickard calls with --as for that persona
     Then he sees the role card and his rounds are tagged with the persona for Holdmate training
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S05
+  Scenario: Faked identification before the queue
+    Given a talk call that reaches transfer
+    When Agda asks for BankID or Freja identification
+    Then the terminal offers a pre-filled test number, typed input is ignored, digits are never logged, and the call lands in the queue
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S06
+  Scenario: Skip keys and live volume during a call
+    Given a talk call is recording or Agda is speaking
+    When Rickard presses any key
+    Then recording stops early or playback skips, and + / - adjusts her volume within the call

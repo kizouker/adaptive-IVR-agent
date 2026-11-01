@@ -29,12 +29,14 @@ def with_aliases(
 
 
 class AgdaReply(NamedTuple):
-    """One scripted answer. queue_place is set when the call reaches the queue."""
+    """One scripted answer. identify asks for ID next; queue_place is set
+    once the call reaches the queue."""
 
     reply: str
     matched: str | None
     done: bool
     misses: int
+    identify: bool
     queue_place: int | None
 
 
@@ -48,6 +50,8 @@ class AgdaCall:
         examples: str,
         yesno: str,
         transfer: str,
+        identify_line: str,
+        identified_line: str,
         queue_line: str,
         place_template: str,
         respond: Callable[[str], tuple[str, str | None]],
@@ -57,6 +61,8 @@ class AgdaCall:
         self._examples = examples
         self._yesno = yesno
         self._transfer = transfer
+        self._identify_line = identify_line
+        self._identified_line = identified_line
         self._queue_line = queue_line
         self._place_template = place_template
         self._respond = respond
@@ -66,16 +72,20 @@ class AgdaCall:
         """Answer HEARD text after MISSES misses."""
         confirm, matched = self._respond(heard)
         if matched is not None:
-            return self._finish(f"{confirm} {self._transfer}", matched, misses)
+            return self._ask_for_id(f"{confirm} {self._transfer}", matched, misses)
         if misses >= 2:
-            return self._finish(self._transfer, None, misses)
+            return self._ask_for_id(self._transfer, None, misses)
         if misses == 1:
-            return AgdaReply(self._yesno, None, False, 2, None)
-        return AgdaReply(self._examples, None, False, 1, None)
+            return AgdaReply(self._yesno, None, False, 2, False, None)
+        return AgdaReply(self._examples, None, False, 1, False, None)
 
-    def _finish(self, prefix: str, matched: str | None, misses: int) -> AgdaReply:
-        """Transfer into the simulated queue with a place number."""
+    def _ask_for_id(self, prefix: str, matched: str | None, misses: int) -> AgdaReply:
+        """Transfer and ask for identification (verified order: ID before queue)."""
+        return AgdaReply(f"{prefix} {self._identify_line}", matched, False, misses, True, None)
+
+    def after_identified(self, misses: int) -> AgdaReply:
+        """Confirm the (faked) identification and enter the simulated queue."""
         place = self._queue_place()
         # place_template is a recorded "plats 1" line; only the digit changes
-        line = f"{prefix} {self._queue_line} {self._place_template.replace('1', str(place), 1)}"
-        return AgdaReply(line, matched, True, misses, place)
+        line = f"{self._identified_line} {self._queue_line} {self._place_template.replace('1', str(place), 1)}"
+        return AgdaReply(line, None, True, misses, False, place)

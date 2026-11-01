@@ -113,6 +113,7 @@ talk_menu() {
     info "1) talk to Agda"
     info "2) talk with AirPods"
     info "3) sound check only"
+    info "4) talk as persona"
     info "b) back"
     printf 'Choose: '
     read -r choice || { echo; exit 0; }
@@ -120,8 +121,17 @@ talk_menu() {
       1) "$HERE/talk.sh"; return 0 ;;
       2) "$HERE/talk.sh" --airpods; return 0 ;;
       3) "$HERE/talk.sh" check; return 0 ;;
+      4)
+        printf 'Persona id: '
+        read -r persona || { echo; exit 0; }
+        if [ -z "$persona" ]; then
+          warn "type a persona id (see data/role-phrasebooks.json)"
+        else
+          "$HERE/talk.sh" --as "$persona"; return 0
+        fi
+        ;;
       b|B) return 0 ;;
-      *) warn "pick 1, 2, 3 or b" ;;
+      *) warn "pick 1, 2, 3, 4 or b" ;;
     esac
   done
 }
