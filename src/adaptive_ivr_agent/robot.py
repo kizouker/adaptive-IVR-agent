@@ -1,4 +1,5 @@
 """Mini practice robot: plays fixed lines, saves each as a step (FN-REQ-IVR-006)."""
+import json
 import shutil
 import subprocess
 from collections.abc import Callable, Sequence
@@ -8,13 +9,24 @@ from adaptive_ivr_agent.steps import Step, StepFile
 
 ROBOT_SPEAKER = "robot"
 SAY_COMMAND = "say"
+SAY_VOICE = "Alva"
+CALLER_VOICE = "Oskar"
+LINES_KEY = "lines"
+LINE_TEXT_KEY = "text"
+ENCODING = "utf-8"
 
 
-def mac_say(text: str) -> None:
+def mac_say(text: str, voice: str = SAY_VOICE) -> None:
     """Speak one line with the Mac `say` command (real runs only, never tests)."""
     if shutil.which(SAY_COMMAND) is None:
         raise RuntimeError(f"{SAY_COMMAND} is not available on this machine")
-    subprocess.run([SAY_COMMAND, text], check=True)
+    subprocess.run([SAY_COMMAND, "-v", voice, text], check=True)
+
+
+def load_lines(path: str | Path) -> list[str]:
+    """Load robot-side lines in order from a doorkeeper-lines JSON file."""
+    raw = json.loads(Path(path).read_text(encoding=ENCODING))
+    return [entry[LINE_TEXT_KEY] for entry in raw[LINES_KEY]]
 
 
 class PracticeRobot:

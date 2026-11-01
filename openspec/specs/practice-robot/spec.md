@@ -2,18 +2,18 @@
 
 ## Purpose
 
-A copy of The Doorkeeper to test against instead of the real line, built from real calls. From 04 step 3, v1 (mini) and v4 (reactive).
+A copy of AF Agda to test against instead of the real line, built from real calls. From 04 step 3, v1 (mini) and v4 (reactive).
 
 ## Requirements
 
 ### Requirement: FN-REQ-IVR-006 Mini robot plays three lines
 
-The practice robot SHALL play 3 The Doorkeeper lines made with `say`, and save each line as a step.
+The practice robot SHALL play 3 AF Agda lines made with `say`, and save each line as a step.
 
 #### Scenario: Three lines play
 
 - **WHEN** the mini robot runs
-- **THEN** it plays 3 The Doorkeeper lines made with `say`
+- **THEN** it plays 3 AF Agda lines made with `say`
 
 #### Scenario: Each line is saved as a step
 

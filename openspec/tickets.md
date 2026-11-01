@@ -45,7 +45,7 @@ One ticket per requirement. Each ticket carries its requirement ID as its name. 
 ### FN-REQ-IVR-006 Mini robot plays three lines
 
 - REQ IDs: FN-REQ-IVR-006
-- Description: Mini practice robot playing 3 The Doorkeeper lines made with `say`; each line saved as a step.
+- Description: Mini practice robot playing 3 AF Agda lines made with `say`; each line saved as a step.
 - Acceptance: 3 lines play; each line is saved as a step.
 - Priority: v1 (Thu 29 Oct)
 - Depends on: FN-REQ-IVR-003

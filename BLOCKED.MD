@@ -3,6 +3,15 @@
 Log of blocked items. Standing rule from Rickard: when blocked, record it
 here (in English), with cause and what is needed to unblock.
 
+## 2026-10-31 — Claude.ai share links unreadable
+
+- Status: BLOCKED — two share links (e4f07fdb…, 2181f26b…) return only the
+  JS shell; content API answers Cloudflare "Just a moment..." to curl.
+- Cause: no browser automation in this environment; Cloudflare blocks
+  non-browser fetches of /api/chat_snapshots.
+- Needed to unblock: Rickard pastes the chat text here, or exports it to a
+  file in the repo (e.g. data/call-transcripts-by-claude/).
+
 ## 2026-10-28 — Issue #3 dry test (step 2)
 
 - Status: APPROVED 2026-10-28 — Rickard wrote OK on the issue; gate item

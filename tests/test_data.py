@@ -32,3 +32,8 @@ UNKNOWN_WORD = "nonsense"
 
 STEP_FILE_NAME = "run.json"
 V1_STEP_FILE_NAME = "v1-run.json"
+
+DOORKEEPER_LINES_NAME = "doorkeeper-lines.json"
+ROLE_PHRASEBOOKS_NAME = "role-phrasebooks.json"
+MIN_DOORKEEPER_LINES = 3
+MIN_ROLES = 8

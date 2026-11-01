@@ -6,7 +6,7 @@ Holdmate is a voice agent that calls phone robots (speech IVRs) at Swedish publi
 
 - **Holdmate** – our AI voice agent; calls, picks words, waits in the queue for you.
 - **Caller (you)** – the job seeker; describes the concern, approves the identity check, takes over at handover.
-- **Phone robot** – the agency's speech IVR (The Doorkeeper = the real one; the practice robot = our simulator copy).
+- **Phone robot** – the agency's speech IVR (AF Agda = the real one; the practice robot = our simulator copy).
 - **Step** – one saved exchange of a call; calls are stored as steps.
 - **Menu map** – map of every choice and where it leads, drawn from steps; the keyword table (keyword ↔ what it gets done) belongs to it.
 - **Queue place** – the caller's number N in the queue ("Det är N samtal före dig").
@@ -18,7 +18,7 @@ Same word for the same thing everywhere; full glossary in 01.
 1. [Recording](recording/spec.md) – record the robot voice (v0, done).
 2. [Transcription](transcription/spec.md) – Whisper speech-to-text (v0 done, used in v2).
 3. [Menu map](menu-map/spec.md) – steps, keyword table, map with * (v1, v3).
-4. [Practice robot](practice-robot/spec.md) – simulator of The Doorkeeper (v1, v4).
+4. [Practice robot](practice-robot/spec.md) – simulator of AF Agda (v1, v4).
 5. [Exploration](exploration/spec.md) – Holdmate tries words, fills the map (v4).
 6. [Queue alert](queue-alert/spec.md) – find queue number, alert, countdown (v2, v5).
 7. [Assisted calling](assisted-calling/spec.md) – intake, identity ping, handover (after hackathon).
@@ -43,14 +43,14 @@ v1 (Thu 29 Oct): keyword table plus a mini practice robot – "One run creates a
 
 ## Open questions
 
-About The Doorkeeper (05, "to test in the next calls"):
+About AF Agda (05, "to test in the next calls"):
 
-- OQ-01 "Does The Doorkeeper understand dialects and accents? Not tested yet – all calls so far used one voice."
+- OQ-01 "Does AF Agda understand dialects and accents? Not tested yet – all calls so far used one voice."
 - OQ-02 "Does saying one of its own words straight away (e.g. "ersättning") skip the yes/no step?"
 - OQ-03 "Where does "jag vill prata med en handläggare" lead?"
 - OQ-04 "What happens if you answer "ja" at "Stämmer det?""
 - OQ-05 "What does the English branch (press 0) offer?"
-- OQ-06 "What does The Doorkeeper say about your place in the queue? We have only heard ... "Det är N samtal före dig". Try a busy time of day."
+- OQ-06 "What does AF Agda say about your place in the queue? We have only heard ... "Det är N samtal före dig". Try a busy time of day."
 - OQ-07 "Are the example words picked at random, or do they change with the time or the caller?"
 
 Decisions (05):
@@ -90,7 +90,7 @@ From the design research (openspec/design/IVR-domain-research-solution-concepts.
 | FN-REQ-IVR-003 | US-IVR-002 | 04 step 2 "save each call as steps"; v1 "Each line is saved as a step" + "One run creates a step file" |
 | FN-REQ-IVR-004 | US-IVR-001 | 01 Goal 1 done "A table maps each keyword ..."; v1 "Keyword table" |
 | FN-REQ-IVR-005 | US-IVR-002 | 01 Goal 2 done "marks where you are now with a *"; v3 |
-| FN-REQ-IVR-006 | – | v1 "mini practice robot that plays 3 The Doorkeeper lines (made with say)" |
+| FN-REQ-IVR-006 | – | v1 "mini practice robot that plays 3 AF Agda lines (made with say)" |
 | FN-REQ-IVR-007 | – | 04 step 3 "reacts to words and key presses"; v4 'including "not understood" and yes/no' |
 | FN-REQ-IVR-008 | US-IVR-003 | v4 "Holdmate picks words from the keyword table" |
 | FN-REQ-IVR-009 | US-IVR-003 | 04 step 4 "tries words ... and fills in the map by itself"; 01 "a menu map that grows with every call" |

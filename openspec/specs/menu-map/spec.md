@@ -6,7 +6,7 @@ Save each call as steps and draw the map from them: the keyword table and the me
 
 ## User stories
 
-- US-IVR-001: As a job seeker calling The Castle, I want to understand the menu of The Doorkeeper, so that I know the exact keywords it understands.
+- US-IVR-001: As a job seeker calling The Castle, I want to understand the menu of AF Agda, so that I know the exact keywords it understands.
 - US-IVR-002: As a job seeker calling The Castle, I want to know where I am in the menu during the call.
 
 ## Requirements

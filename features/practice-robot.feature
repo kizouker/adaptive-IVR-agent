@@ -1,10 +1,10 @@
 Feature: Practice robot
-  A copy of The Doorkeeper to test against instead of the real line.
+  A copy of AF Agda to test against instead of the real line.
 
   @FN-REQ-IVR-006
   Scenario: Three lines play
     When the mini robot runs
-    Then it plays 3 The Doorkeeper lines made with "say"
+    Then it plays 3 AF Agda lines made with "say"
 
   @FN-REQ-IVR-006
   Scenario: Each line is saved as a step

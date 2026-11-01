@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "model": "target_seed",
   "description": "Public website topics and publicly documented phone-routing facts that can seed controlled IVR experiments. These are not verified internal intents or a transcription of complete phone trees.",
-  "updated_at": "2026-10-28",
+  "updated_at": "2026-10-31",
   "evidence_policy": {
     "target_seed_is_observation": false,
     "observed_model_location": "separate run data store",
@@ -48,16 +48,17 @@
     },
     {
       "id":"arbetsformedlingen","name":"Arbetsförmedlingen","scope":"jobseeker_and_employer_topics",
-      "phone_facts":{"status":"publicly_documented","summary":"The contact page says the caller reaches a speech-driven phone response and should say what the matter is. It does not publish the full vocabulary or tree."},
+      "phone_facts":{"status":"publicly_documented","summary":"Verified 2026-10-31 from af_contact: 'När du ringer oss kommer du till ett röststyrt talsvar. Säg vad ditt ärende är så kopplas du vidare till en arbetsförmedlare.' Phone helps with: digital services (e.g. sign-up), reporting absence from a booked meeting, programs/education/support questions, ongoing cases, career/job/application advice. Personal matters need e-legitimation (e.g. mobile BankID). Full vocabulary/tree not published."},
       "sources":["af_jobseekers","af_contact","af_employers"],
       "tree":[
         {"id":"af.jobseeker","label":"För arbetssökande","kind":"web_section","status":"website_taxonomy","source_ids":["af_jobseekers"],"children":[
-          {"id":"af.unemployed","label":"Arbetslös – vad händer nu?","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["skriva in mig","inskrivning","a-kassa","planeringssamtal","aktivitetsrapport","meddela förändring"],"children":[]},
-          {"id":"af.support","label":"Extra stöd","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["arbetsmarknadsutbildning","Rusta och matcha","praktik","stöd vid funktionsnedsättning","program"],"children":[]},
+          {"id":"af.unemployed","label":"Arbetslös, vad händer nu?","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["skriva in mig","skriv in dig","inskrivning","a-kassa","planeringssamtal","aktivitetsrapport","aktivitetsrapportera","meddela förändring","skriv ut dig","anmäl sjukfrånvaro"],"children":[]},
+          {"id":"af.support","label":"Extra stöd","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["arbetsmarknadsutbildning","Rusta och matcha","praktik","stöd vid funktionsnedsättning","program","meddela förhinder","bokat möte"],"children":[]},
           {"id":"af.jobsearch","label":"Så hittar du jobbet","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["Platsbanken","söka jobb","kompetensprofil","starta eget"],"children":[]},
-          {"id":"af.application","label":"Cv, ansökan och intervju","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["cv","personligt brev","jobbintervju","referenser"],"children":[]},
-          {"id":"af.career","label":"Yrkesval och utbildning","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["vilket yrke passar mig","utbildning","yrkesval"],"children":[]},
-          {"id":"af.personal_case","label":"Pågående personligt ärende","kind":"topic","status":"publicly_documented","source_ids":["af_contact"],"candidate_utterances":["mitt ärende","pågående ärende","handläggare"],"children":[]}
+          {"id":"af.application","label":"Cv, ansökan och intervju","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["cv","personligt brev","jobbintervju","jobbansökan","referenser"],"children":[]},
+          {"id":"af.career","label":"Vilket yrke passar dig?","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["vilket yrke passar mig","välja yrke","utbildning","yrkesval"],"children":[]},
+          {"id":"af.work_in_sweden","label":"Arbeta i Sverige","kind":"topic","status":"website_taxonomy","source_ids":["af_jobseekers"],"candidate_utterances":["arbeta i sverige","jobba i sverige","flytta för jobb"],"children":[]},
+          {"id":"af.personal_case","label":"Pågående personligt ärende","kind":"topic","status":"publicly_documented","source_ids":["af_contact"],"candidate_utterances":["mitt ärende","pågående ärende","handläggare","e-legitimation","mobilt bank-id","mina sidor"],"children":[]}
         ]},
         {"id":"af.employer","label":"För arbetsgivare","kind":"web_section","status":"website_taxonomy","source_ids":["af_employers"],"candidate_utterances":["annonsera jobb","söka kandidater","anställningsstöd","nystartsjobb","anmäla varsel"],"children":[]}
       ]
