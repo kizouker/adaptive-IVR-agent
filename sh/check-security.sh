@@ -10,10 +10,11 @@ fail() { echo "SECURITY FAIL: $1"; exit 1; }
 
 git check-ignore -q .env || fail ".env is not ignored"
 
-keys=$(git grep -l "BEGIN .*PRIVATE KEY" -- . ':!*.md' || true)
+SELF="sh/check-security.sh"
+keys=$(git grep -l "BEGIN .*PRIVATE KEY" -- . ":!$SELF" ':!*.md' || true)
 [ -z "$keys" ] || fail "private key material tracked: $keys"
 
-tokens=$(git grep -nE "(sk-[A-Za-z0-9]{8,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{8,}|xox[bap]-[A-Za-z0-9-]+)" -- . || true)
+tokens=$(git grep -nE "(sk-[A-Za-z0-9]{8,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{8,}|xox[bap]-[A-Za-z0-9-]+)" -- . ":!$SELF" || true)
 [ -z "$tokens" ] || fail "token-like strings tracked: $tokens"
 
 dangerous=$(git grep -nE "\beval\(|\bexec\(|shell=True|dangerouslySetInnerHTML|os\.system" -- src ui/board/src || true)
