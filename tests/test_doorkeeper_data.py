@@ -32,6 +32,9 @@ def test_role_phrasebooks_have_roles_with_words():
     for role in roles:
         assert role["id"] and role["af_sections"] and role["vocabulary"]
         assert role["goal"] and role["errand"] and role["errand_en"]
+        assert len(role["checklist"]) >= 3
+        for item in role["checklist"]:
+            assert item["say"] and item["why"] and item["source_url"]
 
 
 def test_served_and_english_lines_have_verbatim_flags():

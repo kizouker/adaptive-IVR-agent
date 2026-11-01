@@ -109,3 +109,9 @@ Feature: Practice robot
     Given the call starts with no sound flags
     When AirPods are connected
     Then output uses them (and the menu defaults to airpods); when absent, speakers are used
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S18
+  Scenario: Role card shows a caller checklist
+    Given a persona with an errand and vocabulary
+    When Rickard calls with --as for that persona
+    Then the role card lists what to say and why, grounded in AF rules with sources

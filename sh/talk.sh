@@ -306,6 +306,10 @@ if persona is None:
 print(f"Role: {persona['label']}")
 print(f"Errand: {persona['errand']}")
 print(f"Try words like: {', '.join(persona['vocabulary'])}")
+print("Checklist (guidance, not legal advice):")
+for i, item in enumerate(persona.get("checklist", []), 1):
+    print(f"  {i}. Say: {item['say']}")
+    print(f"     Why: {item['why']}")
 CARD
   then
     info "valid persona ids:"
