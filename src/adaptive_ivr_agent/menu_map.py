@@ -108,6 +108,39 @@ class MenuMap:
             title=ENGLISH_TITLE,
         )
 
+    @classmethod
+    def from_steps(cls, steps: "list[Step]", title: str = "") -> "MenuMap":
+        """Build the dialog graph from a step log instead of constants.
+
+        Each robot prompt becomes a node (first-seen order); the caller turn
+        between two prompts labels the edge. Repeats reuse the same node, so
+        loops and reprompts show as edges, not new states.
+        """
+        from adaptive_ivr_agent.robot import ROBOT_SPEAKER
+
+        states: list[State] = []
+        by_text: dict[str, str] = {}
+        edges: list[Edge] = []
+        last_robot: str | None = None
+        pending_caller = ""
+        counter = 0
+        for step in steps:
+            if step.speaker == ROBOT_SPEAKER:
+                if step.text not in by_text:
+                    counter += 1
+                    state_id = f"s{counter}"
+                    by_text[step.text] = state_id
+                    states.append(State(state_id, step.text))
+                state_id = by_text[step.text]
+                if last_robot is not None and last_robot != state_id:
+                    edges.append(Edge(last_robot, state_id, pending_caller or "silence"))
+                last_robot = state_id
+                pending_caller = ""
+            else:
+                pending_caller = step.text
+        current = states[0].id if states else ""
+        return cls(states=states, edges=edges, current=current, title=title)
+
     def move_to(self, state_id: str) -> None:
         """Move the position marker; records the edge if one connects them."""
         if state_id not in {s.id for s in self.states}:
