@@ -1,5 +1,10 @@
 # Holdmate — an adaptive IVR agent that practices on AF Agda
 
+[![CI](https://github.com/kizouker/adaptive-IVR-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/kizouker/adaptive-IVR-agent/actions)
+[![tests passed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkizouker%2Fadaptive-IVR-agent%2Fmain%2Ftest-stats.json&query=%24.tests.passed&label=tests%20passed&color=brightgreen)](https://github.com/kizouker/adaptive-IVR-agent/actions)
+[![coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkizouker%2Fadaptive-IVR-agent%2Fmain%2Ftest-stats.json&query=%24.coverage&label=coverage&color=blue)](https://github.com/kizouker/adaptive-IVR-agent/actions)
+[![owasp](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkizouker%2Fadaptive-IVR-agent%2Fmain%2Ftest-stats.json&query=%24.owasp&label=owasp&color=green)](docs/security-review.md)
+
 Holdmate learns to phone robot operators like the Swedish Public Employment
 Service (Arbetsförmedlingen). It practices against AF Agda, a scripted copy of
 the real IVR line built from recorded calls, so the real line is never touched
