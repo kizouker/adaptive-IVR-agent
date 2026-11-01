@@ -10,6 +10,9 @@ import CIWidget from './components/CIWidget';
 import LessonsView from './components/LessonsView';
 import KeypadWidget from './components/KeypadWidget';
 import CoverageWidget from './components/CoverageWidget';
+import HistoryView from './components/HistoryView';
+import TerminalModal from './components/TerminalModal';
+import PacmanView from './components/PacmanView';
 import { fetchBoard, setLang } from './store/boardSlice';
 
 const POLL_MS = 3000;
@@ -33,6 +36,7 @@ const STRINGS = {
     volume: 'Volym',
     quieter: 'Sänk',
     louder: 'Höj',
+    browser: 'webbläsare',
     builds: 'Byggen',
     allBuilds: 'alla →',
     level: 'Nivå',
@@ -41,6 +45,8 @@ const STRINGS = {
     overview: 'Översikt',
     details: 'Detaljer',
     lessons: 'Lektioner',
+    historyTab: 'Historia',
+    maze: 'Labyrint',
     lessonsRun: 'Körda lektioner',
     noLessons: 'Kör lektioner från menyn (4 → 1) för att fylla denna flik.',
     coverage: 'Täckning',
@@ -65,6 +71,15 @@ const STRINGS = {
     history: 'Historik',
     showLess: 'Visa färre',
     seenAbove: 'se ovan',
+    tryCli: 'Prova CLI:t',
+    terminalTitle: 'Holdmate CLI (simulerat)',
+    terminalSim: 'simulering',
+    terminalHint: 'Skriv svar som i tyst läge. 0 ger engelska menyn, 1/2 identifierar, tom rad är tystnad.',
+    terminalPlaceholder: 'Skriv ditt svar…',
+    terminalSilence: '(tystnad)',
+    terminalRestart: 'Börja om',
+    terminalClose: 'Stäng',
+    terminalEnd: 'Demosamtalet är slut — börja om eller stäng med Esc.',
   },
   en: {
     title: 'Holdmate board',
@@ -84,6 +99,7 @@ const STRINGS = {
     volume: 'Volume',
     quieter: 'Quieter',
     louder: 'Louder',
+    browser: 'browser',
     builds: 'Builds',
     allBuilds: 'all →',
     level: 'Level',
@@ -92,6 +108,8 @@ const STRINGS = {
     overview: 'Overview',
     details: 'Details',
     lessons: 'Lessons',
+    historyTab: 'History',
+    maze: 'Maze',
     lessonsRun: 'Lessons run',
     noLessons: 'Run lessons from the menu (4 → 1) to fill this tab.',
     coverage: 'Coverage',
@@ -116,6 +134,15 @@ const STRINGS = {
     history: 'History',
     showLess: 'Show less',
     seenAbove: 'see above',
+    tryCli: 'Try the CLI',
+    terminalTitle: 'Holdmate CLI (simulated)',
+    terminalSim: 'simulation',
+    terminalHint: 'Type answers as in quiet mode. 0 gives the English menu, 1/2 identify, empty line is silence.',
+    terminalPlaceholder: 'Type your answer…',
+    terminalSilence: '(silence)',
+    terminalRestart: 'Restart',
+    terminalClose: 'Close',
+    terminalEnd: 'Demo call over — restart or close with Esc.',
   },
 };
 
@@ -127,6 +154,7 @@ function App() {
   const [tab, setTab] = useState('overview');
   const [treeMode, setTreeMode] = useState('states');
   const [version, setVersion] = useState(null);
+  const [showTerminal, setShowTerminal] = useState(false);
 
   useEffect(() => {
     fetch('version.json').then((res) => {
@@ -177,6 +205,9 @@ function App() {
         </span>
         {version != null && <span className="ver">{version}</span>}
         <span className="spacer" />
+        <button type="button" className="tbtn" onClick={() => setShowTerminal(true)}>
+          {t.tryCli}
+        </button>
         <span className="lang">
           <button type="button" className={lang === 'sv' ? 'on' : ''} onClick={() => dispatch(setLang('sv'))}>
             SV
@@ -187,7 +218,7 @@ function App() {
         </span>
       </div>
       <div className="sub">{`${t.generated} ${data.generated}`}</div>
-      <VolumeWidget label={t.volume} quieter={t.quieter} louder={t.louder} />
+      <VolumeWidget label={t.volume} quieter={t.quieter} louder={t.louder} browser={t.browser} />
       <CIWidget label={t.builds} all={t.allBuilds} />
       <div className="tabs">
         <button
@@ -210,6 +241,20 @@ function App() {
           onClick={() => setTab('lessons')}
         >
           {t.lessons}
+        </button>
+        <button
+          type="button"
+          className={tab === 'history' ? 'on' : ''}
+          onClick={() => setTab('history')}
+        >
+          {t.historyTab}
+        </button>
+        <button
+          type="button"
+          className={tab === 'maze' ? 'on' : ''}
+          onClick={() => setTab('maze')}
+        >
+          {t.maze}
         </button>
       </div>
       {tab === 'overview' && (
@@ -288,6 +333,22 @@ function App() {
             t={t}
           />
         </>
+      )}
+      {tab === 'history' && <HistoryView />}
+      {tab === 'maze' && (
+        <>
+          <h2>{t.maze}</h2>
+          <PacmanView calls={data.calls} t={t} />
+        </>
+      )}
+      {showTerminal && (
+        <TerminalModal
+          lines={data.lines ?? []}
+          words={data.words ?? {}}
+          lang={lang}
+          t={t}
+          onClose={() => setShowTerminal(false)}
+        />
       )}
     </div>
   );
