@@ -6,6 +6,7 @@ import TreeView from './components/TreeView';
 import CallThread from './components/CallThread';
 import Subtitle from './components/Subtitle';
 import VolumeWidget from './components/VolumeWidget';
+import CIWidget from './components/CIWidget';
 import { fetchBoard, setLang } from './store/boardSlice';
 
 const POLL_MS = 3000;
@@ -26,6 +27,8 @@ const STRINGS = {
     queuePlace: 'Köplats',
     generated: 'Uppdaterad',
     volume: 'Volym',
+    builds: 'Byggen',
+    allBuilds: 'alla →',
     level: 'Nivå',
     loading: 'Laddar…',
     failed: 'Kunde inte hämta data',
@@ -52,6 +55,8 @@ const STRINGS = {
     queuePlace: 'Queue place',
     generated: 'Updated',
     volume: 'Volume',
+    builds: 'Builds',
+    allBuilds: 'all →',
     level: 'Level',
     loading: 'Loading…',
     failed: 'Could not fetch data',
@@ -117,6 +122,7 @@ function App() {
       </div>
       <div className="sub">{`${t.generated} ${data.generated}`}</div>
       <VolumeWidget label={t.volume} />
+      <CIWidget label={t.builds} all={t.allBuilds} />
       <div className="tabs">
         <button
           type="button"
