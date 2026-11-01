@@ -63,7 +63,7 @@ def build_agda(lines: dict[str, str], respond) -> AgdaCall:
         yesno=lines["L22"],
         yesno_reprompt=lines["L41"],
         transfer=lines["L19"],
-        identify_line=lines["L09"],
+        identify_line=f"{lines['L43']} {lines['L09']}",
         identified_line=lines["L11"],
         served_line=lines["L30"],
         queue_line=lines["L13"],

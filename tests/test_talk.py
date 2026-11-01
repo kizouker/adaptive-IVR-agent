@@ -51,6 +51,17 @@ def test_yesno_sentence_gets_one_reprompt():
     assert (answer.identify, answer.queue_place) == (False, None)
 
 
+def test_silence_never_matches_and_counts_as_miss():
+    answer = make_call(lambda heard: HIT).reply_to("(silence)", 0)
+    assert (answer.reply, answer.matched, answer.misses) == (
+        "for example say vab", None, 1)
+
+
+def test_silence_at_yesno_gets_reprompt():
+    answer = make_call(lambda heard: HIT).reply_to("(silence)", 2)
+    assert (answer.reply, answer.misses) == ("please answer yes or no.", 3)
+
+
 def test_third_miss_transfers():
     answer = make_call(lambda heard: MISS).reply_to("fortfarande oklart", 3)
     assert (answer.done, answer.identify, answer.misses) == (False, True, 3)

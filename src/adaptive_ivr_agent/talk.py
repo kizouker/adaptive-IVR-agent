@@ -75,6 +75,8 @@ class AgdaCall:
     def reply_to(self, heard: str, misses: int) -> AgdaReply:
         """Answer HEARD text after MISSES misses."""
         confirm, matched = self._respond(heard)
+        if normalize(heard) == "(silence)":
+            matched = None
         if matched is not None:
             return self._ask_for_id(f"{confirm} {self._transfer}", matched, misses)
         if misses >= 3:

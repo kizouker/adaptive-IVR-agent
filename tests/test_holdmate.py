@@ -25,6 +25,7 @@ FAKE_LINES = {
     "L22": "Yes or no?",
     "L19": "Transferring.",
     "L09": "ID please.",
+    "L43": "Please identify first.",
     "L11": "ID ok.",
     "L30": "Served.",
     "L13": "Queued.",

@@ -522,7 +522,7 @@ agda = AgdaCall(
     yesno=lines["L22"],
     yesno_reprompt=lines["L41"],
     transfer=lines["L19"],
-    identify_line=lines["L09"],
+    identify_line=f"{lines['L43']} {lines['L09']}",
     identified_line=lines["L11"],
     served_line=SERVED_LINE,
     queue_line=lines["L13"],
@@ -1050,15 +1050,18 @@ while [ "$ROUND" -lt 6 ]; do
   [ -s "$WAV" ] || fail "Recording is empty: $WAV"
   ok "recorded: $WAV"
   if ! "$HERE/check-recording.sh" "$WAV" >/dev/null 2>&1; then
-    warn "silent recording, skipping this round"
-    rm -f "$WAV"
-    continue
+    warn "silent recording, counts as no answer"
+    printf '(silence)\n' > "$TXT"
+  else
+    run "sh/transcribe-latest.sh $WAV"
+    WHISPER_LANG="${WHISPER_LANG:-sv}" "$HERE/transcribe-latest.sh" "$WAV" >/dev/null \
+      || fail "Transcription failed for $WAV"
+    [ -f "$TXT" ] || fail "Transcript missing: $TXT"
+    if ! grep -q '[^[:space:]]' "$TXT"; then
+      warn "nothing heard, counts as no answer"
+      printf '(silence)\n' > "$TXT"
+    fi
   fi
-  run "sh/transcribe-latest.sh $WAV"
-  WHISPER_LANG="${WHISPER_LANG:-sv}" "$HERE/transcribe-latest.sh" "$WAV" >/dev/null \
-    || fail "Transcription failed for $WAV"
-  [ -f "$TXT" ] || fail "Transcript missing: $TXT"
-  grep -q '[^[:space:]]' "$TXT" || { warn "nothing heard, skipping this round"; continue; }
   fi
   run "render reply ($VOICE)"
   OUT="$(agda_says round "$TXT" "$ROBOT_AIFF" "$WAV")" || fail "Agda failed to answer"
