@@ -13,8 +13,8 @@ const POLL_MS = 3000;
 
 const STRINGS = {
   sv: {
-    title: 'Holdmate liveboard',
-    live: 'live',
+    title: 'Holdmate-board',
+    live: 'exempeldata',
     process: 'Processen',
     calls: 'Samtalen',
     errand: 'Ärende',
@@ -35,14 +35,16 @@ const STRINGS = {
     overview: 'Översikt',
     details: 'Detaljer',
     tree: 'Samtalsträd',
+    treeStates: 'Tillstånd',
+    treeAnswers: 'Svar',
     now: 'Just nu',
     history: 'Historik',
     showLess: 'Visa färre',
     seenAbove: 'se ovan',
   },
   en: {
-    title: 'Holdmate live board',
-    live: 'live',
+    title: 'Holdmate board',
+    live: 'sample data',
     process: 'The process',
     calls: 'The calls',
     errand: 'Errand',
@@ -63,6 +65,8 @@ const STRINGS = {
     overview: 'Overview',
     details: 'Details',
     tree: 'Call tree',
+    treeStates: 'States',
+    treeAnswers: 'Answers',
     now: 'Right now',
     history: 'History',
     showLess: 'Show less',
@@ -76,6 +80,7 @@ function App() {
   const dispatch = useDispatch();
   const { data, lang, status } = useSelector(selectBoard);
   const [tab, setTab] = useState('overview');
+  const [treeMode, setTreeMode] = useState('states');
   const t = STRINGS[lang];
 
   useEffect(() => {
@@ -171,12 +176,29 @@ function App() {
             who={(latest && latest.speaker) || live.robot_name || t.robot}
           />
           <h2>{t.tree}</h2>
+          <div className="tabs">
+            <button
+              type="button"
+              className={treeMode === 'states' ? 'on' : ''}
+              onClick={() => setTreeMode('states')}
+            >
+              {t.treeStates}
+            </button>
+            <button
+              type="button"
+              className={treeMode === 'answers' ? 'on' : ''}
+              onClick={() => setTreeMode('answers')}
+            >
+              {t.treeAnswers}
+            </button>
+          </div>
           <TreeView
             states={states}
             calls={data.calls}
             positionId={live.position}
             lang={lang}
             seenAbove={t.seenAbove}
+            byAnswer={treeMode === 'answers'}
           />
           <h2>{t.calls}</h2>
           {data.calls.map((call) => (

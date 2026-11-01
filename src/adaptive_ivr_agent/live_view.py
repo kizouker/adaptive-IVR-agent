@@ -61,6 +61,7 @@ def build_call(persona_id: str, n_turns: int, phrasebooks: str | Path) -> dict:
         "persona": persona_id,
         "label": persona["label"],
         "errand": persona["errand"],
+        "errand_en": persona["errand_en"],
         "map": "swedish",
         "position": shown.current,
         "turns": turns,

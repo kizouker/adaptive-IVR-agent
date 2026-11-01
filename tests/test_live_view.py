@@ -81,6 +81,7 @@ def test_build_call_carries_persona_fields_and_states():
     assert call["persona"] == "ny-arbetslos"
     assert call["label"] == "Newly unemployed job seeker"
     assert call["errand"] == "Skriva in mig som arbetssökande"
+    assert call["errand_en"] == "Register as a job seeker"
     assert call["map"] == "swedish"
     assert call["position"] == "example_words"
     assert [t["state"] for t in call["turns"]] == ["open_question", "example_words"]

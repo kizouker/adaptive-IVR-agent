@@ -173,3 +173,28 @@ def test_main_rejects_bad_depth(tmp_path):
             "--lessons", str(tmp_path / "l.jsonl"),
             "--depth", "9",
         ])
+
+
+def test_run_prints_live_line_per_sim(capsys):
+    lesson = make_lesson(["kw", "eh"], max_misses=0)
+    lesson.run()
+    out = capsys.readouterr().out
+    assert "kw @open_question -> transfer" in out
+    assert "eh @open_question -> miss" in out
+
+
+def test_main_prints_plan_and_lesson_progress(capsys, tmp_path):
+    code = main([
+        "--phrasebooks", str(PHRASEBOOKS),
+        "--lines", str(LINES),
+        "--knowledge", str(tmp_path / "k.json"),
+        "--lessons", str(tmp_path / "l.jsonl"),
+        "--as", "ny-arbetslos",
+        "--depth", "0",
+        "--fresh",
+    ])
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "plan: 1 lessons, up to " in out
+    assert "lesson 1/1: ny-arbetslos" in out
+    assert "matched " in out and " words: " in out

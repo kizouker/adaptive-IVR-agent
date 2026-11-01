@@ -21,7 +21,7 @@ function CallThread({ call, lang, t }) {
   return (
     <div className="card">
       <h3>{call.label}</h3>
-      <div className="errand">{`${t.errand}: ${call.errand}`}</div>
+      <div className="errand">{`${t.errand}: ${lang === 'en' ? (call.errand_en ?? call.errand) : call.errand}`}</div>
       {expanded && ordered.map((turn) => (
         <div key={turn.caller_audio || `${turn.caller}|${turn.robot}`}>
           {turn.caller !== '' && (
@@ -72,6 +72,7 @@ CallThread.propTypes = {
   call: PropTypes.shape({
     label: PropTypes.string.isRequired,
     errand: PropTypes.string.isRequired,
+    errand_en: PropTypes.string,
     caller_name: PropTypes.string,
     robot_name: PropTypes.string,
     turns: PropTypes.arrayOf(PropTypes.shape({

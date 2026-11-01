@@ -820,24 +820,33 @@ run_english() {
   digit_or_wait; EN_RC=$?
   if [ "$EN_RC" = 2 ]; then quit_call; fi
   if [ "$EN_RC" = 0 ]; then
-    ID_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"
+    METHOD_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"
   else
     en_turn "(silence)" "L33" "" identification e05 "" "" 0 ""
     run "wait again for 1/2 (12 s)"
     digit_or_wait; EN_RC=$?
     if [ "$EN_RC" = 2 ]; then quit_call; fi
     if [ "$EN_RC" = 0 ]; then
-      ID_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"
+      METHOD_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"
     else
-      ID_OK=0; ID_CALLER="(silence)"; ID_DIGIT=""
+      METHOD_OK=0; ID_CALLER="(silence)"; ID_DIGIT=""
     fi
   fi
   if [ -n "$QUEUE_START" ]; then PLACE="$QUEUE_START"; else PLACE=$((RANDOM % 4 + 2)); fi
   START="$PLACE"
-  if [ "$ID_OK" = 1 ]; then
-    en_turn "$ID_CALLER" "L38 L35 L36" "$PLACE" queue e06 "$PLACE" "$START" 0 "$ID_DIGIT"
+  if [ "$METHOD_OK" = 1 ]; then
+    # Choosing a method is not approving: confirm in the app first (L42).
+    en_turn "$ID_CALLER" "L42" "" identification e06 "" "" 0 "$ID_DIGIT"
+    run "wait for in-app approval, press 1 (20 s)"
+    digit_or_wait; EN_RC=$?
+    if [ "$EN_RC" = 2 ]; then quit_call; fi
+    if [ "$EN_RC" = 0 ] && [ "$DIGIT" = 1 ]; then
+      en_turn "(pressed 1)" "L38 L35 L36" "$PLACE" queue e07 "$PLACE" "$START" 0 1
+    else
+      en_turn "(silence)" "L34 L35 L36" "$PLACE" queue e07 "$PLACE" "$START" 0 ""
+    fi
   else
-    en_turn "$ID_CALLER" "L34 L35 L36" "$PLACE" queue e06 "$PLACE" "$START" 0 ""
+    en_turn "$ID_CALLER" "L34 L35 L36" "$PLACE" queue e07 "$PLACE" "$START" 0 ""
   fi
   while [ "$PLACE" -gt 0 ]; do
     title "Queue: place $PLACE of $START (any key hurries, q quits, +/- volume)"
@@ -938,13 +947,14 @@ fi
 
 run_identification() {
   title "Identification (faked, human in the loop)"
-  what "Agda asked for BankID/Freja. A TEST number is pre-filled; typed input is ignored and digits are never logged."
-  printf 'Personnummer [%s] (q quits): ' "$FAKE_PERSONNUMMER"
-  read -r typed || typed=""
-  if [ "$typed" = "q" ] || [ "$typed" = "Q" ]; then quit_call; fi
-  if [ -n "$typed" ] && [ "$typed" != "$FAKE_PERSONNUMMER" ]; then
-    info "ignoring typed input, using test number"
-  fi
+  what "Agda asked for BankID/Freja. Enter uses the TEST number; anything else reprompts and digits are never logged."
+  while true; do
+    printf 'Personnummer [%s] (Enter = test number, q quits): ' "$FAKE_PERSONNUMMER"
+    read -r typed || typed=""
+    if [ "$typed" = "q" ] || [ "$typed" = "Q" ]; then quit_call; fi
+    if [ -z "$typed" ] || [ "$typed" = "$FAKE_PERSONNUMMER" ]; then break; fi
+    warn "only the test number is accepted (nothing real ever flows)"
+  done
   ok "identified with test number"
   run "render confirmation ($VOICE)"
   ID_AIFF="$REC_DIR/talk-$CALL_STAMP-rid.aiff"

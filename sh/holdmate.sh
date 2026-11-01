@@ -2,7 +2,7 @@
 # Holdmate launcher: board server + talk from one menu, runnable from anywhere.
 # Runs on: Rickard's Mac (M4). Modes: menu (default) | check. Direct: 1, 2, 3, 4.
 # 1 = start the board server, open the page, and talk. 2 = talk options.
-# 3 = teach Agda words. 4 = Holdmate calls Agda by itself (BFS lessons).
+# 3 = teach Agda words. 4 = lessons submenu (silent/spoken, one/all).
 # Runs from any folder; paths resolve from this script.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -288,6 +288,29 @@ talk_menu() {
   done
 }
 
+lessons_menu() {
+  while true; do
+    title "Holdmate phones Agda alone (arrows + Enter, Esc goes back)"
+    choice="$(choose \
+      "All personas, silent + live log" \
+      "All personas, spoken (Oskar + Alva)" \
+      "One persona, spoken (pick...)" \
+      "Back")"
+    case "$choice" in
+      1) "$HERE/holdmate-call.sh" --all; return 0 ;;
+      2) "$HERE/holdmate-call.sh" --all --speak; return 0 ;;
+      3)
+        persona="$(pick_persona)"
+        if [ -n "$persona" ] && [ "$persona" != "q" ]; then
+          "$HERE/holdmate-call.sh" --as "$persona" --speak; return 0
+        fi
+        ;;
+      4|q|Q|b|B) return 0 ;;
+      *) warn "pick with arrows + Enter (or type 1-4)" ;;
+    esac
+  done
+}
+
 if [ "$MODE" = "check" ]; then
   run "sh/talk.sh check"
   "$HERE/talk.sh" check || fail "talk check failed"
@@ -319,7 +342,7 @@ while true; do
     1) run_all ;;
     2) talk_menu ;;
     3) "$HERE/learn-words.sh" ;;
-    4) "$HERE/holdmate-call.sh" ;;
+    4) lessons_menu ;;
     5) sound_menu ;;
     6) open_github ;;
     7|q|Q) title "Bye"; exit 0 ;;

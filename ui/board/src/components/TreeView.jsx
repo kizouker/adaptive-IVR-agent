@@ -2,27 +2,43 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const MAX_DEPTH = 10;
+const SILENCE = '(silence)';
 
-function buildGraph(calls) {
+function nodeKey(state, answer) {
+  return `${state}||${answer}`;
+}
+
+function stateOf(id) {
+  return id.includes('||') ? id.split('||')[0] : id;
+}
+
+function buildGraph(calls, byAnswer) {
   const next = new Map();
   const visits = new Map();
   const roots = [];
+  const keyOf = (turn, first) => {
+    if (!byAnswer) return turn.state;
+    return nodeKey(turn.state, first ? 'start' : (turn.caller || SILENCE));
+  };
   calls.forEach((call) => {
     const { turns } = call;
-    if (turns.length > 0 && !roots.includes(turns[0].state)) {
-      roots.push(turns[0].state);
+    if (turns.length > 0) {
+      const root = keyOf(turns[0], true);
+      if (!roots.includes(root)) roots.push(root);
     }
-    turns.forEach((turn) => {
-      visits.set(turn.state, (visits.get(turn.state) || 0) + 1);
+    turns.forEach((turn, i) => {
+      const id = keyOf(turn, i === 0);
+      visits.set(id, (visits.get(id) || 0) + 1);
     });
     for (let i = 1; i < turns.length; i += 1) {
-      const from = turns[i - 1].state;
-      const to = turns[i].state;
+      const from = keyOf(turns[i - 1], i - 1 === 0);
+      const to = keyOf(turns[i], false);
       if (from !== to) {
         if (!next.has(from)) next.set(from, new Map());
         const tos = next.get(from);
         if (!tos.has(to)) tos.set(to, new Set());
-        if (turns[i].caller !== '') tos.get(to).add(turns[i].caller);
+        const word = turns[i].caller || (byAnswer ? SILENCE : '');
+        if (word) tos.get(to).add(word);
       }
     }
   });
@@ -33,8 +49,8 @@ function TreeNode({
   id, edgeWords, states, lang, graph, positionId, seenAbove,
   branch, depth, collapsed, onToggle,
 }) {
-  const state = states.find((s) => s.id === id);
-  const name = state ? state[lang] : id;
+  const state = states.find((s) => s.id === stateOf(id));
+  const name = state ? state[lang] : stateOf(id);
   const pathKey = [...branch, id].join('>');
   if (branch.includes(id)) {
     return (
@@ -44,7 +60,7 @@ function TreeNode({
     );
   }
   const children = [...(graph.next.get(id) || new Map()).entries()];
-  const isCurrent = id === positionId;
+  const isCurrent = stateOf(id) === positionId;
   const label = `${name} ×${graph.visits.get(id) || 0}`;
   if (depth >= MAX_DEPTH || children.length === 0) {
     return (
@@ -124,10 +140,10 @@ TreeNode.defaultProps = {
 };
 
 function TreeView({
-  states, calls, positionId, lang, seenAbove,
+  states, calls, positionId, lang, seenAbove, byAnswer,
 }) {
   const [collapsed, setCollapsed] = useState(() => new Set());
-  const graph = buildGraph(calls);
+  const graph = buildGraph(calls, byAnswer);
   const onToggle = (pathKey) => {
     setCollapsed((prev) => {
       const updated = new Set(prev);
@@ -173,6 +189,11 @@ TreeView.propTypes = {
   positionId: PropTypes.string.isRequired,
   lang: PropTypes.oneOf(['sv', 'en']).isRequired,
   seenAbove: PropTypes.string.isRequired,
+  byAnswer: PropTypes.bool,
+};
+
+TreeView.defaultProps = {
+  byAnswer: false,
 };
 
 export default TreeView;

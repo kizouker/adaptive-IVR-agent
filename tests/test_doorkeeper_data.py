@@ -31,7 +31,7 @@ def test_role_phrasebooks_have_roles_with_words():
     assert len(roles) >= MIN_ROLES
     for role in roles:
         assert role["id"] and role["af_sections"] and role["vocabulary"]
-        assert role["goal"] and role["errand"]
+        assert role["goal"] and role["errand"] and role["errand_en"]
 
 
 def test_served_and_english_lines_have_verbatim_flags():
@@ -51,3 +51,6 @@ def test_served_and_english_lines_have_verbatim_flags():
     assert by_id["L40"]["lang"] == "en"
     assert by_id["L41"]["text"] == "Var god svara ja eller nej."
     assert by_id["L41"]["verbatim"] is False  # Rickard-specified, confirm Monday
+    assert by_id["L42"]["lang"] == "en"
+    assert by_id["L42"]["verbatim"] is False  # invented approve step, UNVERIFIED
+    assert "Press 1 when done" in by_id["L42"]["text"]

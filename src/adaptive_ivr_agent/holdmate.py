@@ -130,6 +130,11 @@ class Lesson:
                 result = result._replace(persona=self.persona_id, path=[*path, word])
                 self.sims.append(result)
                 self.knowledge.observe(result)
+                print(
+                    f"  {display(word)} @{MISS_STATE[misses]} -> "
+                    f"{'transfer' if result.transferred else 'miss'}",
+                    flush=True,
+                )
                 if speak:
                     speak_turns(turns)
                 if not result.transferred and misses < self.max_misses:
@@ -290,9 +295,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"unknown persona: {args.persona}", file=sys.stderr)
             return 1
     knowledge = Knowledge() if args.fresh else Knowledge.load(args.knowledge)
+    planned = [
+        (role, list(dict.fromkeys([*role["vocabulary"], *PROBES])))
+        for role in personas
+    ]
+    total = sum(len(candidates) * (args.depth + 1) for _, candidates in planned)
+    print(f"plan: {len(planned)} lessons, up to {total} sims (depth 0..{args.depth})")
     try:
-        for role in personas:
-            candidates = list(dict.fromkeys([*role["vocabulary"], *PROBES]))
+        for index, (role, candidates) in enumerate(planned, 1):
+            print(f"lesson {index}/{len(planned)}: {role['id']} ({len(candidates)} words)")
             lesson = Lesson(role["id"], candidates, agda, knowledge,
                             max_misses=args.depth)
             summary = lesson.run(speak=args.speak)
@@ -302,7 +313,8 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 f"{role['id']}: {summary['sims']} sims, "
                 f"{summary['transfers']} transfers, {summary['served']} served, "
-                f"matched {len(summary['matched'])} words"
+                f"matched {len(summary['matched'])} words: "
+                f"{', '.join(summary['matched']) or '-'}"
             )
     except KeyboardInterrupt:
         print("stopped early; saving what was learned so far")
