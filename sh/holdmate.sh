@@ -11,10 +11,25 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 MODE="menu"
 SOUND="speakers"
-if command -v SwitchAudioSource >/dev/null 2>&1 \
-   && SwitchAudioSource -a -t output 2>/dev/null | grep -qi 'airpods'; then
-  SOUND="airpods"
-fi
+SOUND_DIRTY=0
+sync_sound() {
+  # Follow the real current output until Rickard picks sound explicitly.
+  if [ "$SOUND_DIRTY" = 1 ]; then return 0; fi
+  if command -v SwitchAudioSource >/dev/null 2>&1 \
+     && SwitchAudioSource -c -t output 2>/dev/null | grep -qi 'airpods'; then
+    SOUND="airpods"
+  else
+    SOUND="speakers"
+  fi
+}
+sound_label() {
+  case "$SOUND" in
+    airpods) printf 'AirPods' ;;
+    quiet) printf 'Quiet' ;;
+    *) printf 'Speakers' ;;
+  esac
+}
+sync_sound
 for arg in "$@"; do
   case "$arg" in
     check|--check) MODE="check" ;;
@@ -129,11 +144,14 @@ choose() { # options as args; echoes 1-based index, or "q" on Esc/EOF
   count=$#
   draw() {
     k=1
+    width=0
+    for opt in "$@"; do [ "${#opt}" -gt "$width" ] && width=${#opt}; done
     for opt in "$@"; do
+      printf -v padded "%-${width}s" "$opt"
       if [ "$k" = "$sel" ]; then
-        printf '%s> %s%s\n' "$(tput rev)" "$opt" "$(tput sgr0)" >&2
+        printf '%s%s> %s%s\n' "$B" "$C" "$padded" "$X" >&2
       else
-        printf '  %s\n' "$opt" >&2
+        printf '%s  %s%s\n' "$D" "$padded" "$X" >&2
       fi
       k=$((k + 1))
     done
@@ -178,16 +196,16 @@ talk_sound() {
 
 sound_menu() {
   while true; do
-    title "Sound (now: $SOUND)"
+    title "Sound (now: $(sound_label))"
     choice="$(choose \
-      "speakers" \
+      "Speakers" \
       "AirPods" \
-      "quiet (type + read)" \
-      "back")"
+      "Quiet (type + read)" \
+      "Back")"
     case "$choice" in
-      1) SOUND="speakers"; info "sound: $SOUND"; return 0 ;;
-      2) SOUND="airpods"; info "sound: $SOUND"; return 0 ;;
-      3) SOUND="quiet"; info "sound: $SOUND"; return 0 ;;
+      1) SOUND="speakers"; SOUND_DIRTY=1; info "sound: Speakers"; return 0 ;;
+      2) SOUND="airpods"; SOUND_DIRTY=1; info "sound: AirPods"; return 0 ;;
+      3) SOUND="quiet"; SOUND_DIRTY=1; info "sound: Quiet"; return 0 ;;
       4|q|Q|b|B) return 0 ;;
       *) warn "pick with arrows + Enter (or type 1-4)" ;;
     esac
@@ -237,12 +255,12 @@ talk_menu() {
   while true; do
     title "Talk options (arrows + Enter, Esc goes back)"
     choice="$(choose \
-      "talk to Agda" \
-      "talk with AirPods" \
-      "sound check only" \
-      "talk as persona" \
-      "talk quietly (type + read)" \
-      "back")"
+      "Talk to Agda" \
+      "Talk with AirPods" \
+      "Sound check only" \
+      "Talk as persona" \
+      "Talk quietly (type + read)" \
+      "Back")"
     case "$choice" in
       1) talk_sound; return 0 ;;
       2) "$HERE/talk.sh" --airpods; return 0 ;;
@@ -277,14 +295,15 @@ case "$MODE" in
 esac
 
 while true; do
+  sync_sound
   title "Holdmate menu (arrows + Enter, Esc quits)"
   choice="$(choose \
-    "board + talk (start server, open page, talk)" \
-    "talk options (server already runs)" \
-    "teach Agda words" \
-    "Holdmate calls Agda by itself (BFS lessons)" \
-    "sound: $SOUND (change...)" \
-    "quit")"
+    "Board + talk (server, page, call)" \
+    "Talk options (server runs already)" \
+    "Teach Agda new words" \
+    "Holdmate phones Agda alone (BFS)" \
+    "Sound: $(sound_label) (change...)" \
+    "Quit")"
   case "$choice" in
     1) run_all ;;
     2) talk_menu ;;
