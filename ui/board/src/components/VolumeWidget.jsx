@@ -23,7 +23,7 @@ async function postVolume(value) {
   });
 }
 
-function VolumeWidget({ label }) {
+function VolumeWidget({ label, quieter, louder }) {
   const [volume, setVolumeState] = useState(null);
   const lastSet = useRef(0);
 
@@ -53,16 +53,27 @@ function VolumeWidget({ label }) {
     return null;
   }
 
-  const onChange = (event) => {
-    const v = Number(event.target.value);
+  const apply = (v) => {
     lastSet.current = Date.now();
     setVolumeState(v);
     postVolume(v);
   };
 
+  const onChange = (event) => {
+    apply(Number(event.target.value));
+  };
+
+  const nudge = (delta) => {
+    const v = Math.min(MAX, Math.max(MIN, Math.round((volume + delta) * 10) / 10));
+    apply(v);
+  };
+
   return (
     <label className="vol" htmlFor="vol-slider">
       {`${label} ${volume.toFixed(1)}`}
+      <button type="button" className="volbtn" onClick={() => nudge(-STEP)} aria-label={quieter}>
+        −
+      </button>
       <input
         id="vol-slider"
         type="range"
@@ -72,12 +83,17 @@ function VolumeWidget({ label }) {
         value={volume}
         onChange={onChange}
       />
+      <button type="button" className="volbtn" onClick={() => nudge(STEP)} aria-label={louder}>
+        +
+      </button>
     </label>
   );
 }
 
 VolumeWidget.propTypes = {
   label: PropTypes.string.isRequired,
+  quieter: PropTypes.string.isRequired,
+  louder: PropTypes.string.isRequired,
 };
 
 export default VolumeWidget;

@@ -28,6 +28,8 @@ const STRINGS = {
     queuePlace: 'Köplats',
     generated: 'Uppdaterad',
     volume: 'Volym',
+    quieter: 'Sänk',
+    louder: 'Höj',
     builds: 'Byggen',
     allBuilds: 'alla →',
     level: 'Nivå',
@@ -67,6 +69,8 @@ const STRINGS = {
     queuePlace: 'Queue place',
     generated: 'Updated',
     volume: 'Volume',
+    quieter: 'Quieter',
+    louder: 'Louder',
     builds: 'Builds',
     allBuilds: 'all →',
     level: 'Level',
@@ -145,7 +149,7 @@ function App() {
         </span>
       </div>
       <div className="sub">{`${t.generated} ${data.generated}`}</div>
-      <VolumeWidget label={t.volume} />
+      <VolumeWidget label={t.volume} quieter={t.quieter} louder={t.louder} />
       <CIWidget label={t.builds} all={t.allBuilds} />
       <div className="tabs">
         <button
