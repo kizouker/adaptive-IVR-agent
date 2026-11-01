@@ -8,7 +8,8 @@
 #   QUEUE_TICK seconds between queue numbers (default 8).
 # Keys during record/playback: any key skips ahead, 0 jumps to the English
 # menu (full call-5 path on DTMF digits), a toggles speakers/AirPods output,
-# t toggles quiet mode (hushes in-flight audio at once), + / - adjusts volume.
+# t toggles quiet mode (hushes in-flight audio at once), + / - adjusts volume
+# (0.1-4.0, 1 = normal; the board slider writes the same .talk-volume file).
 # Each round records ~5s from the MacBook mic, transcribes with whisper.cpp,
 # and the robot answers aloud (Alva). Output goes through the IVR_Agent device
 # (speakers + BlackHole) and everything is switched back on exit.
@@ -59,7 +60,7 @@ MIC_INDEX="${MIC_INDEX:-}"             # empty = auto-detect; set to force an av
 VOICE="${VOICE:-Alva}"
 if [ -z "${TALK_VOLUME+x}" ]; then
   TALK_VOLUME="0.7"                       # Rickard's level; +/- during a call adjusts + remembers
-  if [ -f "$ROOT/.talk-volume" ] && grep -Eq '^(0\.[0-9]+|1(\.0+)?)$' "$ROOT/.talk-volume"; then
+  if [ -f "$ROOT/.talk-volume" ] && grep -Eq '^(0\.[0-9]+|[1-3](\.[0-9]+)?|4(\.0+)?)$' "$ROOT/.talk-volume"; then
     TALK_VOLUME="$(cat "$ROOT/.talk-volume")"
   fi
 fi
@@ -110,6 +111,17 @@ if SwitchAudioSource -a -t output | grep -Fxq "$ALT_CHECK"; then
 else
   warn "toggle target '$ALT_CHECK' not found (mid-call a-key stays put)"
 fi
+if command -v osascript >/dev/null 2>&1; then
+  SYS_VOL="$(osascript -e "get volume settings" 2>/dev/null || true)"
+  case "$SYS_VOL" in
+    *"output muted:true"*) warn "macOS output is MUTED (unmute to hear Agda)" ;;
+  esac
+  SYS_LEVEL="$(printf '%s' "$SYS_VOL" | sed -n 's/.*output volume:\([0-9][0-9]*\).*/\1/p')"
+  case "$SYS_LEVEL" in
+    '' | *[!0-9]*) ;;
+    *) if [ "$SYS_LEVEL" -lt 40 ]; then warn "macOS system volume is $SYS_LEVEL (raise it to hear Agda well)"; fi ;;
+  esac
+fi
 if [ "$QUIET" = 1 ]; then
   info "quiet mode: type + read, t toggles sound back on"
 fi
@@ -123,7 +135,7 @@ fi
 ok "ffmpeg mic index: $MIC_INDEX"
 mkdir -p "$REC_DIR"
 info "Recordings go to: $REC_DIR"
-info "Agda plays at volume $TALK_VOLUME (1 = full; press + / - during the call to adjust)"
+info "Agda plays at volume $TALK_VOLUME (1 = normal, up to 4 = boost; + / - during the call or the board slider)"
 info "Misses are logged to $MISS_FILE (teach them with sh/learn-words.sh)"
 info "Every round is logged to $ROUNDS_FILE (Holdmate's training data)"
 if [ "$AGDA_FORGIVING" = "1" ]; then
@@ -199,8 +211,15 @@ save_volume() {
   printf '%s' "$TALK_VOLUME" > "$VOLUME_FILE"
 }
 
-volume_step() { # $1 = +0.1 | -0.1; clamps to 0.1..1.0 and remembers
-  TALK_VOLUME="$(LC_ALL=C awk -v v="$TALK_VOLUME" -v d="$1" 'BEGIN { n = v + d; if (n < 0.1) n = 0.1; if (n > 1) n = 1; printf "%.1f", n }')"
+load_volume() {
+  # Re-read the GUI-shared volume file (the board slider writes it live).
+  if [ -f "$VOLUME_FILE" ] && grep -Eq '^(0\.[0-9]+|[1-3](\.[0-9]+)?|4(\.0+)?)$' "$VOLUME_FILE"; then
+    TALK_VOLUME="$(cat "$VOLUME_FILE")"
+  fi
+}
+
+volume_step() { # $1 = +0.2 | -0.2; clamps to 0.1..4.0 (1 = normal) and remembers
+  TALK_VOLUME="$(LC_ALL=C awk -v v="$TALK_VOLUME" -v d="$1" 'BEGIN { n = v + d; if (n < 0.1) n = 0.1; if (n > 4) n = 4; printf "%.1f", n }')"
   save_volume
   info "volume $TALK_VOLUME"
 }
@@ -248,8 +267,8 @@ wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 =
     if read -t 1 -n 1 -s key; then
       KEY_PRESSED="$key"
       case "$key" in
-        +) volume_step +0.1 ;;
-        -) volume_step -0.1 ;;
+        +) volume_step +0.2 ;;
+        -) volume_step -0.2 ;;
         a|A) toggle_output ;;
         t|T) if toggle_quiet "$2"; then return 0; fi ;;
         q|Q|"$ETX"|"$EOT") return 2 ;;
@@ -271,8 +290,8 @@ wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
   while [ "$SECONDS" -lt "$end" ]; do
     if read -t 1 -n 1 -s key; then
       case "$key" in
-        +) volume_step +0.1 ;;
-        -) volume_step -0.1 ;;
+        +) volume_step +0.2 ;;
+        -) volume_step -0.2 ;;
         a|A) toggle_output ;;
         t|T) toggle_quiet "" ;;
         q|Q|"$ETX"|"$EOT") return 2 ;;
@@ -292,7 +311,21 @@ play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
     return 0
   fi
   SECS=$((${DUR%.*} + 2))
-  afplay -v "$TALK_VOLUME" "$1" & APID=$!
+  load_volume # pick up board-slider changes made since the last turn
+  PLAY_FILE="$1"
+  PLAY_VOL="$TALK_VOLUME"
+  if LC_ALL=C awk "BEGIN { exit !($TALK_VOLUME > 1) }" 2>/dev/null; then
+    PLAY_FILE="$1-boost.aiff"
+    if ffmpeg -hide_banner -loglevel error -y -i "$1" \
+        -af "volume=$TALK_VOLUME,alimiter=limit=0.95" "$PLAY_FILE" 2>/dev/null; then
+      PLAY_VOL="1"
+      info "boost x$TALK_VOLUME (ffmpeg gain)"
+    else
+      warn "boost failed, playing at max instead"
+      PLAY_FILE="$1"; PLAY_VOL="1"
+    fi
+  fi
+  afplay -v "$PLAY_VOL" "$PLAY_FILE" & APID=$!
   wait_keys "$SECS" "$APID"; RC=$?
   if [ "$RC" = 2 ]; then
     kill "$APID" 2>/dev/null

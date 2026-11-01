@@ -79,3 +79,9 @@ Feature: Practice robot
     Given Rickard must work silently
     When he starts with --quiet
     Then he types instead of speaking (/sound at the prompt or t during waits turns sound on), muted lines still pause for keys, and the board still gets audio plus captions
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S11
+  Scenario: Volume boost above normal is real gain
+    Given the volume is set above 1.0 via + key or board slider
+    When Agda speaks
+    Then ffmpeg applies gain with a limiter (audibly louder, no hard clip), and preflight warns when macOS system volume is low or muted
