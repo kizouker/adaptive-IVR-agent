@@ -11,7 +11,7 @@ Work through the steps in this order. Each step has its own file.
 6. Acceptance Test
 
 ## Gate: no design or code before this is done
-This rule applies to **every agent** (Claude, Codex, qwen or any other) and to Rickard.
+This rule applies to **every agent** (Claude, Codex, Muse, qwen or any other) and to Rickard.
 Do not design, discuss technical solutions, judge technical feasibility or write code for a requirement until **all three** exist:
 
 1. **Vision** – `002_VISION_N_GOALS.MD`
@@ -57,18 +57,20 @@ In steps 1–2, think only about *what* and *why*. A technical thought that come
 | Rickard | Product Owner | Decides *what* and *why*, prioritises, approves |
 | Claude | Requirements and test specialist | Asks questions, writes requirements (Gherkin), checks that every requirement is testable and falsifiable |
 | Codex | Team member | Can review requirements or do steps 4–6 (reads `AGENTS.MD`) |
+| Muse | Developer | Implements steps 1–6 and ships working demos (reads `MUSE.MD`) |
 | Diesel 🐱 | Mascot and spirit animal | Team member. Logo: `model/diesel-logo.jpg` |
 | qwen | (sprint 3) | Generates CV from a job ad, locally |
 | Design | Paused | `design/SAD.md` stays as it is until the gate above is passed |
 
-Steps 4–6 are done by whoever in the team is available: Rickard or any agent (Claude, Codex, Mistral, Ollama, or an AWS tool if the license is approved). We work as one team; every agent follows this file and the gate above.
+Steps 4–6 are done by whoever in the team is available: Rickard or any agent (Claude, Codex, Muse, Mistral, Ollama, or an AWS tool if the license is approved). We work as one team; every agent follows this file and the gate above.
 
 ## Declare your role **(proposal)**
 
 Before starting work, say which hat you're wearing right now, e.g.
 "Claude action as the Visionary"; "Claude Acting like Requirement specialist",
 "Claude, acting as Architect" or "Codex, acting as Developer" or
-"Claude, acting as Test Specialist." Say it again if you switch roles
+"Claude, acting as Test Specialist" or "Muse, acting as Developer."
+Say it again if you switch roles
 mid-conversation. This makes it obvious to Rickard, and to the next
 agent reading the thread, what kind of work is happening and which
 step/file it belongs to.

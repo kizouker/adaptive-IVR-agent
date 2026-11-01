@@ -117,3 +117,8 @@ npm run build --prefix ui/board
 - `data/` — recorded lines, phrasebooks, transcripts, learned knowledge.
 - `src/adaptive_ivr_agent/` — agent, robot, maps, board data.
 - `ui/board/` — React + Redux live board.
+
+## Credits
+
+Built by Rickard Åberg with Muse Code (powered by Meta Muse Spark),
+with earlier requirements and transcript work by Claude and Codex.
