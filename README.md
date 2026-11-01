@@ -8,17 +8,17 @@ Oskar, the officer as Klara.
 
 ## Quick start
 
-One command (works from any folder): starts the board server, opens the page,
-and talks:
+Clone the repo, `cd` into it, then one command starts the board server,
+opens the page, and talks:
 
 ```bash
-~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/start.sh
+./start.sh
 ```
 
 For the full menu instead (talk options, teach words, BFS lessons, sound):
 
 ```bash
-~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/holdmate.sh
+./sh/holdmate.sh
 ```
 
 Menu: 1 = board + talk, 2 = talk options, 3 = teach Agda words,
@@ -26,8 +26,9 @@ Menu: 1 = board + talk, 2 = talk options, 3 = teach Agda words,
 
 ## Scripts (`sh/`)
 
-Every script runs directly (executable bit + bash shebang) and from any folder.
-Most follow `modes`: default run plus `check` (verifies, changes nothing).
+Every script runs directly (executable bit + bash shebang) from the repo
+folder. Most follow `modes`: default run plus `check` (verifies, changes
+nothing).
 
 | Script | What it does |
 |---|---|
@@ -70,42 +71,42 @@ number; typed digits are ignored and never logged.
 
 ## Running scripts: no `sh` prefix
 
-`sh/` is the folder name, not a command. Run scripts by their path:
+`sh/` is the folder name, not a command. From the repo folder, run scripts
+by their path:
 
 ```bash
-~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/talk.sh --quiet
+./sh/talk.sh --quiet
 ```
 
 Never `sh sh/talk.sh`: that forces POSIX `sh`, and the scripts need bash
-(they say so in their first line). From the repo folder, `./sh/talk.sh`
-works too.
+(they say so in their first line).
 
 ## Tests and checks
 
-Every block below copies with one click and runs from any folder.
+Every block below copies with one click and runs from the repo folder.
 
 ```bash
-PYTHONPATH=~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/src pytest -q ~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/tests
+PYTHONPATH=src pytest -q tests
 ```
 
 ```bash
-~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/check-reqs.sh
+./sh/check-reqs.sh
 ```
 
 ```bash
-~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/check-structure.sh
+./sh/check-structure.sh
 ```
 
 ```bash
-~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/sh/check-security.sh
+./sh/check-security.sh
 ```
 
 ```bash
-npm run lint --prefix ~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/ui/board
+npm run lint --prefix ui/board
 ```
 
 ```bash
-npm run build --prefix ~/kod/001_Meta_Hackathon_w44_26_oct_to_3_nov/adaptive-IVR-agent/ui/board
+npm run build --prefix ui/board
 ```
 
 ## Where things live

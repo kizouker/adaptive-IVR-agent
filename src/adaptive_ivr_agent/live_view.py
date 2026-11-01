@@ -1,6 +1,6 @@
 """Live call board data + page rendering (T-045)."""
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 from adaptive_ivr_agent.menu_map import MenuMap
@@ -66,7 +66,7 @@ def build_call(persona_id: str, n_turns: int, phrasebooks: str | Path) -> dict:
 def build_board(specs: list[tuple[str, int]], phrasebooks: str | Path) -> dict:
     """Board state for several (persona, turns) calls sharing one process view."""
     return {
-        "generated": datetime.now(timezone.utc).strftime("%H:%M:%S"),
+        "generated": datetime.now().strftime("%H:%M:%S"),
         "maps": {
             "swedish": _map_blob(MenuMap.af_agda()),
             "english": _map_blob(MenuMap.english_branch()),
@@ -176,7 +176,7 @@ class LiveCall:
 def build_live_board(calls: list[LiveCall]) -> dict:
     """Board state for live calls. Same top-level shape as build_board."""
     return {
-        "generated": datetime.now(timezone.utc).strftime("%H:%M:%S"),
+        "generated": datetime.now().strftime("%H:%M:%S"),
         "maps": {
             "swedish": _map_blob(MenuMap.af_agda()),
             "english": _map_blob(MenuMap.english_branch()),
