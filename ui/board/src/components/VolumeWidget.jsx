@@ -26,6 +26,8 @@ async function postVolume(value) {
 function VolumeWidget({ label, quieter, louder }) {
   const [volume, setVolumeState] = useState(null);
   const lastSet = useRef(0);
+  const volumeRef = useRef(volume);
+  volumeRef.current = volume;
 
   useEffect(() => {
     let live = true;
@@ -46,6 +48,44 @@ function VolumeWidget({ label, quieter, louder }) {
     return () => {
       live = false;
       clearInterval(id);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onKey = (event) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+      const { target } = event;
+      const isTextArea = target instanceof HTMLTextAreaElement;
+      const isSelect = target instanceof HTMLSelectElement;
+      if (isTextArea || isSelect) {
+        return;
+      }
+      if (target instanceof HTMLInputElement && target.type !== 'range') {
+        return;
+      }
+      const { current } = volumeRef;
+      if (current == null) {
+        return;
+      }
+      let delta = 0;
+      if (event.key === '+' || event.key === '=' || event.key === 'Add') {
+        delta = STEP;
+      } else if (event.key === '-' || event.key === '_' || event.key === 'Subtract') {
+        delta = -STEP;
+      } else {
+        return;
+      }
+      event.preventDefault();
+      const v = Math.min(MAX, Math.max(MIN, Math.round((current + delta) * 10) / 10));
+      lastSet.current = Date.now();
+      setVolumeState(v);
+      postVolume(v);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
     };
   }, []);
 

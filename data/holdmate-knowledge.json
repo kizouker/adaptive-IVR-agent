@@ -1,250 +1,250 @@
 {
-  "updated": "2026-11-01T18:44:00+00:00",
+  "updated": "2026-11-01T21:43:14+00:00",
   "words": {
     "skriva in mig": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 19,
+      "transfers": 19,
       "keywords": {
-        "skriva in mig": 3
+        "skriva in mig": 19
       }
     },
     "skriv in dig": {
-      "tries": 6,
-      "transfers": 6,
+      "tries": 31,
+      "transfers": 31,
       "keywords": {
-        "skriv in dig": 6
+        "skriv in dig": 31
       }
     },
     "inskrivning": {
-      "tries": 6,
-      "transfers": 6,
+      "tries": 31,
+      "transfers": 31,
       "keywords": {
-        "inskrivning": 6
+        "inskrivning": 31
       }
     },
     "a-kassa": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 18,
+      "transfers": 18,
       "keywords": {
-        "a-kassa": 3
+        "a-kassa": 18
       }
     },
     "aktivitetsrapport": {
-      "tries": 12,
-      "transfers": 12,
+      "tries": 54,
+      "transfers": 54,
       "keywords": {
-        "aktivitetsrapport": 12
+        "aktivitetsrapport": 54
       }
     },
     "planeringssamtal": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 18,
+      "transfers": 18,
       "keywords": {
-        "planeringssamtal": 3
+        "planeringssamtal": 18
       }
     },
     "ja": {
-      "tries": 24,
-      "transfers": 8,
+      "tries": 102,
+      "transfers": 33,
       "keywords": {
-        "ja": 8
+        "ja": 33
       }
     },
     "nej": {
-      "tries": 24,
-      "transfers": 8,
+      "tries": 102,
+      "transfers": 33,
       "keywords": {
-        "nej": 8
+        "nej": 33
       }
     },
     "hej": {
-      "tries": 24,
+      "tries": 101,
       "transfers": 0,
       "keywords": {}
     },
     "tack": {
-      "tries": 24,
+      "tries": 101,
       "transfers": 0,
       "keywords": {}
     },
     "": {
-      "tries": 24,
+      "tries": 101,
       "transfers": 0,
       "keywords": {}
     },
     "rusta och matcha": {
-      "tries": 6,
-      "transfers": 6,
+      "tries": 24,
+      "transfers": 24,
       "keywords": {
-        "rusta och matcha": 6
+        "rusta och matcha": 24
       }
     },
     "arbetsmarknadsutbildning": {
-      "tries": 6,
-      "transfers": 6,
+      "tries": 24,
+      "transfers": 24,
       "keywords": {
-        "arbetsmarknadsutbildning": 6
+        "arbetsmarknadsutbildning": 24
       }
     },
     "aktivitetsrapportera": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "aktivitetsrapportera": 3
+        "aktivitetsrapportera": 12
       }
     },
     "program": {
-      "tries": 6,
-      "transfers": 6,
+      "tries": 24,
+      "transfers": 24,
       "keywords": {
-        "program": 6
+        "program": 24
       }
     },
     "meddela förhinder": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "meddela förhinder": 3
+        "meddela förhinder": 12
       }
     },
     "bokat möte": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "bokat möte": 3
+        "bokat möte": 12
       }
     },
     "anmäl sjukfrånvaro": {
-      "tries": 6,
-      "transfers": 6,
+      "tries": 26,
+      "transfers": 26,
       "keywords": {
-        "anmäl sjukfrånvaro": 6
+        "anmäl sjukfrånvaro": 26
       }
     },
     "vab": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "vab": 3
+        "vab": 12
       }
     },
     "föräldrapenning": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "föräldrapenning": 3
+        "föräldrapenning": 12
       }
     },
     "meddela förändring": {
-      "tries": 6,
-      "transfers": 6,
+      "tries": 24,
+      "transfers": 24,
       "keywords": {
-        "meddela förändring": 6
+        "meddela förändring": 24
       }
     },
     "mitt ärende": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "mitt ärende": 3
+        "mitt ärende": 12
       }
     },
     "pågående ärende": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "pågående ärende": 3
+        "pågående ärende": 12
       }
     },
     "handläggare": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "handläggare": 3
+        "handläggare": 12
       }
     },
     "automatisk växel": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "automatisk växel": 3
+        "automatisk växel": 12
       }
     },
     "sjukskriven": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "sjukskriven": 3
+        "sjukskriven": 12
       }
     },
     "sjukpenning": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "sjukpenning": 3
+        "sjukpenning": 12
       }
     },
     "arbeta i sverige": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "arbeta i sverige": 3
+        "arbeta i sverige": 12
       }
     },
     "jobba i sverige": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "jobba i sverige": 3
+        "jobba i sverige": 12
       }
     },
     "flytta för jobb": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "flytta för jobb": 3
+        "flytta för jobb": 12
       }
     },
     "stöd vid funktionsnedsättning": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "stöd vid funktionsnedsättning": 3
+        "stöd vid funktionsnedsättning": 12
       }
     },
     "välja yrke": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 13,
+      "transfers": 13,
       "keywords": {
-        "välja yrke": 3
+        "välja yrke": 13
       }
     },
     "vilket yrke passar mig": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 13,
+      "transfers": 13,
       "keywords": {
-        "vilket yrke passar mig": 3
+        "vilket yrke passar mig": 13
       }
     },
     "utbildning": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 13,
+      "transfers": 13,
       "keywords": {
-        "utbildning": 3
+        "utbildning": 13
       }
     },
     "yrkesval": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "yrkesval": 3
+        "yrkesval": 12
       }
     },
     "platsbanken": {
-      "tries": 3,
-      "transfers": 3,
+      "tries": 12,
+      "transfers": 12,
       "keywords": {
-        "platsbanken": 3
+        "platsbanken": 12
       }
     }
   },
@@ -308,190 +308,198 @@
         "source": "transfer",
         "target": "identification",
         "label": "kopplar",
-        "tries": 139,
-        "successes": 139,
+        "tries": 602,
+        "successes": 602,
         "status": "observed"
       },
       {
         "source": "identification",
         "target": "queue",
         "label": "legitimerad",
-        "tries": 139,
-        "successes": 139,
+        "tries": 602,
+        "successes": 602,
         "status": "observed"
       },
       {
         "source": "queue",
         "target": "officer",
         "label": "served",
-        "tries": 139,
-        "successes": 139,
+        "tries": 602,
+        "successes": 602,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "skriva in mig",
-        "tries": 1,
-        "successes": 1,
+        "tries": 9,
+        "successes": 9,
         "status": "observed"
       },
       {
         "source": "queue",
         "target": "queue",
         "label": "tick",
-        "tries": 278,
-        "successes": 278,
+        "tries": 1204,
+        "successes": 1204,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "skriv in dig",
-        "tries": 2,
-        "successes": 2,
+        "tries": 13,
+        "successes": 13,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "inskrivning",
-        "tries": 2,
-        "successes": 2,
+        "tries": 13,
+        "successes": 13,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "a-kassa",
-        "tries": 1,
-        "successes": 1,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "aktivitetsrapport",
-        "tries": 4,
-        "successes": 4,
+        "tries": 20,
+        "successes": 20,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "planeringssamtal",
-        "tries": 1,
-        "successes": 1,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "skriva in mig",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "skriv in dig",
-        "tries": 2,
-        "successes": 2,
+        "tries": 9,
+        "successes": 9,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "inskrivning",
-        "tries": 2,
-        "successes": 2,
+        "tries": 9,
+        "successes": 9,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "a-kassa",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "aktivitetsrapport",
-        "tries": 4,
-        "successes": 4,
+        "tries": 17,
+        "successes": 17,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "planeringssamtal",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "skriva in mig",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "skriv in dig",
-        "tries": 2,
-        "successes": 2,
+        "tries": 9,
+        "successes": 9,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "inskrivning",
-        "tries": 2,
-        "successes": 2,
+        "tries": 9,
+        "successes": 9,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "a-kassa",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "aktivitetsrapport",
-        "tries": 4,
-        "successes": 4,
+        "tries": 17,
+        "successes": 17,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "planeringssamtal",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "ja",
-        "tries": 8,
-        "successes": 8,
+        "tries": 33,
+        "successes": 33,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "nej",
+        "tries": 33,
+        "successes": 33,
+        "status": "observed"
+      },
+      {
+        "source": "open_question",
+        "target": "transfer",
+        "label": "rusta och matcha",
         "tries": 8,
         "successes": 8,
         "status": "observed"
@@ -499,602 +507,634 @@
       {
         "source": "open_question",
         "target": "transfer",
-        "label": "rusta och matcha",
-        "tries": 2,
-        "successes": 2,
-        "status": "observed"
-      },
-      {
-        "source": "open_question",
-        "target": "transfer",
         "label": "arbetsmarknadsutbildning",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "aktivitetsrapportera",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "program",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "meddela förhinder",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "bokat möte",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "rusta och matcha",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "arbetsmarknadsutbildning",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "aktivitetsrapportera",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "program",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "meddela förhinder",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "bokat möte",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "rusta och matcha",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "arbetsmarknadsutbildning",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "aktivitetsrapportera",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "program",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "meddela förhinder",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "bokat möte",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "anmäl sjukfrånvaro",
-        "tries": 2,
-        "successes": 2,
+        "tries": 10,
+        "successes": 10,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "vab",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "föräldrapenning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "meddela förändring",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "anmäl sjukfrånvaro",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "vab",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "föräldrapenning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "meddela förändring",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "anmäl sjukfrånvaro",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "vab",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "föräldrapenning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "meddela förändring",
-        "tries": 2,
-        "successes": 2,
+        "tries": 8,
+        "successes": 8,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "mitt ärende",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "pågående ärende",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "handläggare",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "automatisk växel",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "mitt ärende",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "pågående ärende",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "handläggare",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "automatisk växel",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "mitt ärende",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "pågående ärende",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "handläggare",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "automatisk växel",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "sjukskriven",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "sjukpenning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "sjukskriven",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "sjukpenning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "sjukskriven",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "sjukpenning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "arbeta i sverige",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "jobba i sverige",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "flytta för jobb",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "arbeta i sverige",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "jobba i sverige",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "flytta för jobb",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "arbeta i sverige",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "jobba i sverige",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "flytta för jobb",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "stöd vid funktionsnedsättning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "stöd vid funktionsnedsättning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "stöd vid funktionsnedsättning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "välja yrke",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "vilket yrke passar mig",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "utbildning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 5,
+        "successes": 5,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "yrkesval",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "platsbanken",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "välja yrke",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "vilket yrke passar mig",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "utbildning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "yrkesval",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "example_words",
         "target": "transfer",
         "label": "platsbanken",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "välja yrke",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "vilket yrke passar mig",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "utbildning",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "yrkesval",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
       },
       {
         "source": "yes_no",
         "target": "transfer",
         "label": "platsbanken",
-        "tries": 1,
-        "successes": 1,
+        "tries": 4,
+        "successes": 4,
         "status": "observed"
+      },
+      {
+        "source": "example_words",
+        "target": "yes_no",
+        "label": "ja",
+        "tries": 1,
+        "successes": 0,
+        "status": "inferred"
+      },
+      {
+        "source": "example_words",
+        "target": "yes_no",
+        "label": "nej",
+        "tries": 1,
+        "successes": 0,
+        "status": "inferred"
+      },
+      {
+        "source": "example_words",
+        "target": "yes_no",
+        "label": "hej",
+        "tries": 1,
+        "successes": 0,
+        "status": "inferred"
+      },
+      {
+        "source": "example_words",
+        "target": "yes_no",
+        "label": "tack",
+        "tries": 1,
+        "successes": 0,
+        "status": "inferred"
+      },
+      {
+        "source": "example_words",
+        "target": "yes_no",
+        "label": "(silence)",
+        "tries": 1,
+        "successes": 0,
+        "status": "inferred"
       }
     ]
   },
@@ -1227,6 +1267,438 @@
         "yrkesval"
       ],
       "ts": "2026-11-01T18:44:00+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-01T20:44:11+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 33,
+      "transfers": 20,
+      "served": 20,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "ja",
+        "nej",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-01T20:48:37+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 36,
+      "transfers": 23,
+      "served": 23,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "ja",
+        "meddela förhinder",
+        "nej",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-01T20:48:37+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "ja",
+        "meddela förändring",
+        "nej",
+        "vab"
+      ],
+      "ts": "2026-11-01T20:48:37+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 27,
+      "transfers": 14,
+      "served": 14,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "ja",
+        "mitt ärende",
+        "nej",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-01T20:48:37+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "ja",
+        "meddela förändring",
+        "nej",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-01T20:48:37+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "ja",
+        "jobba i sverige",
+        "nej",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-01T20:48:37+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 27,
+      "transfers": 14,
+      "served": 14,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "ja",
+        "nej",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-01T20:48:37+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "ja",
+        "nej",
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-01T20:48:37+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 33,
+      "transfers": 20,
+      "served": 20,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "ja",
+        "nej",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-01T21:10:58+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 36,
+      "transfers": 23,
+      "served": 23,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "ja",
+        "meddela förhinder",
+        "nej",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-01T21:10:58+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "ja",
+        "meddela förändring",
+        "nej",
+        "vab"
+      ],
+      "ts": "2026-11-01T21:10:58+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 27,
+      "transfers": 14,
+      "served": 14,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "ja",
+        "mitt ärende",
+        "nej",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-01T21:10:58+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "ja",
+        "meddela förändring",
+        "nej",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-01T21:10:58+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "ja",
+        "jobba i sverige",
+        "nej",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-01T21:10:58+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 27,
+      "transfers": 14,
+      "served": 14,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "ja",
+        "nej",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-01T21:10:58+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "ja",
+        "nej",
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-01T21:10:58+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 33,
+      "transfers": 20,
+      "served": 20,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "ja",
+        "nej",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-01T21:27:12+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 36,
+      "transfers": 23,
+      "served": 23,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "ja",
+        "meddela förhinder",
+        "nej",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-01T21:27:12+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "ja",
+        "meddela förändring",
+        "nej",
+        "vab"
+      ],
+      "ts": "2026-11-01T21:27:12+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 27,
+      "transfers": 14,
+      "served": 14,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "ja",
+        "mitt ärende",
+        "nej",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-01T21:27:12+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "ja",
+        "meddela förändring",
+        "nej",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-01T21:27:12+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "ja",
+        "jobba i sverige",
+        "nej",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-01T21:27:12+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 27,
+      "transfers": 14,
+      "served": 14,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "ja",
+        "nej",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-01T21:27:12+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 30,
+      "transfers": 17,
+      "served": 17,
+      "matched": [
+        "ja",
+        "nej",
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-01T21:27:12+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-01T21:35:22+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-01T21:43:14+00:00"
     }
   ]
 }

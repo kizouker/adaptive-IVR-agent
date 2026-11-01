@@ -102,6 +102,10 @@ PYTHONPATH=src pytest -q tests
 ```
 
 ```bash
+./sh/check-prompts.sh
+```
+
+```bash
 npm run lint --prefix ui/board
 ```
 
@@ -117,6 +121,12 @@ npm run build --prefix ui/board
 - `data/` — recorded lines, phrasebooks, transcripts, learned knowledge.
 - `src/adaptive_ivr_agent/` — agent, robot, maps, board data.
 - `ui/board/` — React + Redux live board.
+
+## Hackathon application
+
+What we promised vs what is built:
+[Meta_Hackathon_2026_Application_Form.md](Meta_Hackathon_2026_Application_Form.md#build-status-checked-2026-11-01)
+(status matrix at the end, checked 2026-11-01).
 
 ## Credits
 

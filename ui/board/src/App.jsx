@@ -132,8 +132,8 @@ function App() {
     fetch('version.json').then((res) => {
       if (res.ok) return res.json();
       throw new Error('no version file');
-    }).then((data) => {
-      setVersion(data.version);
+    }).then((info) => {
+      setVersion(info.version);
     }).catch(() => {
       // Dev server without version plugin or stale deploy: hide it.
     });
