@@ -129,6 +129,16 @@ open_github() {
   fi
 }
 
+open_pages() {
+  PAGES="https://kizouker.github.io/adaptive-IVR-agent/"
+  if command -v open >/dev/null 2>&1; then
+    open "$PAGES"
+    ok "opened $PAGES in your browser"
+  else
+    info "open this in your browser: $PAGES"
+  fi
+}
+
 cleanup() {
   tput cnorm 2>/dev/null || true
   stop_server
@@ -337,6 +347,7 @@ while true; do
     "Holdmate phones Agda alone (BFS)" \
     "Sound: $(sound_label) (change...)" \
     "GitHub: open repo in browser" \
+    "Pages: open live site in browser" \
     "Quit")"
   case "$choice" in
     1) run_all ;;
@@ -345,7 +356,8 @@ while true; do
     4) lessons_menu ;;
     5) sound_menu ;;
     6) open_github ;;
-    7|q|Q) title "Bye"; exit 0 ;;
-    *) warn "pick with arrows + Enter (or type 1-7)" ;;
+    7) open_pages ;;
+    8|q|Q) title "Bye"; exit 0 ;;
+    *) warn "pick with arrows + Enter (or type 1-8)" ;;
   esac
 done
