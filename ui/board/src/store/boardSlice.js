@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 export const fetchBoard = createAsyncThunk('board/fetchBoard', async () => {
-  const res = await fetch('/board-state.json');
+  const res = await fetch('board-state.json');
   if (!res.ok) {
     throw new Error(`board fetch failed: ${res.status}`);
   }

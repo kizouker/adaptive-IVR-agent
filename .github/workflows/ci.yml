@@ -24,6 +24,21 @@ jobs:
           sudo apt-get install -y shellcheck
           shellcheck -S warning sh/*.sh
 
+      - name: Structure and security
+        run: ./sh/check-structure.sh && ./sh/check-security.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ui/board/package-lock.json
+
+      - name: Board lint and audit
+        run: |
+          npm ci --prefix ui/board
+          npm run lint --prefix ui/board
+          npm audit --prefix ui/board --omit=dev --audit-level=high
+
       - name: Tests
         run: |
           if [ -d tests ]; then pip install pytest && pytest -q; else echo "no tests yet"; fi
