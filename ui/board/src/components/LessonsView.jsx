@@ -26,10 +26,10 @@ function LessonsView({ lessons, words, t }) {
       <table className="words">
         <thead>
           <tr>
-            <th>{t.word}</th>
-            <th>{t.tries}</th>
-            <th>{t.transfers}</th>
-            <th aria-label="result" />
+            <th title={t.hintWord}>{t.word}</th>
+            <th title={t.hintTries}>{t.tries}</th>
+            <th title={t.hintTransfers}>{t.transfers}</th>
+            <th aria-label="result" title={t.hintResult} />
           </tr>
         </thead>
         <tbody>
@@ -65,6 +65,10 @@ LessonsView.propTypes = {
   })).isRequired,
   t: PropTypes.shape({
     noLessons: PropTypes.string.isRequired,
+    hintWord: PropTypes.string.isRequired,
+    hintTries: PropTypes.string.isRequired,
+    hintTransfers: PropTypes.string.isRequired,
+    hintResult: PropTypes.string.isRequired,
     sims: PropTypes.string.isRequired,
     transfers: PropTypes.string.isRequired,
     served: PropTypes.string.isRequired,

@@ -15,7 +15,7 @@ function CoverageWidget({ coverage, t }) {
   });
   return (
     <div className="cov">
-      <div className="covpct">{`${pct}%`}</div>
+      <div className="covpct" title={t.hintCoverage}>{`${pct}%`}</div>
       <div className="covsub">{`${coverage.tried} ${t.of} ${coverage.total} ${t.explored}`}</div>
       {groups.map((group) => (
         <div key={group.name} className="covgroup">
@@ -51,6 +51,7 @@ CoverageWidget.propTypes = {
     })).isRequired,
   }).isRequired,
   t: PropTypes.shape({
+    hintCoverage: PropTypes.string.isRequired,
     of: PropTypes.string.isRequired,
     explored: PropTypes.string.isRequired,
     tries: PropTypes.string.isRequired,
