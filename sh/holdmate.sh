@@ -11,6 +11,10 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 MODE="menu"
 SOUND="speakers"
+if command -v SwitchAudioSource >/dev/null 2>&1 \
+   && SwitchAudioSource -a -t output 2>/dev/null | grep -qi 'airpods'; then
+  SOUND="airpods"
+fi
 for arg in "$@"; do
   case "$arg" in
     check|--check) MODE="check" ;;

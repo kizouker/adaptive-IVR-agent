@@ -84,9 +84,12 @@ find_airpods() {
 }
 
 MULTI_OUTPUT="$OUTPUT_SPEAKERS"
+AUTO_PODS="$(find_airpods)"
 if [ "$AIRPODS" = 1 ]; then
-  MULTI_OUTPUT="$(find_airpods)"
-  [ -n "$MULTI_OUTPUT" ] || fail "No AirPods found among output devices (connect them first, then retry)"
+  [ -n "$AUTO_PODS" ] || fail "No AirPods found among output devices (connect them first, then retry)"
+  MULTI_OUTPUT="$AUTO_PODS"
+elif [ -n "$AUTO_PODS" ]; then
+  MULTI_OUTPUT="$AUTO_PODS"
 fi
 
 audio_index_for() {
@@ -167,6 +170,13 @@ ok "phrasebooks: $PHRASEBOOKS"
 SwitchAudioSource -a -t output | grep -Fxq "$MULTI_OUTPUT" \
   || fail "Output device '$MULTI_OUTPUT' not found (open Audio MIDI Setup and check the Multi-Output device)"
 ok "output device: $MULTI_OUTPUT"
+if [ "$AIRPODS" = 0 ]; then
+  if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then
+    info "auto output: speakers (no AirPods connected)"
+  else
+    info "auto output: AirPods connected, using them"
+  fi
+fi
 if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then
   ALT_CHECK="$(find_airpods)"
   if [ -n "$ALT_CHECK" ]; then
@@ -241,11 +251,8 @@ switch_back() {
 }
 trap switch_back EXIT
 trap 'exit 130' INT TERM
-_floor_target="$NORMAL_OUTPUT"
-if [ "$AIRPODS" = 1 ]; then
-  _pods="$(find_airpods)"
-  [ -n "$_pods" ] && _floor_target="$_pods"
-fi
+if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then _floor_target="$NORMAL_OUTPUT"
+else _floor_target="$MULTI_OUTPUT"; fi
 if [ "$(SwitchAudioSource -c -t output)" != "$_floor_target" ]; then
   SwitchAudioSource -s "$_floor_target" -t output >/dev/null \
     || fail "Could not switch output to $_floor_target"

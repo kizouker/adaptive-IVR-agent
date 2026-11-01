@@ -103,3 +103,9 @@ Feature: Practice robot
     Given Agda asked a yes/no question
     When Rickard answers with a sentence
     Then she says "Var god svara ja eller nej." once, and the next miss transfers; clean ja or nej transfers at once
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S15
+  Scenario: Output follows AirPods presence
+    Given the call starts with no sound flags
+    When AirPods are connected
+    Then output uses them (and the menu defaults to airpods); when absent, speakers are used
