@@ -170,6 +170,13 @@ def test_queue_turn_carries_place_number():
     assert call.position == "queue"
 
 
+def test_queue_turn_carries_start_total_for_progress():
+    call = LiveCall()
+    call.add_turn("", "reply", False, "queue", queue_place=7, queue_total=30)
+    turn = call.snapshot()["turns"][0]
+    assert (turn["queue_place"], turn["queue_total"]) == (7, 30)
+
+
 def test_live_call_carries_captions_and_speaker_names():
     call = LiveCall()
     call.add_turn("vab", "reply", True, "transfer",

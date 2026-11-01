@@ -101,7 +101,11 @@ function App() {
         paths={data.calls.map((call) => call.turns.map((turn) => turn.state))}
       />
       <h2>{t.queuePlace}</h2>
-      <QueueWidget place={queued ? queued.queue_place : null} />
+      <QueueWidget
+        place={queued?.queue_place ?? null}
+        total={queued?.queue_total ?? null}
+        label={t.queuePlace}
+      />
       <h2>{t.calls}</h2>
       {data.calls.map((call) => (
         <CallThread key={call.persona} call={call} lang={lang} t={t} />

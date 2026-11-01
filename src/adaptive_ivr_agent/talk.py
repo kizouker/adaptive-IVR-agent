@@ -52,6 +52,7 @@ class AgdaCall:
         transfer: str,
         identify_line: str,
         identified_line: str,
+        served_line: str,
         queue_line: str,
         place_template: str,
         respond: Callable[[str], tuple[str, str | None]],
@@ -63,6 +64,7 @@ class AgdaCall:
         self._transfer = transfer
         self._identify_line = identify_line
         self._identified_line = identified_line
+        self._served_line = served_line
         self._queue_line = queue_line
         self._place_template = place_template
         self._respond = respond
@@ -86,6 +88,15 @@ class AgdaCall:
     def after_identified(self, misses: int) -> AgdaReply:
         """Confirm the (faked) identification and enter the simulated queue."""
         place = self._queue_place()
+        line = f"{self._identified_line} {self._queue_line} {self._placed(place)}"
+        return AgdaReply(line, None, False, misses, False, place)
+
+    def _placed(self, place: int) -> str:
         # place_template is a recorded "plats 1" line; only the digit changes
-        line = f"{self._identified_line} {self._queue_line} {self._place_template.replace('1', str(place), 1)}"
-        return AgdaReply(line, None, True, misses, False, place)
+        return self._place_template.replace("1", str(place), 1)
+
+    def queue_tick(self, place: int, misses: int) -> AgdaReply:
+        """One step closer: announce the next number, or hand over at 1."""
+        if place <= 1:
+            return AgdaReply(self._served_line, None, True, misses, False, 0)
+        return AgdaReply(self._placed(place - 1), None, False, misses, False, place - 1)

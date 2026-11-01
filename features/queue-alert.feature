@@ -31,3 +31,9 @@ Feature: Queue alert
     Given a talk call that reaches transfer
     When Agda finishes the transfer
     Then she speaks the recorded queue lines with a place number and the board shows position queue plus the number
+
+  @FN-REQ-IVR-011 @FN-REQ-IVR-011-S05
+  Scenario: Queue counts down aloud to served
+    Given a talk call in the simulated queue at place N
+    When each tick passes
+    Then Agda announces the next number, the flip-board ticks down with progress, and at 0 an officer connects

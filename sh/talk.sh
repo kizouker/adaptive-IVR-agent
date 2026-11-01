@@ -1,8 +1,10 @@
 #!/bin/bash
 # Talk to the practice robot with your own voice (push-to-talk loop).
 # Runs on: Rickard's Mac (M4). Modes: talk (default) | check.
-# Flags: --airpods, --as <persona> (role-play + tag rounds for Holdmate training).
+# Flags: --airpods, --as <persona> (role-play + tag rounds for Holdmate training),
+#   --queue N (simulate a queue of N, 1-99; default is a random short one).
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
+#   QUEUE_TICK seconds between queue numbers (default 8).
 # Keys during record/playback: any key skips ahead, + / - adjusts her volume.
 # Each round records ~5s from the MacBook mic, transcribes with whisper.cpp,
 # and the robot answers aloud (Alva). Output goes through the IVR_Agent device
@@ -18,6 +20,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 MODE="talk"
 AIRPODS=0
 PERSONA=""
+QUEUE_START=""
 while [ $# -gt 0 ]; do
   case "$1" in
     check|--check) MODE="check" ;;
@@ -27,7 +30,17 @@ while [ $# -gt 0 ]; do
       [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>)" ;;
+    --queue)
+      QUEUE_START="${2:-}"
+      case "$QUEUE_START" in
+        '' | *[!0-9]*) fail "--queue needs a number 1-99" ;;
+      esac
+      if [ "$QUEUE_START" -lt 1 ] || [ "$QUEUE_START" -gt 99 ]; then
+        fail "--queue needs a number 1-99"
+      fi
+      shift
+      ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N)" ;;
   esac
   shift
 done
@@ -46,6 +59,7 @@ if [ -z "${TALK_VOLUME+x}" ]; then
   fi
 fi
 AGDA_FORGIVING="${AGDA_FORGIVING:-0}"     # 1 = Agda's bad memory (learned aliases); 0 = exact AF words
+QUEUE_TICK="${QUEUE_TICK:-8}"             # seconds between queue numbers (any key hurries)
 FAKE_PERSONNUMMER="19121212-1212"         # test number for the faked ID step; nothing real ever flows
 MODEL="$HOME/models/whisper/ggml-small.bin"
 REC_DIR="$ROOT/data/recordings"
@@ -101,6 +115,14 @@ if [ "$AGDA_FORGIVING" = "1" ]; then
   warn "bad memory ON: Agda accepts learned aliases (unrealistic practice)"
 else
   info "bad memory off: Agda only knows exact AF words (realistic)"
+fi
+case "$QUEUE_TICK" in
+  '' | *[!0-9]*) fail "QUEUE_TICK must be whole seconds" ;;
+esac
+if [ -n "$QUEUE_START" ]; then
+  info "queue starts at $QUEUE_START, ticks every ${QUEUE_TICK}s (any key hurries)"
+else
+  info "queue starts at random 2-5, ticks every ${QUEUE_TICK}s (any key hurries)"
 fi
 
 [ "$MODE" = "check" ] && { title "Check only: nothing changed"; exit 0; }
@@ -199,7 +221,8 @@ play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
 }
 
 agda_says() {
-  # $1 = opening|round, $2 = transcript file (round only), $3 = aiff file, $4 = caller wav (round only).
+  # $1 = opening|round|identified|queue, $2 = transcript (round only),
+  # $3 = aiff file, $4 = caller wav (round only).
   # Speaks Agda's line, saves the audio, publishes the board state,
   # prints the exchange plus TALK_DONE / TALK_MISSES.
   TALK_ROOT="$ROOT" TALK_TXT="${2:-}" TALK_AIFF="$3" TALK_VOICE="$VOICE" TALK_MISSES="$MISSES" \
@@ -207,6 +230,7 @@ agda_says() {
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
     TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
+    TALK_QUEUE_START="$QUEUE_START" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
 import json
 import os
@@ -229,6 +253,8 @@ if forgiving and os.path.exists(learned_path):
     aliases = json.load(open(learned_path, encoding="utf-8"))
 else:
     aliases = {}
+forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
+forced = int(forced_start) if forced_start.isdigit() else None
 agda = AgdaCall(
     opening=f"{lines['L01']} {lines['L02']}",
     examples=lines["L03"],
@@ -236,9 +262,11 @@ agda = AgdaCall(
     transfer=lines["L19"],
     identify_line=lines["L09"],
     identified_line=lines["L11"],
+    served_line=lines["L08"],
     queue_line=lines["L13"],
     place_template=lines["L29"],
     respond=with_aliases(ears.respond, aliases),
+    queue_place=(lambda: forced) if forced else None,
 )
 
 
@@ -294,7 +322,7 @@ def load_call():
                 call.add_turn(turn["caller"], turn["robot"], turn["matched"], turn["state"],
                               turn.get("caller_audio"), turn.get("robot_audio"),
                               turn.get("caller_captions"), turn.get("robot_captions"),
-                              turn.get("queue_place"))
+                              turn.get("queue_place"), turn.get("queue_total"))
     return call
 
 
@@ -379,12 +407,34 @@ elif sys.argv[1] == "identified":
     call = load_call()
     call.add_turn("", answer.reply, False, "queue",
                   robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
-                  queue_place=answer.queue_place)
+                  queue_place=answer.queue_place, queue_total=answer.queue_place)
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
     print(f"ROBOT: {answer.reply}")
-    print("TALK_DONE=yes")
+    print(f"TALK_PLACE={answer.queue_place}")
+    print("TALK_DONE=no")
+elif sys.argv[1] == "queue":
+    answer = agda.queue_tick(int(os.environ["TALK_PLACE"]), int(os.environ["TALK_MISSES"]))
+    render_reply(answer.reply)
+    audio_dir = os.environ["TALK_AUDIO_DIR"]
+    os.makedirs(audio_dir, exist_ok=True)
+    base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}q{answer.queue_place}"
+    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    aiff = os.environ["TALK_AIFF"]
+    to_mp3(aiff, os.path.join(audio_dir, agda_name))
+    write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
+    call = load_call()
+    call.add_turn("", answer.reply, False, "queue",
+                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  queue_place=answer.queue_place,
+                  queue_total=int(os.environ["TALK_TOTAL"]))
+    with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
+        handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
+    write_board(call)
+    print(f"ROBOT: {answer.reply}")
+    print(f"TALK_PLACE={answer.queue_place}")
+    print(f"TALK_DONE={'yes' if answer.done else 'no'}")
 EOF
 }
 
@@ -419,7 +469,37 @@ run_identification() {
   ok "confirmation on board: $ID_MP3"
   run "Agda speaks (any key skips, +/- volume)"
   play_skippable "$ID_AIFF"
-  title "Call over — you are in the queue. Your audio setup is restored on exit."
+  START="$(printf '%s\n' "$OUT2" | sed -n 's/^TALK_PLACE=//p')"
+  case "$START" in
+    '' | *[!0-9]*) fail "Lost track of the queue place" ;;
+  esac
+  PLACE="$START"
+  while [ "$PLACE" -gt 0 ]; do
+    title "Queue: place $PLACE of $START (any key moves faster, Ctrl+C quits)"
+    if [ -t 0 ]; then
+      wait_keys "$QUEUE_TICK" ""
+    else
+      sleep "$QUEUE_TICK"
+    fi
+    run "render queue number ($VOICE)"
+    Q_AIFF="$REC_DIR/talk-$CALL_STAMP-q$PLACE.aiff"
+    OUT3="$(agda_says queue "" "$Q_AIFF")" || fail "Agda failed in the queue"
+    printf '%s\n' "$OUT3" | grep -v '^TALK_'
+    [ -s "$Q_AIFF" ] || fail "Queue audio missing: $Q_AIFF"
+    PLACE="$(printf '%s\n' "$OUT3" | sed -n 's/^TALK_PLACE=//p')"
+    case "$PLACE" in
+      '' | *[!0-9]*) fail "Lost track of the queue place" ;;
+    esac
+    Q_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}q${PLACE}-agda.mp3"
+    [ -s "$Q_MP3" ] || fail "Queue board audio missing: $Q_MP3"
+    ok "queue number on board: $Q_MP3"
+    run "Agda speaks (any key skips, +/- volume)"
+    play_skippable "$Q_AIFF"
+  done
+  if [ "$(printf '%s\n' "$OUT3" | sed -n 's/^TALK_DONE=//p')" != "yes" ]; then
+    fail "Queue did not finish"
+  fi
+  title "Call over — an officer is connecting you. Your audio setup is restored on exit."
   exit 0
 }
 

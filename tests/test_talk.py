@@ -15,6 +15,7 @@ def make_call(respond, queue_place=None):
         transfer="transferring you.",
         identify_line="identify with bankid or freja.",
         identified_line="identification worked.",
+        served_line="connecting you now.",
         queue_line="you are placed in queue.",
         place_template="you are place 1 in queue.",
         respond=respond,
@@ -51,9 +52,17 @@ def test_keyword_hit_transfers_and_asks_for_id():
 def test_after_identified_enters_queue_with_place_number():
     call = make_call(lambda heard: MISS, queue_place=lambda: 3)
     answer = call.after_identified(2)
-    assert (answer.done, answer.identify, answer.queue_place) == (True, False, 3)
+    assert (answer.done, answer.identify, answer.queue_place) == (False, False, 3)
     assert answer.reply == ("identification worked. you are placed in queue. "
                             "you are place 3 in queue.")
+
+
+def test_queue_tick_counts_down_and_serves_at_one():
+    call = make_call(lambda heard: MISS)
+    step = call.queue_tick(3, 1)
+    assert (step.reply, step.done, step.queue_place) == ("you are place 2 in queue.", False, 2)
+    last = call.queue_tick(1, 1)
+    assert (last.reply, last.done, last.queue_place) == ("connecting you now.", True, 0)
 
 
 def test_default_queue_place_is_a_small_number():
@@ -69,7 +78,9 @@ def test_real_robot_ears_drive_the_script():
     second = call.reply_to("vab", 1)
     assert (second.matched, second.done, second.identify) == ("vab", False, True)
     third = call.after_identified(second.misses)
-    assert (third.done, third.queue_place) == (True, 4)
+    assert (third.done, third.queue_place) == (False, 4)
+    fourth = call.queue_tick(third.queue_place, third.misses)
+    assert (fourth.done, fourth.queue_place) == (False, 3)
 
 
 def test_learned_alias_translates_before_matching():
