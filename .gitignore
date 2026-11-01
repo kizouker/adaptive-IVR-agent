@@ -15,6 +15,7 @@ ui/board/.vite/
 data/talk-misses.jsonl
 .talk-volume
 .talk-quiet
+ui/board/public/doorkeeper-lines.json
 
 ## generated + scratch
 __pycache__/

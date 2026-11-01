@@ -80,6 +80,8 @@ const STRINGS = {
     terminalRestart: 'Börja om',
     terminalClose: 'Stäng',
     terminalEnd: 'Demosamtalet är slut — börja om eller stäng med Esc.',
+    terminalMic: 'Mick',
+    terminalListening: 'Lyssnar…',
   },
   en: {
     title: 'Holdmate board',
@@ -143,6 +145,8 @@ const STRINGS = {
     terminalRestart: 'Restart',
     terminalClose: 'Close',
     terminalEnd: 'Demo call over — restart or close with Esc.',
+    terminalMic: 'Mic',
+    terminalListening: 'Listening…',
   },
 };
 

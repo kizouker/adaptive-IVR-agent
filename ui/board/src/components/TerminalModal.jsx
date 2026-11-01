@@ -66,9 +66,67 @@ function TerminalModal({
   const boxRef = useRef(null);
   const inputRef = useRef(null);
   const answerRef = useRef(null);
+  const [fetched, setFetched] = useState(null);
+  const ready = lines.length > 0 ? lines : fetched;
+  const [listening, setListening] = useState(false);
+  const recRef = useRef(null);
+  const canMic = typeof window !== 'undefined'
+    && (window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  const stopMic = () => {
+    try {
+      if (recRef.current) {
+        recRef.current.stop();
+        recRef.current = null;
+      }
+    } catch {
+      // Already stopped.
+    }
+    setListening(false);
+  };
+
+  const toggleMic = () => {
+    if (!canMic) {
+      return;
+    }
+    if (listening) {
+      stopMic();
+      return;
+    }
+    try {
+      const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const rec = new Rec();
+      rec.lang = 'sv-SE';
+      rec.interimResults = false;
+      rec.onresult = (event) => {
+        const said = event.results[0][0].transcript;
+        if (answerRef.current) {
+          const resolve = answerRef.current;
+          answerRef.current = null;
+          resolve(said);
+          setValue('');
+        } else {
+          setValue(said);
+        }
+      };
+      rec.onend = () => {
+        recRef.current = null;
+        setListening(false);
+      };
+      rec.onerror = () => {
+        recRef.current = null;
+        setListening(false);
+      };
+      recRef.current = rec;
+      rec.start();
+      setListening(true);
+    } catch {
+      setListening(false);
+    }
+  };
 
   const byId = {};
-  lines.forEach((line) => {
+  (ready ?? []).forEach((line) => {
     byId[line.id] = line;
   });
   const text = (id) => {
@@ -115,8 +173,29 @@ function TerminalModal({
   };
 
   useEffect(() => {
+    let liveFetch = true;
+    if (lines.length === 0 && fetched === null) {
+      fetch('doorkeeper-lines.json')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (liveFetch) {
+            setFetched(data && data.lines ? data.lines : []);
+          }
+        })
+        .catch(() => {
+          if (liveFetch) {
+            setFetched([]);
+          }
+        });
+    }
+    return () => {
+      liveFetch = false;
+    };
+  }, [lines, fetched]);
+
+  useEffect(() => {
     let cancelled = false;
-    if (lines.length === 0) {
+    if (!ready || ready.length === 0) {
       return () => {
         cancelled = true;
       };
@@ -124,7 +203,8 @@ function TerminalModal({
     const run = async () => {
       // eslint-disable-next-line no-use-before-define
       const check = () => !cancelled;
-      await say('L01', 'sv');
+      const busyDay = Math.random() < 0.25;
+      await say(busyDay ? 'L44' : 'L01', 'sv');
       if (!check()) return;
       const first = normalize(await hear());
       if (!check()) return;
@@ -208,6 +288,14 @@ function TerminalModal({
       if (!check()) return;
       await say('L30', 'sv');
       if (!check()) return;
+      await say('L15', 'sv');
+      if (!check()) return;
+      const survey = normalize(await hear());
+      if (!check()) return;
+      if (survey === '1') {
+        await say('L16', 'sv');
+        if (!check()) return;
+      }
       await say('L39', 'sv');
       setLive(false);
     };
@@ -215,12 +303,13 @@ function TerminalModal({
     return () => {
       cancelled = true;
       stopSpeech();
+      stopMic();
       if (answerRef.current) {
         answerRef.current('');
         answerRef.current = null;
       }
     };
-  }, [runId]);
+  }, [runId, ready?.length]);
 
   useEffect(() => {
     const onKey = (event) => {
@@ -255,6 +344,7 @@ function TerminalModal({
 
   const restart = () => {
     stopSpeech();
+    stopMic();
     if (answerRef.current) {
       answerRef.current('');
       answerRef.current = null;
@@ -265,7 +355,35 @@ function TerminalModal({
     setRunId((n) => n + 1);
   };
 
-  if (lines.length === 0) {
+  const renderInput = () => {
+    if (!live) {
+      return <p className="tend">{t.terminalEnd}</p>;
+    }
+    if (ready === null) {
+      return <p className="thint">{t.loading}</p>;
+    }
+    return (
+      <form onSubmit={submit} className="tform">
+        <span aria-hidden="true">&gt;</span>
+        <input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          placeholder={t.terminalPlaceholder}
+          aria-label={t.terminalPlaceholder}
+          autoComplete="off"
+        />
+        {canMic && (
+          <button type="button" className="tbtn" onClick={toggleMic} aria-label={t.terminalMic}>
+            {listening ? t.terminalListening : t.terminalMic}
+          </button>
+        )}
+      </form>
+    );
+  };
+
+  if (ready !== null && ready.length === 0) {
     return (
       <div className="tmodal" role="dialog" aria-modal="true" aria-label={t.terminalTitle}>
         <div className="tbody">
@@ -276,7 +394,7 @@ function TerminalModal({
               ✕
             </button>
           </div>
-          <p className="thint">{t.noLessons}</p>
+          <p className="thint">{t.failed}</p>
         </div>
       </div>
     );
@@ -305,22 +423,7 @@ function TerminalModal({
             {turn.text}
           </p>
         ))}
-        {live ? (
-          <form onSubmit={submit} className="tform">
-            <span aria-hidden="true">&gt;</span>
-            <input
-              ref={inputRef}
-              type="text"
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-              placeholder={t.terminalPlaceholder}
-              aria-label={t.terminalPlaceholder}
-              autoComplete="off"
-            />
-          </form>
-        ) : (
-          <p className="tend">{t.terminalEnd}</p>
-        )}
+        {renderInput()}
       </div>
     </div>
   );
@@ -338,7 +441,8 @@ TerminalModal.propTypes = {
   })).isRequired,
   lang: PropTypes.string.isRequired,
   t: PropTypes.shape({
-    noLessons: PropTypes.string.isRequired,
+    failed: PropTypes.string.isRequired,
+    loading: PropTypes.string.isRequired,
     terminalTitle: PropTypes.string.isRequired,
     terminalSim: PropTypes.string.isRequired,
     terminalHint: PropTypes.string.isRequired,
@@ -347,6 +451,8 @@ TerminalModal.propTypes = {
     terminalRestart: PropTypes.string.isRequired,
     terminalClose: PropTypes.string.isRequired,
     terminalEnd: PropTypes.string.isRequired,
+    terminalMic: PropTypes.string.isRequired,
+    terminalListening: PropTypes.string.isRequired,
   }).isRequired,
   onClose: PropTypes.func.isRequired,
 };
