@@ -110,8 +110,7 @@ class SparkNormalizer(Normalizer):
             },
         )
         try:
-            # nosec B310: endpoint scheme validated https in __init__
-            with urllib.request.urlopen(req, timeout=self.timeout) as res:
+            with urllib.request.urlopen(req, timeout=self.timeout) as res:  # nosec B310: https validated
                 payload = json.load(res)
             content = payload["choices"][0]["message"]["content"]
             verdict = json.loads(content)
