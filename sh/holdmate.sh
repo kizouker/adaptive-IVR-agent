@@ -2,7 +2,7 @@
 # Holdmate launcher: board server + talk from one menu, runnable from anywhere.
 # Runs on: Rickard's Mac (M4). Modes: menu (default) | check. Direct: 1, 2, 3, 4.
 # 1 = start the board server, open the page, and talk. 2 = talk options.
-# 3 = teach Agda words. 4 = lessons submenu (silent/spoken, one/all).
+# 3 = misc menu (Teach Agda parked). 4 = lessons submenu (silent/spoken, one/all).
 # Runs from any folder; paths resolve from this script.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -40,6 +40,7 @@ done
 
 BOARD_DIR="$ROOT/ui/board"
 BOARD_LOG="/tmp/holdmate-board.log"
+VOLUME_FILE="$ROOT/.talk-volume"
 PORT="${PORT:-5173}"
 URL="http://localhost:$PORT"
 STARTED_BY_ME=0
@@ -119,24 +120,38 @@ open_board() {
   fi
 }
 
-open_github() {
-  GH="https://github.com/kizouker/adaptive-IVR-agent"
+open_link() { # $1 = url
   if command -v open >/dev/null 2>&1; then
-    open "$GH"
-    ok "opened $GH in your browser"
+    open "$1"
+    ok "opened $1 in your browser"
   else
-    info "open this in your browser: $GH"
+    info "open this in your browser: $1"
   fi
 }
 
-open_pages() {
+github_menu() {
+  GH="https://github.com/kizouker/adaptive-IVR-agent"
   PAGES="https://kizouker.github.io/adaptive-IVR-agent/"
-  if command -v open >/dev/null 2>&1; then
-    open "$PAGES"
-    ok "opened $PAGES in your browser"
-  else
-    info "open this in your browser: $PAGES"
-  fi
+  while true; do
+    wintitle "github"
+    title "GitHub (arrows + Enter, Esc goes back)"
+    choice="$(choose \
+      "Open repo" \
+      "Open live site (Pages)" \
+      "Open pull requests" \
+      "Open issues" \
+      "Open Actions" \
+      "Back")"
+    case "$choice" in
+      1) open_link "$GH" ;;
+      2) open_link "$PAGES" ;;
+      3) open_link "$GH/pulls" ;;
+      4) open_link "$GH/issues" ;;
+      5) open_link "$GH/actions" ;;
+      6|q|Q|b|B) return 0 ;;
+      *) warn "pick with arrows + Enter (or type 1-6)" ;;
+    esac
+  done
 }
 
 cleanup() {
@@ -215,19 +230,68 @@ talk_sound() {
   esac
 }
 
-sound_menu() {
+talk_volume() { # talk level (0.7 unless remembered in .talk-volume)
+  if [ -f "$VOLUME_FILE" ] && grep -Eq '^(0\.[0-9]+|[1-3](\.[0-9]+)?|4(\.0+)?)$' "$VOLUME_FILE"; then
+    cat "$VOLUME_FILE"
+  else
+    printf '0.7'
+  fi
+}
+
+volume_menu_step() { # $1 = +0.2|-0.2 (same clamp as talk.sh)
+  _v="$(talk_volume)"
+  _v="$(LC_ALL=C awk -v v="$_v" -v d="$1" 'BEGIN { n = v + d; if (n < 0.1) n = 0.1; if (n > 4) n = 4; printf "%.1f", n }')"
+  printf '%s' "$_v" > "$VOLUME_FILE"
+  info "volume $_v (used by the next talk)"
+}
+
+output_menu() {
   while true; do
-    wintitle "sound"
-    title "Sound (now: $(sound_label))"
+    title "Output (now: $(sound_label))"
     choice="$(choose \
       "Speakers" \
       "AirPods" \
-      "Quiet (type + read)" \
       "Back")"
     case "$choice" in
       1) SOUND="speakers"; SOUND_DIRTY=1; info "sound: Speakers"; return 0 ;;
       2) SOUND="airpods"; SOUND_DIRTY=1; info "sound: AirPods"; return 0 ;;
-      3) SOUND="quiet"; SOUND_DIRTY=1; info "sound: Quiet"; return 0 ;;
+      3|q|Q|b|B) return 0 ;;
+      *) warn "pick with arrows + Enter (or type 1-3)" ;;
+    esac
+  done
+}
+
+volume_menu() {
+  while true; do
+    title "Volume (now: $(talk_volume), 0.1-4.0)"
+    choice="$(choose \
+      "Louder (+)" \
+      "Quieter (-)" \
+      "Back")"
+    case "$choice" in
+      1) volume_menu_step +0.2 ;;
+      2) volume_menu_step -0.2 ;;
+      3|q|Q|b|B) return 0 ;;
+      *) warn "pick with arrows + Enter (or type 1-3)" ;;
+    esac
+  done
+}
+
+sound_menu() {
+  while true; do
+    wintitle "sound"
+    if [ "$SOUND" = "quiet" ]; then QUIET_STATE="on"; else QUIET_STATE="off"; fi
+    title "Sound (now: $(sound_label), volume $(talk_volume))"
+    choice="$(choose \
+      "Output: $(sound_label) (change...)" \
+      "Volume: $(talk_volume) (change...)" \
+      "Quiet: $QUIET_STATE (toggle)" \
+      "Back")"
+    case "$choice" in
+      1) output_menu ;;
+      2) volume_menu ;;
+      3) if [ "$SOUND" = "quiet" ]; then SOUND="speakers"; else SOUND="quiet"; fi
+        SOUND_DIRTY=1; info "sound: $(sound_label)" ;;
       4|q|Q|b|B) return 0 ;;
       *) warn "pick with arrows + Enter (or type 1-4)" ;;
     esac
@@ -351,6 +415,21 @@ lessons_menu() {
   done
 }
 
+misc_menu() {
+  while true; do
+    wintitle "misc"
+    title "Misc (arrows + Enter, Esc goes back)"
+    choice="$(choose \
+      "Teach Agda new words (disabled)" \
+      "Back")"
+    case "$choice" in
+      1) info "Teach Agda is disabled for now (Agda stays dumb; Holdmate is the learner)" ;;
+      2|q|Q|b|B) return 0 ;;
+      *) warn "pick with arrows + Enter (or type 1-2)" ;;
+    esac
+  done
+}
+
 if [ "$MODE" = "check" ]; then
   run "sh/talk.sh check"
   "$HERE/talk.sh" check || fail "talk check failed"
@@ -363,7 +442,7 @@ fi
 case "$MODE" in
   direct-1) run_all; exit 0 ;;
   direct-2) "$HERE/talk.sh"; exit 0 ;;
-  direct-3) "$HERE/learn-words.sh"; exit 0 ;;
+  direct-3) info "Teach Agda is disabled for now"; exit 0 ;;
   direct-4) "$HERE/holdmate-call.sh"; exit 0 ;;
 esac
 
@@ -374,21 +453,19 @@ while true; do
   choice="$(choose \
     "Board + talk (server, page, call)" \
     "Talk options (server runs already)" \
-    "Teach Agda new words" \
+    "Misc..." \
     "Holdmate phones Agda alone (BFS)" \
     "Sound: $(sound_label) (change...)" \
-    "GitHub: open repo in browser" \
-    "Pages: open live site in browser" \
+    "GitHub (repo, site, pulls...)" \
     "Quit")"
   case "$choice" in
     1) run_all ;;
     2) talk_menu ;;
-    3) "$HERE/learn-words.sh" ;;
+    3) misc_menu ;;
     4) lessons_menu ;;
     5) sound_menu ;;
-    6) open_github ;;
-    7) open_pages ;;
-    8|q|Q) title "Bye"; exit 0 ;;
-    *) warn "pick with arrows + Enter (or type 1-8)" ;;
+    6) github_menu ;;
+    7|q|Q) title "Bye"; exit 0 ;;
+    *) warn "pick with arrows + Enter (or type 1-7)" ;;
   esac
 done
