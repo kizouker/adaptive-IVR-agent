@@ -10,6 +10,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 . "$HERE/ui.sh"
 ROOT="$(cd "$HERE/.." && pwd)"
 MODE="menu"
+SOUND="speakers"
 for arg in "$@"; do
   case "$arg" in
     check|--check) MODE="check" ;;
@@ -154,12 +155,30 @@ choose() { # options as args; echoes 1-based index, or "q" on Esc/EOF
   done
 }
 
+talk_sound() {
+  # Talk with the menu sound choice (speakers/AirPods/quiet) + extra args.
+  case "$SOUND" in
+    airpods) "$HERE/talk.sh" --airpods "$@" ;;
+    quiet) "$HERE/talk.sh" --quiet "$@" ;;
+    *) "$HERE/talk.sh" "$@" ;;
+  esac
+}
+
+cycle_sound() {
+  case "$SOUND" in
+    speakers) SOUND="airpods" ;;
+    airpods) SOUND="quiet" ;;
+    *) SOUND="speakers" ;;
+  esac
+  info "sound: $SOUND"
+}
+
 run_all() {
   step "Board + talk"
   what "Start the server, open the page, then talk. Server stops when this ends."
   start_server
   open_board
-  "$HERE/talk.sh"
+  talk_sound
 }
 
 pick_persona() { # arrow-pick a persona; echoes its id, or "q" to go back
@@ -204,13 +223,13 @@ talk_menu() {
       "talk quietly (type + read)" \
       "back")"
     case "$choice" in
-      1) "$HERE/talk.sh"; return 0 ;;
+      1) talk_sound; return 0 ;;
       2) "$HERE/talk.sh" --airpods; return 0 ;;
       3) "$HERE/talk.sh" check; return 0 ;;
       4)
         persona="$(pick_persona)"
         if [ -n "$persona" ] && [ "$persona" != "q" ]; then
-          "$HERE/talk.sh" --as "$persona"; return 0
+          talk_sound --as "$persona"; return 0
         fi
         ;;
       5) "$HERE/talk.sh" --quiet; return 0 ;;
@@ -243,13 +262,15 @@ while true; do
     "talk options (server already runs)" \
     "teach Agda words" \
     "Holdmate calls Agda by itself (BFS lessons)" \
+    "sound: $SOUND (tap to change)" \
     "quit")"
   case "$choice" in
     1) run_all ;;
     2) talk_menu ;;
     3) "$HERE/learn-words.sh" ;;
     4) "$HERE/holdmate-call.sh" ;;
-    5|q|Q) title "Bye"; exit 0 ;;
-    *) warn "pick with arrows + Enter (or type 1-5)" ;;
+    5) cycle_sound ;;
+    6|q|Q) title "Bye"; exit 0 ;;
+    *) warn "pick with arrows + Enter (or type 1-6)" ;;
   esac
 done
