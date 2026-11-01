@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const VOLUME_FILE = path.join(here, '..', '..', '.talk-volume');
@@ -95,7 +96,27 @@ function dtmfApi() {
   };
 }
 
+function versionApi() {
+  return {
+    name: 'board-version-api',
+    configureServer(server) {
+      server.middlewares.use('/version.json', (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        let version = 'dev';
+        try {
+          version = execSync('git describe --tags --always --dirty', {
+            cwd: path.join(here, '..', '..'),
+          }).toString().trim();
+        } catch {
+          // Not a git checkout; stay on dev.
+        }
+        res.end(JSON.stringify({ version, built: new Date().toISOString() }));
+      });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), volumeApi(), dtmfApi()],
+  plugins: [react(), volumeApi(), dtmfApi(), versionApi()],
   base: './',
 });

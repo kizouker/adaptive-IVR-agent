@@ -126,6 +126,18 @@ function App() {
   const { data, lang, status } = useSelector(selectBoard);
   const [tab, setTab] = useState('overview');
   const [treeMode, setTreeMode] = useState('states');
+  const [version, setVersion] = useState(null);
+
+  useEffect(() => {
+    fetch('version.json').then((res) => {
+      if (res.ok) return res.json();
+      throw new Error('no version file');
+    }).then((data) => {
+      setVersion(data.version);
+    }).catch(() => {
+      // Dev server without version plugin or stale deploy: hide it.
+    });
+  }, []);
   const t = STRINGS[lang];
 
   useEffect(() => {
@@ -163,6 +175,7 @@ function App() {
           <span className="dot" />
           {t.live}
         </span>
+        {version != null && <span className="ver">{version}</span>}
         <span className="spacer" />
         <span className="lang">
           <button type="button" className={lang === 'sv' ? 'on' : ''} onClick={() => dispatch(setLang('sv'))}>
