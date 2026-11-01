@@ -11,7 +11,9 @@ from adaptive_ivr_agent.live_view import (
     build_board,
     build_call,
     build_live_board,
+    line_translations,
     render_live_page,
+    translate_robot,
     vtt_timestamp,
     write_captions,
 )
@@ -205,6 +207,32 @@ def test_map_blob_ships_edges_for_option_lists():
     edges = state["maps"]["swedish"]["edges"]
     assert {"source": "yes_no", "target": "transfer", "label": "ja/nej"} in edges
     assert all(set(edge) == {"source", "target", "label"} for edge in edges)
+
+
+def test_translate_robot_renders_known_lines_and_passes_unknown():
+    translations = line_translations(ROOT / "data" / "doorkeeper-lines.json")
+    assert translate_robot(
+        "Förlåt, jag uppfattade inte. Du kan till exempel säga aktivitetsrapport,"
+        " ersättning eller hjälp med att söka arbete.",
+        translations,
+    ).startswith("Sorry, I did not catch that.")
+    composed = ("Tack. Jag kopplar dig vidare till en handläggare. "
+                "För att vi ska kunna hjälpa dig med ditt ärende måste du identifiera dig.")
+    assert translate_robot(composed, translations) == (
+        "Tack. I will connect you to an officer. "
+        "In order for us to help you with your case, you must identify yourself.")
+    assert translate_robot("Du har plats 3 i kön", translations) == \
+        "You are number 3 in the queue."
+    assert translate_robot("helt okänt dravel", translations) == "helt okänt dravel"
+
+
+def test_add_turn_carries_english_robot_line():
+    call = LiveCall()
+    call.add_turn("vab", "svar", True, "transfer", robot_en="reply")
+    assert call.snapshot()["turns"][0]["robot_en"] == "reply"
+    plain = LiveCall()
+    plain.add_turn("vab", "svar", True, "transfer")
+    assert "robot_en" not in plain.snapshot()["turns"][0]
 
 
 def test_live_call_defaults_english_errand_to_errand():

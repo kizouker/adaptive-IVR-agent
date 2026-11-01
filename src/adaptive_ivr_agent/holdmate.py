@@ -19,7 +19,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
-from adaptive_ivr_agent.live_view import LiveCall, build_live_board
+from adaptive_ivr_agent.live_view import (
+    LiveCall,
+    build_live_board,
+    line_translations,
+    translate_robot,
+)
 from adaptive_ivr_agent.menu_map import (
     AF_AGDA_STATES,
     Edge,
@@ -376,7 +381,7 @@ def lesson_log(path: str | Path, result: SimResult) -> None:
         handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
-def lesson_call(role: dict, lesson: Lesson) -> LiveCall:
+def lesson_call(role: dict, lesson: Lesson, translations: dict) -> LiveCall:
     """One lesson as a board call: every sim exchange becomes a turn."""
     call = LiveCall(
         persona=role["id"],
@@ -388,7 +393,8 @@ def lesson_call(role: dict, lesson: Lesson) -> LiveCall:
     for sim in lesson.sims:
         for exchange in sim.exchanges:
             call.add_turn(exchange.caller, exchange.robot, exchange.matched,
-                          exchange.state)
+                          exchange.state,
+                          robot_en=translate_robot(exchange.robot, translations))
     return call
 
 
@@ -421,6 +427,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.depth < 0 or args.depth > MAX_MISSES:
         parser.error(f"--depth must be 0..{MAX_MISSES}")
     lines = load_indexed_lines(args.lines)
+    translations = line_translations(args.lines)
     ears = ReactiveRobot.from_phrasebooks(args.phrasebooks)
     agda = build_agda(lines, ears.respond)
     personas = load_personas(args.phrasebooks)
@@ -454,7 +461,7 @@ def main(argv: list[str] | None = None) -> int:
                 f"matched {len(summary['matched'])} words: {italic(words)}"
             )
             if args.board_out:
-                live_calls.append(lesson_call(role, lesson))
+                live_calls.append(lesson_call(role, lesson, translations))
                 write_lesson_board(args.board_out, live_calls, knowledge)
     except KeyboardInterrupt:
         print("stopped early; saving what was learned so far")

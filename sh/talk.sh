@@ -529,6 +529,8 @@ from adaptive_ivr_agent.live_view import (
     LIVE_ROBOT_NAME,
     LiveCall,
     build_live_board,
+    line_translations,
+    translate_robot,
     write_captions,
 )
 from adaptive_ivr_agent.reactive import ReactiveRobot
@@ -538,6 +540,7 @@ from adaptive_ivr_agent.talk import AgdaCall, with_aliases
 root = os.environ["TALK_ROOT"]
 voice = os.environ.get("TALK_VOICE", SAY_VOICE)
 lines = load_indexed_lines(os.path.join(root, "data/doorkeeper-lines.json"))
+translations = line_translations(os.path.join(root, "data/doorkeeper-lines.json"))
 ears = ReactiveRobot.from_phrasebooks(os.path.join(root, "data/role-phrasebooks.json"))
 learned_path = os.environ["TALK_LEARNED_FILE"]
 forgiving = os.environ.get("TALK_FORGIVING") == "1"
@@ -676,7 +679,8 @@ if sys.argv[1] == "opening":
     write_captions(os.path.join(audio_dir, agda_vtt), agda.opening, duration_of(aiff))
     call = LiveCall()
     call.add_turn("", agda.opening, False, "open_question",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}")
+                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_en=translate_robot(agda.opening, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
@@ -702,6 +706,7 @@ elif sys.argv[1] == "round":
     call = load_call()
     call.add_turn(heard.strip(), answer.reply, answer.matched is not None,
                   state_after(answer.done, answer.misses, answer.identify),
+                  robot_en=translate_robot(answer.reply, translations),
                   caller_audio=f"audio/{you_name}", robot_audio=f"audio/{agda_name}",
                   caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{agda_vtt}",
                   queue_place=answer.queue_place)
@@ -727,7 +732,8 @@ elif sys.argv[1] == "identified":
     call = load_call()
     call.add_turn("", answer.reply, False, "queue",
                   robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
-                  queue_place=answer.queue_place, queue_total=answer.queue_place)
+                  queue_place=answer.queue_place, queue_total=answer.queue_place,
+                  robot_en=translate_robot(answer.reply, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
@@ -747,7 +753,8 @@ elif sys.argv[1] == "idline":
     write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
     call = load_call()
     call.add_turn("", text, False, "identification",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}")
+                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_en=translate_robot(text, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
@@ -767,7 +774,8 @@ elif sys.argv[1] == "queue":
     call.add_turn("", answer.reply, False, "queue",
                   robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
                   queue_place=answer.queue_place,
-                  queue_total=int(os.environ["TALK_TOTAL"]))
+                  queue_total=int(os.environ["TALK_TOTAL"]),
+                  robot_en=translate_robot(answer.reply, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
@@ -799,7 +807,8 @@ elif sys.argv[1] == "english":
     call.add_turn(heard, text, bool(digit), state,
                   robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
                   queue_place=int(place) if place else None,
-                  queue_total=int(total) if total else None)
+                  queue_total=int(total) if total else None,
+                  robot_en=translate_robot(text, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
@@ -821,7 +830,8 @@ elif sys.argv[1] == "officer":
     call = load_call()
     call.add_turn("", text, False, "officer",
                   robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
-                  speaker=os.environ.get("TALK_OFF_SPEAKER") or None)
+                  speaker=os.environ.get("TALK_OFF_SPEAKER") or None,
+                  robot_en=translate_robot(text, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)

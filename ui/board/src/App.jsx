@@ -130,6 +130,9 @@ function App() {
   const { states } = data.maps[live.map];
   const queued = [...live.turns].reverse().find((turn) => turn.queue_place != null);
   const latest = live.turns.length === 0 ? null : live.turns[live.turns.length - 1];
+  const latestSv = latest == null ? null : latest.robot;
+  const latestEn = latest == null ? null : (latest.robot_en ?? latest.robot);
+  const latestRobot = lang === 'en' ? latestEn : latestSv;
   const subtitleKey = latest == null
     ? `${live.persona}|none`
     : latest.caller_audio || `${latest.caller}|${latest.robot}`;
@@ -208,7 +211,7 @@ function App() {
           <h2>{t.now}</h2>
           <Subtitle
             key={subtitleKey}
-            text={latest && latest.robot}
+            text={latestRobot}
             who={(latest && latest.speaker) || live.robot_name || t.robot}
           />
           <h2>{t.tree}</h2>

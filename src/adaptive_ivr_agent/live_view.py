@@ -1,5 +1,6 @@
 """Live call board data + page rendering (T-045)."""
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -105,6 +106,29 @@ def write_captions(path: str | Path, text: str, seconds: float) -> str:
     return str(path)
 
 
+QUEUE_PLACE_SV = re.compile(r"Du har plats (\d+) i kön")
+
+
+def line_translations(path: str | Path) -> dict[str, str]:
+    """Swedish-to-English map from the lines file (entries with en only)."""
+    raw = json.loads(Path(path).read_text(encoding=ENCODING))
+    return {line["text"]: line["en"] for line in raw["lines"] if "en" in line}
+
+
+def translate_robot(text: str, translations: dict[str, str]) -> str:
+    """English rendering of Agda's known lines; unknown text passes through."""
+    out = text
+    for sv, en in sorted(translations.items(), key=lambda kv: -len(kv[0])):
+        if sv in out:
+            out = out.replace(sv, en)
+    match = QUEUE_PLACE_SV.search(out)
+    if match:
+        out = out.replace(
+            match.group(0), f"You are number {match.group(1)} in the queue."
+        )
+    return out
+
+
 class LiveCall:
     """One real call's turns, accumulated round by round for the board."""
 
@@ -140,6 +164,7 @@ class LiveCall:
         queue_place: int | None = None,
         queue_total: int | None = None,
         speaker: str | None = None,
+        robot_en: str | None = None,
     ) -> None:
         """Append one exchange. Media paths are board-relative (audio/...) or None."""
         turn = {
@@ -163,6 +188,8 @@ class LiveCall:
             turn["queue_total"] = queue_total
         if speaker is not None:
             turn["speaker"] = speaker
+        if robot_en is not None:
+            turn["robot_en"] = robot_en
         self.turns.append(turn)
 
     @property

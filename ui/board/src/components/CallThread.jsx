@@ -37,7 +37,7 @@ function CallThread({ call, lang, t }) {
           )}
           <div className="turn robot">
             <div className="who">{turn.speaker || call.robot_name || t.robot}</div>
-            <div className="bubble"><Typewriter text={turn.robot} /></div>
+            <div className="bubble"><Typewriter text={lang === 'en' ? (turn.robot_en ?? turn.robot) : turn.robot} /></div>
             {turn.robot_audio && (
               <audio
                 controls
@@ -78,6 +78,7 @@ CallThread.propTypes = {
     turns: PropTypes.arrayOf(PropTypes.shape({
       caller: PropTypes.string.isRequired,
       robot: PropTypes.string.isRequired,
+      robot_en: PropTypes.string,
       matched: PropTypes.bool.isRequired,
       caller_audio: PropTypes.string,
       robot_audio: PropTypes.string,
