@@ -58,6 +58,11 @@ MIC="MacBook Pro-mikrofon"
 RECORD_SECONDS="${RECORD_SECONDS:-5}"
 MIC_INDEX="${MIC_INDEX:-}"             # empty = auto-detect; set to force an avfoundation index
 VOICE="${VOICE:-Alva}"
+FLOOR_LEVEL=70                        # talk mode raises a quieter physical output to this (merged devices can't be raised later)
+FLOOR_CHANGED=0
+FLOOR_TARGET=""
+ORIG_SYS_VOL=""
+ORIG_SYS_MUTED=""
 if [ -z "${TALK_VOLUME+x}" ]; then
   TALK_VOLUME="0.7"                       # Rickard's level; +/- during a call adjusts + remembers
   if [ -f "$ROOT/.talk-volume" ] && grep -Eq '^(0\.[0-9]+|[1-3](\.[0-9]+)?|4(\.0+)?)$' "$ROOT/.talk-volume"; then
@@ -87,6 +92,57 @@ audio_index_for() {
   [ -z "$_line" ] && _line="$(printf '%s\n' "$_list" | grep -i -m1 'macbook\|mikrofon\|microphone')"
   [ -z "$_line" ] && _line="$(printf '%s\n' "$_list" | head -1)"
   printf '%s\n' "$_line" | sed -n 's/^\[\([0-9][0-9]*\)\].*/\1/p'
+}
+
+floor_system_volume() {
+  # $1 = physical device already current. Unmute + raise below FLOOR_LEVEL.
+  # Remembers originals for restore_system_volume. Never fails the call.
+  FLOOR_TARGET="$1"
+  FLOOR_CHANGED=0
+  ORIG_SYS_VOL=""
+  ORIG_SYS_MUTED=""
+  command -v osascript >/dev/null 2>&1 || { warn "osascript missing, skipping volume floor"; return 0; }
+  _vol="$(osascript -e 'output volume of (get volume settings)' 2>/dev/null || true)"
+  _muted="$(osascript -e 'output muted of (get volume settings)' 2>/dev/null || true)"
+  case "$_vol" in
+    '' | *[!0-9]*) warn "could not read system volume, skipping floor"; return 0 ;;
+  esac
+  ORIG_SYS_VOL="$_vol"
+  ORIG_SYS_MUTED="$_muted"
+  if [ "$_muted" = "true" ]; then
+    osascript -e 'set volume output muted false' 2>/dev/null || true
+    FLOOR_CHANGED=1
+    info "unmuted $1 (was muted)"
+  fi
+  if [ "$_vol" -lt "$FLOOR_LEVEL" ]; then
+    osascript -e "set volume output volume $FLOOR_LEVEL" 2>/dev/null || true
+    FLOOR_CHANGED=1
+    info "raised $1 system volume $_vol -> $FLOOR_LEVEL (merged device can't be raised later)"
+  else
+    ok "system volume $1: $_vol (floor $FLOOR_LEVEL)"
+  fi
+}
+
+restore_system_volume() {
+  # Undo floor_system_volume: exact level/mute back on FLOOR_TARGET, then back
+  # to ORIGINAL_OUTPUT. Silent no-op unless the floor changed something.
+  [ "${FLOOR_CHANGED:-0}" = 1 ] || return 0
+  [ -n "${FLOOR_TARGET:-}" ] || return 0
+  command -v osascript >/dev/null 2>&1 || return 0
+  case "${ORIG_SYS_VOL:-}" in
+    '' | *[!0-9]*) return 0 ;;
+  esac
+  if [ "$(SwitchAudioSource -c -t output 2>/dev/null)" != "$FLOOR_TARGET" ]; then
+    SwitchAudioSource -s "$FLOOR_TARGET" -t output >/dev/null 2>/dev/null || return 0
+  fi
+  osascript -e "set volume output volume $ORIG_SYS_VOL" 2>/dev/null || true
+  if [ "${ORIG_SYS_MUTED:-}" = "true" ]; then
+    osascript -e 'set volume output muted true' 2>/dev/null || true
+  fi
+  if [ "$(SwitchAudioSource -c -t output 2>/dev/null)" != "$ORIGINAL_OUTPUT" ]; then
+    SwitchAudioSource -s "$ORIGINAL_OUTPUT" -t output >/dev/null 2>/dev/null || true
+  fi
+  info "system volume restored: $FLOOR_TARGET -> $ORIG_SYS_VOL"
 }
 
 title "Talk to the robot ($MODE)"
@@ -122,6 +178,9 @@ if command -v osascript >/dev/null 2>&1; then
     *) if [ "$SYS_LEVEL" -lt 40 ]; then warn "macOS system volume is $SYS_LEVEL (raise it to hear Agda well)"; fi ;;
   esac
 fi
+if [ "$MODE" = "check" ] && command -v osascript >/dev/null 2>&1; then
+  info "check: talk mode would unmute + raise below $FLOOR_LEVEL to $FLOOR_LEVEL (now: ${SYS_LEVEL:-unknown})"
+fi
 if [ "$QUIET" = 1 ]; then
   info "quiet mode: type + read, t toggles sound back on"
 fi
@@ -155,7 +214,7 @@ fi
 [ "$MODE" = "check" ] && { title "Check only: nothing changed"; exit 0; }
 
 step "Switch audio"
-what "Route output through $MULTI_OUTPUT (you hear the robot) and input from $MIC. Originals are restored on exit."
+what "Level the physical output first (merged devices can't be raised later), then route through $MULTI_OUTPUT. Originals are restored on exit."
 ORIGINAL_OUTPUT="$(SwitchAudioSource -c -t output)"
 case "$ORIGINAL_OUTPUT" in
   IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
@@ -166,9 +225,21 @@ switch_back() {
   SwitchAudioSource -s "$ORIGINAL_OUTPUT" -t output >/dev/null
   SwitchAudioSource -s "$ORIGINAL_INPUT" -t input >/dev/null
   info "Audio restored: output='$ORIGINAL_OUTPUT' input='$ORIGINAL_INPUT'"
+  restore_system_volume
 }
 trap switch_back EXIT
 trap 'exit 130' INT TERM
+_floor_target="$NORMAL_OUTPUT"
+if [ "$AIRPODS" = 1 ]; then
+  _pods="$(SwitchAudioSource -a -t output 2>/dev/null | grep -i -m1 'airpods' || true)"
+  [ -n "$_pods" ] && _floor_target="$_pods"
+fi
+if [ "$(SwitchAudioSource -c -t output)" != "$_floor_target" ]; then
+  SwitchAudioSource -s "$_floor_target" -t output >/dev/null \
+    || fail "Could not switch output to $_floor_target"
+  ok "output -> $_floor_target (level check)"
+fi
+floor_system_volume "$_floor_target"
 SwitchAudioSource -s "$MULTI_OUTPUT" -t output >/dev/null
 [ "$(SwitchAudioSource -c -t output)" = "$MULTI_OUTPUT" ] \
   || fail "Could not switch output to $MULTI_OUTPUT"
@@ -302,7 +373,25 @@ wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
   return 1
 }
 
-play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
+prepare_playback() {
+  # From TALK_VOLUME + PLAY_SRC: set PLAY_FILE/PLAY_VOL/PLAY_FROM (boost incl).
+  PLAY_FILE="$PLAY_SRC"
+  PLAY_VOL="$TALK_VOLUME"
+  PLAY_FROM="$TALK_VOLUME"
+  if LC_ALL=C awk "BEGIN { exit !($TALK_VOLUME > 1) }" 2>/dev/null; then
+    PLAY_FILE="$PLAY_SRC-boost.aiff"
+    if ffmpeg -hide_banner -loglevel error -y -i "$PLAY_SRC" \
+        -af "volume=$TALK_VOLUME,alimiter=limit=0.95" "$PLAY_FILE" 2>/dev/null; then
+      PLAY_VOL="1"
+      info "boost x$TALK_VOLUME (ffmpeg gain)"
+    else
+      warn "boost failed, playing at max instead"
+      PLAY_FILE="$PLAY_SRC"; PLAY_VOL="1"
+    fi
+  fi
+}
+
+play_skippable() { # $1 = file; any key skips, + / - and slider act live
   DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$1" 2>/dev/null)" || DUR="8"
   if [ "$QUIET" = 1 ]; then
     info "(quiet: muted — any key continues, t for sound, q quits)"
@@ -312,28 +401,31 @@ play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
   fi
   SECS=$((${DUR%.*} + 2))
   load_volume # pick up board-slider changes made since the last turn
-  PLAY_FILE="$1"
-  PLAY_VOL="$TALK_VOLUME"
-  if LC_ALL=C awk "BEGIN { exit !($TALK_VOLUME > 1) }" 2>/dev/null; then
-    PLAY_FILE="$1-boost.aiff"
-    if ffmpeg -hide_banner -loglevel error -y -i "$1" \
-        -af "volume=$TALK_VOLUME,alimiter=limit=0.95" "$PLAY_FILE" 2>/dev/null; then
-      PLAY_VOL="1"
-      info "boost x$TALK_VOLUME (ffmpeg gain)"
-    else
-      warn "boost failed, playing at max instead"
-      PLAY_FILE="$1"; PLAY_VOL="1"
-    fi
-  fi
+  PLAY_SRC="$1"
+  prepare_playback
   afplay -v "$PLAY_VOL" "$PLAY_FILE" & APID=$!
-  wait_keys "$SECS" "$APID"; RC=$?
-  if [ "$RC" = 2 ]; then
-    kill "$APID" 2>/dev/null
-    quit_call
-  elif [ "$RC" = 0 ]; then
-    kill "$APID" 2>/dev/null
-    info "skipped ahead"
-  fi
+  LEFT="$SECS"
+  while [ "$LEFT" -gt 0 ]; do
+    kill -0 "$APID" 2>/dev/null || break
+    wait_keys 1 "$APID"; RC=$?
+    if [ "$RC" = 2 ]; then
+      kill "$APID" 2>/dev/null
+      quit_call
+    elif [ "$RC" = 0 ]; then
+      kill "$APID" 2>/dev/null
+      info "skipped ahead"
+      break
+    fi
+    kill -0 "$APID" 2>/dev/null || break
+    load_volume
+    if [ "$TALK_VOLUME" != "$PLAY_FROM" ]; then
+      kill "$APID" 2>/dev/null
+      info "volume $TALK_VOLUME (replaying line)"
+      prepare_playback
+      afplay -v "$PLAY_VOL" "$PLAY_FILE" & APID=$!
+    fi
+    LEFT=$((LEFT - 1))
+  done
   wait "$APID" 2>/dev/null || true
 }
 

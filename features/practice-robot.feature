@@ -85,3 +85,9 @@ Feature: Practice robot
     Given the volume is set above 1.0 via + key or board slider
     When Agda speaks
     Then ffmpeg applies gain with a limiter (audibly louder, no hard clip), and preflight warns when macOS system volume is low or muted
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S12
+  Scenario: Volume change replays the line live
+    Given Agda is speaking a line
+    When the volume changes via + / - key or board slider
+    Then the line restarts at the new volume within a second
