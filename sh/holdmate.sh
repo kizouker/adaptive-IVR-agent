@@ -98,40 +98,121 @@ open_board() {
   fi
 }
 
+cleanup() {
+  tput cnorm 2>/dev/null || true
+  stop_server
+}
+trap cleanup EXIT INT TERM
+
+can_fancy() {
+  [ -t 0 ] && [ -t 2 ] && command -v tput >/dev/null 2>&1 && tput sgr0 >/dev/null 2>&1
+}
+
+choose() { # options as args; echoes 1-based index, or "q" on Esc/EOF
+  if ! can_fancy; then
+    i=1
+    for opt in "$@"; do info "$i) $opt"; i=$((i + 1)); done
+    printf 'Type a number: '
+    read -r line || line="q"
+    printf '%s\n' "$line"
+    return 0
+  fi
+  ESC="$(printf '\033')"
+  tput civis >&2
+  sel=1
+  count=$#
+  draw() {
+    k=1
+    for opt in "$@"; do
+      if [ "$k" = "$sel" ]; then
+        printf '%s> %s%s\n' "$(tput rev)" "$opt" "$(tput sgr0)" >&2
+      else
+        printf '  %s\n' "$opt" >&2
+      fi
+      k=$((k + 1))
+    done
+  }
+  draw "$@"
+  while true; do
+    IFS= read -rsn1 key || { tput cnorm >&2; printf 'q\n'; return 0; }
+    case "$key" in
+      "$ESC")
+        if read -rsn2 -t 0.2 rest; then
+          if [ "$rest" = "[A" ] && [ "$sel" -gt 1 ]; then sel=$((sel - 1)); fi
+          if [ "$rest" = "[B" ] && [ "$sel" -lt "$count" ]; then sel=$((sel + 1)); fi
+        else
+          tput cnorm >&2; printf 'q\n'; return 0
+        fi
+        ;;
+      "")
+        tput cnorm >&2; printf '%s\n' "$sel"; return 0
+        ;;
+    esac
+    tput cuu "$count" >&2
+    draw "$@"
+  done
+}
+
 run_all() {
   step "Board + talk"
   what "Start the server, open the page, then talk. Server stops when this ends."
-  trap stop_server EXIT INT TERM
   start_server
   open_board
   "$HERE/talk.sh"
 }
 
+pick_persona() { # arrow-pick a persona; echoes its id, or "q" to go back
+  MAP="$(PYTHONPATH="$ROOT/src" python3 -c "
+import json, sys
+raw = json.load(open('$ROOT/data/role-phrasebooks.json'))
+for r in raw['roles']:
+    print(r['id'] + '|' + r['label'])
+")" || fail "Could not read personas"
+  IDS=()
+  OPTS=()
+  while IFS='|' read -r pid plabel; do
+    [ -n "$pid" ] || continue
+    IDS+=("$pid")
+    OPTS+=("$plabel")
+  done <<EOF
+$MAP
+EOF
+  OPTS+=("back")
+  sel="$(choose "${OPTS[@]}")"
+  case "$sel" in
+    q|Q) printf 'q\n'; return 0 ;;
+  esac
+  case "$sel" in
+    '' | *[!0-9]*) printf 'q\n'; return 0 ;;
+  esac
+  if [ "$sel" -ge 1 ] && [ "$sel" -le "${#IDS[@]}" ]; then
+    printf '%s\n' "${IDS[$((sel - 1))]}"
+  else
+    printf 'q\n'
+  fi
+}
+
 talk_menu() {
   while true; do
-    title "Talk options"
-    info "1) talk to Agda"
-    info "2) talk with AirPods"
-    info "3) sound check only"
-    info "4) talk as persona"
-    info "b) back"
-    printf 'Choose: '
-    read -r choice || { echo; exit 0; }
+    title "Talk options (arrows + Enter, Esc goes back)"
+    choice="$(choose \
+      "talk to Agda" \
+      "talk with AirPods" \
+      "sound check only" \
+      "talk as persona" \
+      "back")"
     case "$choice" in
       1) "$HERE/talk.sh"; return 0 ;;
       2) "$HERE/talk.sh" --airpods; return 0 ;;
       3) "$HERE/talk.sh" check; return 0 ;;
       4)
-        printf 'Persona id: '
-        read -r persona || { echo; exit 0; }
-        if [ -z "$persona" ]; then
-          warn "type a persona id (see data/role-phrasebooks.json)"
-        else
+        persona="$(pick_persona)"
+        if [ -n "$persona" ] && [ "$persona" != "q" ]; then
           "$HERE/talk.sh" --as "$persona"; return 0
         fi
         ;;
-      b|B) return 0 ;;
-      *) warn "pick 1, 2, 3, 4 or b" ;;
+      5|q|Q|b|B) return 0 ;;
+      *) warn "pick with arrows + Enter (or type 1-5)" ;;
     esac
   done
 }
@@ -150,18 +231,17 @@ case "$MODE" in
 esac
 
 while true; do
-  title "Holdmate menu"
-  info "1) board + talk (start server, open page, talk)"
-  info "2) talk options (server already runs)"
-  info "3) teach Agda words"
-  info "q) quit"
-  printf 'Choose: '
-  read -r choice || { echo; exit 0; }
+  title "Holdmate menu (arrows + Enter, Esc quits)"
+  choice="$(choose \
+    "board + talk (start server, open page, talk)" \
+    "talk options (server already runs)" \
+    "teach Agda words" \
+    "quit")"
   case "$choice" in
     1) run_all ;;
     2) talk_menu ;;
     3) "$HERE/learn-words.sh" ;;
-    q|Q) title "Bye"; exit 0 ;;
-    *) warn "pick 1, 2, 3 or q" ;;
+    4|q|Q) title "Bye"; exit 0 ;;
+    *) warn "pick with arrows + Enter (or type 1-4)" ;;
   esac
 done

@@ -153,7 +153,7 @@ if [ -n "$PERSONA" ]; then
   step "Role card"
   what "Show who you are calling as, so you can speak from that errand."
   run "read $PERSONA from role-phrasebooks.json"
-  PYTHONPATH="$ROOT/src" python3 - "$PERSONA" "$PHRASEBOOKS" <<'CARD' || fail "Unknown persona '$PERSONA' (check data/role-phrasebooks.json)"
+  if ! PYTHONPATH="$ROOT/src" python3 - "$PERSONA" "$PHRASEBOOKS" <<'CARD'
 import json
 import sys
 roles = json.load(open(sys.argv[2], encoding="utf-8"))["roles"]
@@ -164,6 +164,11 @@ print(f"Role: {persona['label']}")
 print(f"Errand: {persona['errand']}")
 print(f"Try words like: {', '.join(persona['vocabulary'])}")
 CARD
+  then
+    info "valid persona ids:"
+    PYTHONPATH="$ROOT/src" python3 -c "import json; [print(' - ' + r['id']) for r in json.load(open('$PHRASEBOOKS'))['roles']]"
+    fail "Unknown persona '$PERSONA'"
+  fi
   ok "rounds will be tagged: $PERSONA"
 fi
 
@@ -255,6 +260,10 @@ else:
     aliases = {}
 forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
 forced = int(forced_start) if forced_start.isdigit() else None
+# UNVERIFIED paraphrase (Rickard, 1 Nov): no transcript captured Agda's exact
+# served line (L08 is from call 1 step 3, wrong spot). Replace with verbatim
+# from Monday's sampling.
+SERVED_LINE = "Jag ska se om det finns en ledig handläggare."
 agda = AgdaCall(
     opening=f"{lines['L01']} {lines['L02']}",
     examples=lines["L03"],
@@ -262,7 +271,7 @@ agda = AgdaCall(
     transfer=lines["L19"],
     identify_line=lines["L09"],
     identified_line=lines["L11"],
-    served_line=lines["L08"],
+    served_line=SERVED_LINE,
     queue_line=lines["L13"],
     place_template=lines["L29"],
     respond=with_aliases(ears.respond, aliases),
