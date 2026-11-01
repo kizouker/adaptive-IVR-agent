@@ -353,7 +353,8 @@ toggle_quiet() {
   return 1
 }
 
-poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, beeps, consumes file
+poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, consumes file
+  # No Mac beep here: the browser already beeps instantly (else it sounds twice).
   DTMF_DIGIT=""
   [ -n "${CALL_STAMP:-}" ] || return 1
   [ -f "$DTMF_FILE" ] || return 1
@@ -364,16 +365,6 @@ poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, beeps, consumes file
     *) return 1 ;;
   esac
   DTMF_DIGIT="$_d"
-  if [ "${QUIET:-0}" != 1 ]; then
-    _beep="$REC_DIR/dtmf-$CALL_STAMP-$_d.wav"
-    if PYTHONPATH="$ROOT/src" python3 - "$_beep" "$_d" <<'EOF' 2>/dev/null; then
-import sys
-from adaptive_ivr_agent.tones import write_beeps
-write_beeps(sys.argv[1], sys.argv[2], 1, 0.25, 0)
-EOF
-      afplay "$_beep" 2>/dev/null &
-    fi
-  fi
   return 0
 }
 
@@ -647,6 +638,18 @@ def to_mp3(aiff, mp3):
 
 def write_board(call):
     board = build_live_board([call])
+    try:
+        with open(os.path.join(root, "data/holdmate-knowledge.json"),
+                  encoding="utf-8") as handle:
+            known = json.load(handle)
+    except (OSError, ValueError):
+        known = None
+    if known:
+        board["lessons"] = known.get("lessons", [])
+        board["words"] = {
+            word: {"tries": entry["tries"], "transfers": entry["transfers"]}
+            for word, entry in known.get("words", {}).items()
+        }
     with open(os.environ["TALK_BOARD_FILE"], "w", encoding="utf-8") as handle:
         handle.write(json.dumps(board, ensure_ascii=False))
 

@@ -10,6 +10,9 @@ function LessonsView({ lessons, words, t }) {
   const rows = Object.entries(words)
     .map(([word, entry]) => ({ word: word === '' ? '(silence)' : word, ...entry }))
     .sort((a, b) => b.transfers - a.transfers || a.word.localeCompare(b.word));
+  if (lessons.length === 0 && rows.length === 0) {
+    return <p className="tempty">{t.noLessons}</p>;
+  }
   return (
     <>
       <ul className="lessons">
@@ -61,6 +64,7 @@ LessonsView.propTypes = {
     transfers: PropTypes.number.isRequired,
   })).isRequired,
   t: PropTypes.shape({
+    noLessons: PropTypes.string.isRequired,
     sims: PropTypes.string.isRequired,
     transfers: PropTypes.string.isRequired,
     served: PropTypes.string.isRequired,
