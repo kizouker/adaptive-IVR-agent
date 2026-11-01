@@ -10,6 +10,7 @@ from adaptive_ivr_agent.live_view import (
     LiveCall,
     build_board,
     build_call,
+    build_coverage,
     build_live_board,
     line_translations,
     render_live_page,
@@ -224,6 +225,24 @@ def test_translate_robot_renders_known_lines_and_passes_unknown():
     assert translate_robot("Du har plats 3 i kön", translations) == \
         "You are number 3 in the queue."
     assert translate_robot("helt okänt dravel", translations) == "helt okänt dravel"
+
+
+def test_build_coverage_flags_eaten_tokens_per_group():
+    roles = [
+        {"id": "a", "vocabulary": ["vab", "x"]},
+        {"id": "b", "vocabulary": ["vab", "y"]},
+    ]
+    words = {"vab": {"tries": 2, "transfers": 2}, "ja": {"tries": 1, "transfers": 0}}
+    coverage = build_coverage(roles, words)
+    assert coverage["total"] == len({"vab", "x", "y", "ja", "nej", "hej", "tack",
+                                      "", "1", "2", "4"})
+    assert coverage["tried"] == 2
+    vab_cells = [cell for cell in coverage["cells"] if cell["token"] == "vab"]
+    assert [cell["group"] for cell in vab_cells] == ["a", "b"]
+    assert all(cell["tried"] and cell["transfers"] == 2 for cell in vab_cells)
+    silence = [cell for cell in coverage["cells"] if cell["token"] == ""]
+    assert silence[0]["label"] == "(silence)"
+    assert silence[0]["tried"] is False
 
 
 def test_add_turn_carries_english_robot_line():

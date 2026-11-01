@@ -107,6 +107,37 @@ def write_captions(path: str | Path, text: str, seconds: float) -> str:
 
 
 QUEUE_PLACE_SV = re.compile(r"Du har plats (\d+) i kön")
+SPECIAL_PROBES = ("ja", "nej", "hej", "tack", "")
+ENGLISH_DIGITS = ("1", "2", "4")
+
+
+def build_coverage(roles: list, knowledge_words: dict) -> dict:
+    """Pacman matrix: explorable menu tokens grouped, eaten ones flagged.
+
+    Cells repeat shared tokens per group (each persona's menu); the
+    total/tried counts use unique tokens so the share stays honest.
+    """
+    groups = [(role["id"], list(dict.fromkeys(role["vocabulary"]))) for role in roles]
+    groups.append(("special", list(SPECIAL_PROBES)))
+    groups.append(("english", list(ENGLISH_DIGITS)))
+    cells = []
+    seen: dict = {}
+    for group, tokens in groups:
+        for token in tokens:
+            entry = knowledge_words.get(token, {})
+            tries = entry.get("tries", 0)
+            tried = tries > 0
+            cells.append({
+                "token": token,
+                "label": token if token else "(silence)",
+                "group": group,
+                "tried": tried,
+                "tries": tries,
+                "transfers": entry.get("transfers", 0),
+            })
+            if token not in seen:
+                seen[token] = tried
+    return {"total": len(seen), "tried": sum(seen.values()), "cells": cells}
 
 
 def line_translations(path: str | Path) -> dict[str, str]:

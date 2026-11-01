@@ -9,6 +9,7 @@ import VolumeWidget from './components/VolumeWidget';
 import CIWidget from './components/CIWidget';
 import LessonsView from './components/LessonsView';
 import KeypadWidget from './components/KeypadWidget';
+import CoverageWidget from './components/CoverageWidget';
 import { fetchBoard, setLang } from './store/boardSlice';
 
 const POLL_MS = 3000;
@@ -42,6 +43,9 @@ const STRINGS = {
     lessons: 'Lektioner',
     lessonsRun: 'Körda lektioner',
     noLessons: 'Kör lektioner från menyn (4 → 1) för att fylla denna flik.',
+    coverage: 'Täckning',
+    of: 'av',
+    explored: 'avsökt',
     learnedWords: 'Inlärda ord',
     sims: 'simuleringar',
     transfers: 'kopplingar',
@@ -85,6 +89,9 @@ const STRINGS = {
     lessons: 'Lessons',
     lessonsRun: 'Lessons run',
     noLessons: 'Run lessons from the menu (4 → 1) to fill this tab.',
+    coverage: 'Coverage',
+    of: 'of',
+    explored: 'explored',
     learnedWords: 'Learned words',
     sims: 'sims',
     transfers: 'transfers',
@@ -249,6 +256,8 @@ function App() {
       )}
       {tab === 'lessons' && (
         <>
+          <h2>{t.coverage}</h2>
+          {data.coverage != null && <CoverageWidget coverage={data.coverage} t={t} />}
           <h2>{t.lessonsRun}</h2>
           <LessonsView
             lessons={data.lessons ?? []}

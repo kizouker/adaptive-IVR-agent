@@ -282,3 +282,5 @@ def test_main_writes_lesson_board_with_words(tmp_path):
     assert raw["lessons"][0]["persona"] == "ny-arbetslos"
     assert raw["words"]["skriva in mig"]["transfers"] == 1
     assert "I will connect you to an officer." in raw["calls"][0]["turns"][0]["robot_en"]
+    assert raw["coverage"]["tried"] > 0
+    assert raw["coverage"]["total"] >= raw["coverage"]["tried"]

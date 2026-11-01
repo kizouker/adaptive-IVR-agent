@@ -519,6 +519,7 @@ from adaptive_ivr_agent.live_view import (
     LIVE_MAP,
     LIVE_ROBOT_NAME,
     LiveCall,
+    build_coverage,
     build_live_board,
     line_translations,
     translate_robot,
@@ -650,6 +651,14 @@ def write_board(call):
             word: {"tries": entry["tries"], "transfers": entry["transfers"]}
             for word, entry in known.get("words", {}).items()
         }
+        try:
+            with open(os.path.join(root, "data/role-phrasebooks.json"),
+                      encoding="utf-8") as handle:
+                all_roles = json.load(handle)["roles"]
+        except (OSError, ValueError, KeyError):
+            all_roles = []
+        if all_roles:
+            board["coverage"] = build_coverage(all_roles, known.get("words", {}))
     with open(os.environ["TALK_BOARD_FILE"], "w", encoding="utf-8") as handle:
         handle.write(json.dumps(board, ensure_ascii=False))
 

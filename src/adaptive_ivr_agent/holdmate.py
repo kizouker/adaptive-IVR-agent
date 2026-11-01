@@ -20,7 +20,9 @@ from pathlib import Path
 from typing import NamedTuple
 
 from adaptive_ivr_agent.live_view import (
+    SPECIAL_PROBES,
     LiveCall,
+    build_coverage,
     build_live_board,
     line_translations,
     translate_robot,
@@ -40,7 +42,7 @@ CALLER_VOICE = "Oskar"
 AGDA_VOICE = "Alva"
 MAX_MISSES = 2
 FIXED_PLACE = 3
-PROBES = ["ja", "nej", "hej", "tack", ""]
+PROBES = list(SPECIAL_PROBES)
 SILENCE_LABEL = "(silence)"
 
 
@@ -399,14 +401,15 @@ def lesson_call(role: dict, lesson: Lesson, translations: dict) -> LiveCall:
 
 
 def write_lesson_board(path: str | Path, calls: list[LiveCall],
-                       knowledge: "Knowledge") -> None:
-    """Board state with lesson calls plus the run log and word table."""
+                       knowledge: "Knowledge", roles: list) -> None:
+    """Board state: lesson calls plus run log, word table and coverage."""
     board = build_live_board(calls)
     board["lessons"] = knowledge.lessons
     board["words"] = {
         word: {"tries": entry["tries"], "transfers": entry["transfers"]}
         for word, entry in knowledge.words.items()
     }
+    board["coverage"] = build_coverage(roles, knowledge.words)
     Path(path).write_text(json.dumps(board, ensure_ascii=False), encoding=ENCODING)
 
 
@@ -430,9 +433,10 @@ def main(argv: list[str] | None = None) -> int:
     translations = line_translations(args.lines)
     ears = ReactiveRobot.from_phrasebooks(args.phrasebooks)
     agda = build_agda(lines, ears.respond)
-    personas = load_personas(args.phrasebooks)
+    all_roles = load_personas(args.phrasebooks)
+    personas = all_roles
     if args.persona:
-        personas = [r for r in personas if r["id"] == args.persona]
+        personas = [r for r in all_roles if r["id"] == args.persona]
         if not personas:
             print(f"unknown persona: {args.persona}", file=sys.stderr)
             return 1
@@ -462,7 +466,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             if args.board_out:
                 live_calls.append(lesson_call(role, lesson, translations))
-                write_lesson_board(args.board_out, live_calls, knowledge)
+                write_lesson_board(args.board_out, live_calls, knowledge, all_roles)
     except KeyboardInterrupt:
         print("stopped early; saving what was learned so far")
     except BrokenPipeError:
