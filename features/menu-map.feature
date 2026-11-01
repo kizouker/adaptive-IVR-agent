@@ -61,3 +61,9 @@ Feature: Menu map
     Given a call with more than two turns
     When the thread renders
     Then the two latest turns show first with fast typing, and a button reveals the rest
+
+  @FN-REQ-IVR-005 @FN-REQ-IVR-005-S06
+  Scenario: Cinema subtitles with history behind a click
+    Given a live call with turns
+    When the details tab renders
+    Then one phrase at a time shows as big subtitles, and a history button reveals all turns latest-first

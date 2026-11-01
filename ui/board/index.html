@@ -56,17 +56,17 @@
         border-radius: 20px; }
       .kw-ok { color: #7ee2a8; }
       .kw-miss { color: #9aa3af; }
-      .flow { max-width: 340px; margin-bottom: 6px; }
+      .flow { max-width: 340px; margin: 0 auto 6px; }
       .fname { fill: #e8eaed; font-size: 13px; text-anchor: middle; }
       .flvl { fill: #9aa3af; font-size: 10px; text-anchor: middle; }
       .caret { display: inline-block; width: 7px; height: 14px;
         background: #7ee2a8; vertical-align: -2px; margin-left: 1px; }
       .queue { display: flex; flex-direction: column; align-items: center;
         margin: 6px 0 10px; }
-      .qbar { width: 190px; height: 8px; background: #161c25;
+      .qbar { width: 220px; height: 8px; background: #161c25;
         border-radius: 4px; margin-top: 10px; overflow: hidden; }
       .qfill { height: 100%; background: #2dd4bf; border-radius: 4px; }
-      .flap { position: relative; width: 190px; height: 150px; }
+      .flap { position: relative; width: 220px; height: 168px; }
       .half { position: absolute; left: 0; right: 0; height: 50%; }
       .half.top { top: 0; background: #242d3a;
         border-radius: 12px 12px 0 0; border: 1px solid #39424f;
@@ -76,9 +76,8 @@
         border-top: none; }
       .fdigit { position: absolute; inset: 0; display: flex;
         align-items: center; justify-content: center;
-        font-size: 104px; font-weight: 700; color: #f2f4f7;
+        font-size: 120px; font-weight: 700; color: #f2f4f7;
         font-variant-numeric: tabular-nums; }
-      .flap.dim .fdigit { color: #4b5563; }
       .split { position: absolute; top: 50%; left: 0; right: 0;
         height: 2px; margin-top: -1px; background: #0b0e12; }
       .split::before, .split::after { content: ""; position: absolute;
@@ -108,6 +107,11 @@
       .tedge { display: block; font-size: 12px; color: #7ee2a8;
         margin: 2px 0 2px 30px; font-style: italic; }
       .tleaf { font-size: 13px; color: #9aa3af; }
+      .subs { text-align: center; margin: 6px 0 10px; }
+      .subline { margin: 8px 0; }
+      .subwho { font-size: 13px; color: #9aa3af; margin-bottom: 2px; }
+      .subtext { font-size: 34px; font-weight: 600;
+        text-shadow: 0 1px 3px #000; }
       @media (prefers-reduced-motion: no-preference) {
         .fcurrent { animation: fpulse 1.6s infinite; }
         @keyframes fpulse { 50% { opacity: 0.55; } }

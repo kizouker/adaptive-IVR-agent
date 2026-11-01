@@ -4,6 +4,7 @@ import FlowGraph from './components/FlowGraph';
 import QueueWidget from './components/QueueWidget';
 import TreeView from './components/TreeView';
 import CallThread from './components/CallThread';
+import Subtitle from './components/Subtitle';
 import { fetchBoard, setLang } from './store/boardSlice';
 
 const POLL_MS = 3000;
@@ -29,7 +30,8 @@ const STRINGS = {
     overview: 'Översikt',
     details: 'Detaljer',
     tree: 'Samtalsträd',
-    showAll: 'Visa alla',
+    now: 'Just nu',
+    history: 'Historik',
     showLess: 'Visa färre',
     seenAbove: 'se ovan',
   },
@@ -53,7 +55,8 @@ const STRINGS = {
     overview: 'Overview',
     details: 'Details',
     tree: 'Call tree',
-    showAll: 'Show all',
+    now: 'Right now',
+    history: 'History',
     showLess: 'Show less',
     seenAbove: 'see above',
   },
@@ -87,6 +90,10 @@ function App() {
   const live = data.calls[data.calls.length - 1];
   const { states } = data.maps[live.map];
   const queued = [...live.turns].reverse().find((turn) => turn.queue_place != null);
+  const latest = live.turns.length === 0 ? null : live.turns[live.turns.length - 1];
+  const subtitleKey = latest == null
+    ? `${live.persona}|none`
+    : latest.caller_audio || `${latest.caller}|${latest.robot}`;
   return (
     <div className="wrap">
       <div className="top">
@@ -141,6 +148,12 @@ function App() {
         </>
       ) : (
         <>
+          <h2>{t.now}</h2>
+          <Subtitle
+            key={subtitleKey}
+            text={latest && latest.robot}
+            who={live.robot_name || t.robot}
+          />
           <h2>{t.tree}</h2>
           <TreeView
             states={states}

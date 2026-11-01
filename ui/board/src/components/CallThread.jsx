@@ -2,8 +2,6 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import Typewriter from './Typewriter';
 
-const PREVIEW_TURNS = 2;
-
 const stringsShape = PropTypes.shape({
   errand: PropTypes.string.isRequired,
   caller: PropTypes.string.isRequired,
@@ -13,19 +11,18 @@ const stringsShape = PropTypes.shape({
   missed: PropTypes.string.isRequired,
   captions: PropTypes.string.isRequired,
   queuePlace: PropTypes.string.isRequired,
-  showAll: PropTypes.string.isRequired,
+  history: PropTypes.string.isRequired,
   showLess: PropTypes.string.isRequired,
 });
 
 function CallThread({ call, lang, t }) {
   const [expanded, setExpanded] = useState(false);
   const ordered = [...call.turns].reverse();
-  const visible = expanded ? ordered : ordered.slice(0, PREVIEW_TURNS);
   return (
     <div className="card">
       <h3>{call.label}</h3>
       <div className="errand">{`${t.errand}: ${call.errand}`}</div>
-      {visible.map((turn) => (
+      {expanded && ordered.map((turn) => (
         <div key={turn.caller_audio || `${turn.caller}|${turn.robot}`}>
           {turn.caller !== '' && (
             <div className="turn caller">
@@ -58,9 +55,9 @@ function CallThread({ call, lang, t }) {
           </div>
         </div>
       ))}
-      {call.turns.length > PREVIEW_TURNS && (
+      {call.turns.length > 0 && (
         <button type="button" className="linklike" onClick={() => setExpanded(!expanded)}>
-          {expanded ? t.showLess : `${t.showAll} (${call.turns.length})`}
+          {expanded ? t.showLess : `${t.history} (${call.turns.length})`}
         </button>
       )}
     </div>
