@@ -45,7 +45,7 @@ class ElksClient:
             data=urllib.parse.urlencode(fields).encode(),
             headers={"Authorization": f"Basic {token}"},
         )
-        with urllib.request.urlopen(req, timeout=15) as res:
+        with urllib.request.urlopen(req, timeout=15) as res:  # nosec B310: fixed https API base
             return json.load(res)
 
     def place_call(

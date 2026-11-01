@@ -10,6 +10,7 @@ from __future__ import annotations
 import difflib
 import json
 import os
+import urllib.parse
 import urllib.request
 
 from adaptive_ivr_agent.talk import normalize
@@ -82,6 +83,8 @@ class SparkNormalizer(Normalizer):
         self.api_key = api_key or os.environ.get("SPARK_API_KEY", "")
         if not self.endpoint or not self.api_key:
             raise NotConfiguredError("set SPARK_API_URL + SPARK_API_KEY")
+        if urllib.parse.urlparse(self.endpoint).scheme != "https":
+            raise NotConfiguredError("SPARK_API_URL must be https")
         self.model = model
         self.timeout = timeout
 
@@ -107,6 +110,7 @@ class SparkNormalizer(Normalizer):
             },
         )
         try:
+            # nosec B310: endpoint scheme validated https in __init__
             with urllib.request.urlopen(req, timeout=self.timeout) as res:
                 payload = json.load(res)
             content = payload["choices"][0]["message"]["content"]

@@ -68,6 +68,8 @@ def test_spark_requires_config(monkeypatch):
     monkeypatch.delenv("SPARK_API_KEY", raising=False)
     with pytest.raises(NotConfiguredError):
         SparkNormalizer()
+    with pytest.raises(NotConfiguredError):
+        SparkNormalizer(endpoint="http://x.test/v1", api_key="k")
 
 
 def test_spark_parses_and_validates(monkeypatch):
