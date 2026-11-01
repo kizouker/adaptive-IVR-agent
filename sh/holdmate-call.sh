@@ -53,9 +53,9 @@ what "Check python, phrasebooks and recorded lines before running lessons."
 command -v python3 >/dev/null 2>&1 || fail "python3 is missing"
 ok "tool: python3"
 [ -f "$PHRASEBOOKS" ] || fail "Phrasebooks not found: $PHRASEBOOKS"
-ok "phrasebooks: $PHRASEBOOKS"
+ok "phrasebooks: ${PHRASEBOOKS#$ROOT/}"
 [ -f "$LINES" ] || fail "Recorded lines not found: $LINES"
-ok "recorded lines: $LINES"
+ok "recorded lines: ${LINES#$ROOT/}"
 if [ "$SPEAK" = 1 ]; then
   command -v say >/dev/null 2>&1 || fail "say is missing (macOS only)"
   ok "speech: Oskar calls, Alva answers"
@@ -82,16 +82,20 @@ ARGS="--phrasebooks $PHRASEBOOKS --lines $LINES --knowledge $KNOWLEDGE --lessons
 [ -n "$PERSONA" ] && ARGS="$ARGS --as $PERSONA"
 [ "$SPEAK" = 1 ] && ARGS="$ARGS --speak"
 [ "$FRESH" = 1 ] && ARGS="$ARGS --fresh"
-run "PYTHONPATH=src python3 -m adaptive_ivr_agent.holdmate $ARGS"
+DISPLAY="holdmate lessons --depth $DEPTH"
+[ -n "$PERSONA" ] && DISPLAY="$DISPLAY --as $PERSONA"
+[ "$SPEAK" = 1 ] && DISPLAY="$DISPLAY --speak"
+[ "$FRESH" = 1 ] && DISPLAY="$DISPLAY --fresh"
+run "$DISPLAY"
 # shellcheck disable=SC2086
 PYTHONPATH="$ROOT/src" python3 -m adaptive_ivr_agent.holdmate $ARGS \
   || fail "Lessons failed"
 [ -s "$KNOWLEDGE" ] || fail "Knowledge missing: $KNOWLEDGE"
-ok "knowledge: $KNOWLEDGE"
+ok "knowledge: ${KNOWLEDGE#$ROOT/}"
 [ -s "$LESSONS" ] || fail "Lesson history missing: $LESSONS"
-ok "history: $LESSONS"
+ok "history: ${LESSONS#$ROOT/}"
 if [ -s "$BOARD" ]; then
-  ok "board: $BOARD"
+  ok "board: ${BOARD#$ROOT/}"
 else
   warn "board file missing: $BOARD (display only)"
 fi

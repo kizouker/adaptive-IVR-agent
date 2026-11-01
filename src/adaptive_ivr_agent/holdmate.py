@@ -10,8 +10,10 @@ says every turn aloud (Oskar calls, Alva answers).
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
+import textwrap
 from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
@@ -220,12 +222,37 @@ class Lesson:
         }
 
 
+def _wrap_width() -> int:
+    """Dialogue width: the terminal when watched, 100 in pipes and files."""
+    try:
+        if sys.stdout.isatty():
+            return shutil.get_terminal_size().columns
+    except OSError:
+        pass
+    return 100
+
+
+def _dialogue(tag_painted: str, tag_plain: str, said: str, width: int) -> str:
+    """One wrapped dialogue turn; paint stays out of the width math."""
+    lead = f"    {tag_plain} "
+    rows = textwrap.wrap(said, width=width - len(lead)) or [""]
+    first = f"    {tag_painted} {rows[0]}"
+    rest = [" " * len(lead) + cont for cont in rows[1:]]
+    return "\n".join([first, *rest])
+
+
 def speak_turns(turns: list[str]) -> None:
     """Say one call aloud; Ctrl-C stops at once instead of trailing off."""
+    width = _wrap_width()
     for line in turns:
-        voice = CALLER_VOICE if line.startswith("YOU:") else AGDA_VOICE
-        print(line, flush=True)
-        proc = subprocess.Popen(["say", "-v", voice, line.split(": ", 1)[1]])
+        said = line.split(": ", 1)[1]
+        if line.startswith("YOU:"):
+            print(_dialogue(bold("You:"), "You:", said, width))
+            voice = CALLER_VOICE
+        else:
+            print(_dialogue(dim("Agda:"), "Agda:", said, width))
+            voice = AGDA_VOICE
+        proc = subprocess.Popen(["say", "-v", voice, said])
         try:
             proc.wait()
         except KeyboardInterrupt:
@@ -233,6 +260,7 @@ def speak_turns(turns: list[str]) -> None:
             raise
         if proc.returncode != 0:
             raise subprocess.CalledProcessError(proc.returncode, "say")
+    print()
 
 
 class Knowledge:

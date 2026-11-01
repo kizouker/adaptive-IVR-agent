@@ -1,5 +1,6 @@
 """Holdmate calls by itself: BFS lessons, word table, map evidence (S2)."""
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,7 @@ from adaptive_ivr_agent.holdmate import (
     lesson_log,
     main,
     run_call,
+    speak_turns,
     wintitle,
 )
 
@@ -210,6 +212,29 @@ def test_interrupt_mid_lesson_keeps_partial_knowledge():
         lesson.run()
     assert len(lesson.sims) == 2
     assert set(lesson.knowledge.words) == {"a", "b"}
+
+
+def test_speak_turns_layout_indents_wraps_and_spaces(capsys, monkeypatch):
+    cmds = []
+
+    class FakeProc:
+        returncode = 0
+
+        def wait(self):
+            return 0
+
+    def fake_popen(cmd, **kwargs):
+        cmds.append(cmd)
+        return FakeProc()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+    speak_turns(["YOU: hej", "AGDA: " + "ord " * 40])
+    out = capsys.readouterr().out
+    assert out.startswith("    You: hej\n")
+    assert "\n" + " " * 10 + "ord" in out  # hanging indent, plain width
+    assert out.endswith("\n\n")
+    assert cmds[0][-1] == "hej"  # speech stays unpainted
+    assert all("\x1b" not in part for cmd in cmds for part in cmd)
 
 
 def test_run_prints_live_line_per_sim(capsys):
