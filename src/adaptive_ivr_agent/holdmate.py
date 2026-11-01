@@ -9,6 +9,7 @@ says every turn aloud (Oskar calls, Alva answers).
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from collections import deque
@@ -38,6 +39,53 @@ SILENCE_LABEL = "(silence)"
 def display(word: str) -> str:
     """Printable form; the empty probe is silence."""
     return word if word else SILENCE_LABEL
+
+
+def _colors() -> bool:
+    """ANSI colors when a human watches: a tty, or forced for the pager."""
+    if os.environ.get("NO_COLOR"):
+        return False
+    return sys.stdout.isatty() or os.environ.get("HOLDEMATE_COLOR") == "1"
+
+
+def _paint(code: str, text: str) -> str:
+    if not _colors():
+        return text
+    return f"\x1b[{code}m{text}\x1b[0m"
+
+
+def bold(text: str) -> str:
+    """Bold on a terminal, plain in tests and files."""
+    return _paint("1", text)
+
+
+def italic(text: str) -> str:
+    """Italics on a terminal, plain in tests and files."""
+    return _paint("3", text)
+
+
+def green(text: str) -> str:
+    """Green on a terminal, plain in tests and files."""
+    return _paint("32", text)
+
+
+def red(text: str) -> str:
+    """Red on a terminal, plain in tests and files."""
+    return _paint("31", text)
+
+
+def dim(text: str) -> str:
+    """Dim on a terminal, plain in tests and files."""
+    return _paint("2", text)
+
+
+def wintitle(text: str) -> None:
+    """Terminal window title follows the lessons (silent without a tty)."""
+    try:
+        with open("/dev/tty", "w", encoding=ENCODING) as tty:
+            tty.write(f"\x1b]0;Holdmate: {text}\x07")
+    except OSError:
+        pass
 
 
 MISS_STATE = {0: "open_question", 1: "example_words", 2: "yes_no"}
@@ -130,11 +178,12 @@ class Lesson:
                 result = result._replace(persona=self.persona_id, path=[*path, word])
                 self.sims.append(result)
                 self.knowledge.observe(result)
-                print(
-                    f"  {display(word)} @{MISS_STATE[misses]} -> "
-                    f"{'transfer' if result.transferred else 'miss'}",
-                    flush=True,
-                )
+                mark = green("✓") if result.transferred else red("✗")
+                state = MISS_STATE[misses].replace("_", " ")
+                outcome = "transfer" if result.transferred else "miss"
+                said = italic(display(word))
+                print(f"  {mark} {said} → {bold(outcome)} {dim(f'({state})')}",
+                      flush=True)
                 if speak:
                     speak_turns(turns)
                 if not result.transferred and misses < self.max_misses:
@@ -300,26 +349,32 @@ def main(argv: list[str] | None = None) -> int:
         for role in personas
     ]
     total = sum(len(candidates) * (args.depth + 1) for _, candidates in planned)
-    print(f"plan: {len(planned)} lessons, up to {total} sims (depth 0..{args.depth})")
+    print(bold(f"plan: {len(planned)} lessons, up to {total} sims (depth 0..{args.depth})"))
     try:
         for index, (role, candidates) in enumerate(planned, 1):
-            print(f"lesson {index}/{len(planned)}: {role['id']} ({len(candidates)} words)")
+            print(bold(f"lesson {index}/{len(planned)}: {role['id']} ({len(candidates)} words)"))
+            wintitle(f"lesson {index}/{len(planned)}: {role['id']}")
             lesson = Lesson(role["id"], candidates, agda, knowledge,
                             max_misses=args.depth)
             summary = lesson.run(speak=args.speak)
             for sim in lesson.sims:
                 lesson_log(args.lessons, sim)
             knowledge.add_lesson(summary)
+            words = ", ".join(summary["matched"]) or "-"
             print(
-                f"{role['id']}: {summary['sims']} sims, "
+                f"{bold(role['id'])}: {summary['sims']} sims, "
                 f"{summary['transfers']} transfers, {summary['served']} served, "
-                f"matched {len(summary['matched'])} words: "
-                f"{', '.join(summary['matched']) or '-'}"
+                f"matched {len(summary['matched'])} words: {italic(words)}"
             )
     except KeyboardInterrupt:
         print("stopped early; saving what was learned so far")
+    except BrokenPipeError:
+        pass  # pager quit early; save below what was learned so far
     knowledge.save(args.knowledge)
-    print(f"knowledge: {args.knowledge}")
+    try:
+        print(f"knowledge: {args.knowledge}")
+    except BrokenPipeError:
+        pass
     return 0
 
 

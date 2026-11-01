@@ -155,6 +155,7 @@ restore_system_volume() {
   info "system volume restored: $FLOOR_TARGET -> $ORIG_SYS_VOL"
 }
 
+wintitle "talk to Agda"
 title "Talk to the robot ($MODE)"
 
 step "Preflight"
@@ -246,6 +247,7 @@ switch_back() {
   stty sane 2>/dev/null || true
   SwitchAudioSource -s "$ORIGINAL_OUTPUT" -t output >/dev/null
   SwitchAudioSource -s "$ORIGINAL_INPUT" -t input >/dev/null
+  wintitle "done"
   info "Audio restored: output='$ORIGINAL_OUTPUT' input='$ORIGINAL_INPUT'"
   restore_system_volume
 }
@@ -802,6 +804,7 @@ en_turn() {
 }
 
 run_english() {
+  wintitle "English menu"
   title "English menu (pressed 0)"
   what "Full call-5 path: key menu, sub-menu, SMS offer, identification, queue. Digits answer; silence moves on."
   EN_VOICE="$(pick_english_voice)"
@@ -850,6 +853,7 @@ run_english() {
   fi
   while [ "$PLACE" -gt 0 ]; do
     title "Queue: place $PLACE of $START (any key hurries, q quits, +/- volume)"
+    wintitle "queue $PLACE of $START"
     if [ -t 0 ]; then
       wait_keys "$QUEUE_TICK" ""; EN_RC=$?
       [ "$EN_RC" = 2 ] && quit_call
@@ -946,6 +950,7 @@ if [ "${KEY_PRESSED:-}" = "0" ]; then
 fi
 
 run_identification() {
+  wintitle "identification"
   title "Identification (faked, human in the loop)"
   what "Agda asked for BankID/Freja. Enter uses the TEST number; anything else reprompts and digits are never logged."
   while true; do
@@ -973,6 +978,7 @@ run_identification() {
   PLACE="$START"
   while [ "$PLACE" -gt 0 ]; do
     title "Queue: place $PLACE of $START (any key hurries, q quits, +/- volume)"
+    wintitle "queue $PLACE of $START"
     if [ -t 0 ]; then
       wait_keys "$QUEUE_TICK" ""; RC=$?
       [ "$RC" = 2 ] && quit_call
@@ -1010,6 +1016,7 @@ while [ "$ROUND" -lt 6 ]; do
   else
     title "Round $ROUND: speak now ($RECORD_SECONDS s; any key stops, q quits, +/- volume)"
   fi
+  wintitle "talk round $ROUND"
   WAV="$REC_DIR/talk-$CALL_STAMP-r$ROUND.wav"
   TXT="${WAV%.wav}.txt"
   ROBOT_AIFF="${WAV%.wav}-robot.aiff"

@@ -141,6 +141,7 @@ open_pages() {
 
 cleanup() {
   tput cnorm 2>/dev/null || true
+  wintitle "done"
   stop_server
 }
 trap cleanup EXIT INT TERM
@@ -216,6 +217,7 @@ talk_sound() {
 
 sound_menu() {
   while true; do
+    wintitle "sound"
     title "Sound (now: $(sound_label))"
     choice="$(choose \
       "Speakers" \
@@ -234,6 +236,7 @@ sound_menu() {
 
 run_all() {
   step "Board + talk"
+  wintitle "board + talk"
   what "Start the server, open the page, then talk. Server stops when this ends."
   start_server
   open_board
@@ -273,6 +276,7 @@ EOF
 
 talk_menu() {
   while true; do
+    wintitle "talk options"
     title "Talk options (arrows + Enter, Esc goes back)"
     choice="$(choose \
       "Talk to Agda" \
@@ -298,16 +302,24 @@ talk_menu() {
   done
 }
 
+page() { # stdin pager: one screen, space = more, q quits (stays put)
+  if command -v less >/dev/null 2>&1; then less -RX; else cat; fi
+}
+
 lessons_menu() {
   while true; do
+    wintitle "lessons"
     title "Holdmate phones Agda alone (arrows + Enter, Esc goes back)"
     choice="$(choose \
-      "All personas, silent + live log" \
+      "All personas, silent (space = more)" \
       "All personas, spoken (Oskar + Alva)" \
       "One persona, spoken (pick...)" \
       "Back")"
     case "$choice" in
-      1) "$HERE/holdmate-call.sh" --all; return 0 ;;
+      1) HOLDEMATE_COLOR=1 "$HERE/holdmate-call.sh" --all 2>&1 | page
+        [ "${PIPESTATUS[0]}" = 0 ] || warn "lessons ended early (see above)"
+        return 0
+        ;;
       2) "$HERE/holdmate-call.sh" --all --speak; return 0 ;;
       3)
         persona="$(pick_persona)"
@@ -339,6 +351,7 @@ esac
 
 while true; do
   sync_sound
+  wintitle "menu"
   title "Holdmate menu (arrows + Enter, Esc quits)"
   choice="$(choose \
     "Board + talk (server, page, call)" \

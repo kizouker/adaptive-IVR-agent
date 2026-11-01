@@ -12,6 +12,7 @@ from adaptive_ivr_agent.holdmate import (
     lesson_log,
     main,
     run_call,
+    wintitle,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -176,12 +177,17 @@ def test_main_rejects_bad_depth(tmp_path):
         ])
 
 
+def test_wintitle_is_silent_without_a_tty():
+    wintitle("lesson 1/8")
+    assert True  # must not raise where /dev/tty is missing
+
+
 def test_run_prints_live_line_per_sim(capsys):
     lesson = make_lesson(["kw", "eh"], max_misses=0)
     lesson.run()
     out = capsys.readouterr().out
-    assert "kw @open_question -> transfer" in out
-    assert "eh @open_question -> miss" in out
+    assert "✓ kw → transfer (open question)" in out
+    assert "✗ eh → miss (open question)" in out
 
 
 def test_main_prints_plan_and_lesson_progress(capsys, tmp_path):
