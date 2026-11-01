@@ -27,3 +27,16 @@
 {"ts": "2026-11-01T13:01:36", "call": "20261101-130051", "round": 3, "persona": "", "heard": "Nej, jag jobbar på Skogsstusen med introduktionsjobb.", "matched": null}
 {"ts": "2026-11-01T13:33:27", "call": "20261101-133319", "round": 1, "persona": "", "heard": "Tack för att du gick till.\nTack för att du gick till.", "matched": null}
 {"ts": "2026-11-01T13:33:37", "call": "20261101-133319", "round": 2, "persona": "", "heard": "(pressed 0)", "matched": "dtmf:0"}
+{"ts": "2026-11-01T13:42:04", "call": "20261101-134145", "round": 2, "persona": "", "heard": "t", "matched": null}
+{"ts": "2026-11-01T13:55:17", "call": "20261101-135511", "round": 1, "persona": "", "heard": "t", "matched": null}
+{"ts": "2026-11-01T13:55:47", "call": "20261101-135539", "round": 1, "persona": "", "heard": "t", "matched": null}
+{"ts": "2026-11-01T13:57:14", "call": "20261101-135711", "round": 1, "persona": "", "heard": "t", "matched": null}
+{"ts": "2026-11-01T14:08:33", "call": "20261101-140818", "round": 1, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-01T14:08:51", "call": "20261101-140818", "round": 2, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-01T14:09:02", "call": "20261101-140818", "round": 3, "persona": "", "heard": "Det är skogstyr som sitter där.", "matched": null}
+{"ts": "2026-11-01T14:23:19", "call": "20261101-142304", "round": 1, "persona": "", "heard": "Nu har det kommit fram nu till växeln här.", "matched": null}
+{"ts": "2026-11-01T14:23:36", "call": "20261101-142304", "round": 2, "persona": "", "heard": "Vilket arbete!", "matched": null}
+{"ts": "2026-11-01T14:23:46", "call": "20261101-142304", "round": 3, "persona": "", "heard": "Det är kärnbäste.", "matched": null}
+{"ts": "2026-11-01T14:25:07", "call": "20261101-142452", "round": 1, "persona": "", "heard": "Tack för att du gick och gick i den här videon!\nTack för att du gick och gick i den här videon!", "matched": null}
+{"ts": "2026-11-01T14:25:23", "call": "20261101-142452", "round": 2, "persona": "", "heard": "Tack för att du var här.", "matched": null}
+{"ts": "2026-11-01T14:25:33", "call": "20261101-142452", "round": 3, "persona": "", "heard": "Och är påan mellan mig. Jag vill påan mellan mig.", "matched": null}
