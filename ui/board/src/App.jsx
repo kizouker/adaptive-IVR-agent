@@ -8,8 +8,8 @@ const POLL_MS = 3000;
 
 const STRINGS = {
   sv: {
-    title: 'Holdmate liveboard',
-    live: 'live',
+    title: 'Holdmate-board',
+    live: 'exempeldata',
     process: 'Processen',
     calls: 'Samtalen',
     errand: 'Ärende',
@@ -24,8 +24,8 @@ const STRINGS = {
     failed: 'Kunde inte hämta data',
   },
   en: {
-    title: 'Holdmate live board',
-    live: 'live',
+    title: 'Holdmate board',
+    live: 'sample data',
     process: 'The process',
     calls: 'The calls',
     errand: 'Errand',

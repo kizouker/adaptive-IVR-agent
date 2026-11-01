@@ -9,7 +9,7 @@ export const fetchBoard = createAsyncThunk('board/fetchBoard', async () => {
 });
 
 const initialState = {
-  data: null, lang: 'sv', status: 'idle', error: null,
+  data: null, lang: 'en', status: 'idle', error: null,
 };
 
 const boardSlice = createSlice({
