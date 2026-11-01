@@ -284,11 +284,13 @@ wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
 }
 
 play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
+  DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$1" 2>/dev/null)" || DUR="8"
   if [ "$QUIET" = 1 ]; then
-    info "(quiet: muted, read the line above)"
+    info "(quiet: muted — any key continues, t for sound, q quits)"
+    wait_keys "$((${DUR%.*} + 2))" ""; RC=$?
+    if [ "$RC" = 2 ]; then quit_call; fi
     return 0
   fi
-  DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$1" 2>/dev/null)" || DUR="8"
   SECS=$((${DUR%.*} + 2))
   afplay -v "$TALK_VOLUME" "$1" & APID=$!
   wait_keys "$SECS" "$APID"; RC=$?

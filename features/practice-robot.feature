@@ -77,5 +77,5 @@ Feature: Practice robot
   @FN-REQ-IVR-007 @FN-REQ-IVR-007-S10
   Scenario: Quiet practice by typing and reading
     Given Rickard must work silently
-    When he starts with --quiet or presses t mid-call
-    Then he types instead of speaking, all playback is muted, and the board still gets audio plus captions
+    When he starts with --quiet
+    Then he types instead of speaking (/sound at the prompt or t during waits turns sound on), muted lines still pause for keys, and the board still gets audio plus captions
