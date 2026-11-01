@@ -22,3 +22,8 @@
 {"ts": "2026-11-01T12:58:47", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "(silence)", "matched": null}
 {"ts": "2026-11-01T12:58:59", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "(pressed 1)", "matched": "dtmf:1"}
 {"ts": "2026-11-01T12:59:22", "call": "20261101-125737", "round": 1, "persona": "ny-i-sverige", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-01T13:01:08", "call": "20261101-130051", "round": 1, "persona": "", "heard": "Jag vill prata på engelska.", "matched": null}
+{"ts": "2026-11-01T13:01:25", "call": "20261101-130051", "round": 2, "persona": "", "heard": "En skökt pal.", "matched": null}
+{"ts": "2026-11-01T13:01:36", "call": "20261101-130051", "round": 3, "persona": "", "heard": "Nej, jag jobbar på Skogsstusen med introduktionsjobb.", "matched": null}
+{"ts": "2026-11-01T13:33:27", "call": "20261101-133319", "round": 1, "persona": "", "heard": "Tack för att du gick till.\nTack för att du gick till.", "matched": null}
+{"ts": "2026-11-01T13:33:37", "call": "20261101-133319", "round": 2, "persona": "", "heard": "(pressed 0)", "matched": "dtmf:0"}

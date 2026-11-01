@@ -67,3 +67,15 @@ Feature: Practice robot
     Given a talk call that reaches the handover line
     When Agda finishes the served line
     Then DTMF beeps play while connecting and an officer answers in a different voice with its own speaker label on the board
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S09
+  Scenario: Output toggles between speakers and AirPods mid-call
+    Given a talk call is recording or Agda is speaking
+    When Rickard presses a
+    Then system output switches to the other device without restarting, and a missing device only warns
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S10
+  Scenario: Quiet practice by typing and reading
+    Given Rickard must work silently
+    When he starts with --quiet or presses t mid-call
+    Then he types instead of speaking, all playback is muted, and the board still gets audio plus captions

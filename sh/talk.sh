@@ -2,11 +2,13 @@
 # Talk to the practice robot with your own voice (push-to-talk loop).
 # Runs on: Rickard's Mac (M4). Modes: talk (default) | check.
 # Flags: --airpods, --as <persona> (role-play + tag rounds for Holdmate training),
-#   --queue N (simulate a queue of N, 1-99; default is a random short one).
+#   --queue N (simulate a queue of N, 1-99; default is a random short one),
+#   --quiet (type + read instead of speak + listen).
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
 # Keys during record/playback: any key skips ahead, 0 jumps to the English
-# menu (full call-5 path on DTMF digits), + / - adjusts her volume.
+# menu (full call-5 path on DTMF digits), a toggles speakers/AirPods output,
+# t toggles quiet mode (hushes in-flight audio at once), + / - adjusts volume.
 # Each round records ~5s from the MacBook mic, transcribes with whisper.cpp,
 # and the robot answers aloud (Alva). Output goes through the IVR_Agent device
 # (speakers + BlackHole) and everything is switched back on exit.
@@ -21,11 +23,13 @@ ROOT="$(cd "$HERE/.." && pwd)"
 MODE="talk"
 AIRPODS=0
 PERSONA=""
+QUIET=0
 QUEUE_START=""
 while [ $# -gt 0 ]; do
   case "$1" in
     check|--check) MODE="check" ;;
     --airpods) AIRPODS=1 ;;
+    --quiet) QUIET=1 ;;
     --as)
       PERSONA="${2:-}"
       [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
@@ -41,7 +45,7 @@ while [ $# -gt 0 ]; do
       fi
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N)" ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet)" ;;
   esac
   shift
 done
@@ -99,6 +103,16 @@ ok "phrasebooks: $PHRASEBOOKS"
 SwitchAudioSource -a -t output | grep -Fxq "$MULTI_OUTPUT" \
   || fail "Output device '$MULTI_OUTPUT' not found (open Audio MIDI Setup and check the Multi-Output device)"
 ok "output device: $MULTI_OUTPUT"
+if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then ALT_CHECK="$OUTPUT_AIRPODS"
+else ALT_CHECK="$OUTPUT_SPEAKERS"; fi
+if SwitchAudioSource -a -t output | grep -Fxq "$ALT_CHECK"; then
+  ok "toggle target: $ALT_CHECK (press a during the call)"
+else
+  warn "toggle target '$ALT_CHECK' not found (mid-call a-key stays put)"
+fi
+if [ "$QUIET" = 1 ]; then
+  info "quiet mode: type + read, t toggles sound back on"
+fi
 SwitchAudioSource -a -t input | grep -Fxq "$MIC" \
   || fail "Mic '$MIC' not found (check System Settings -> Sound -> Input)"
 ok "mic: $MIC"
@@ -196,6 +210,31 @@ quit_call() {
   exit 0
 }
 
+toggle_output() {
+  # Switch system output between speakers and AirPods; never fails the call.
+  if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then ALT_TARGET="$OUTPUT_AIRPODS"
+  else ALT_TARGET="$OUTPUT_SPEAKERS"; fi
+  if ! SwitchAudioSource -a -t output | grep -Fxq "$ALT_TARGET"; then
+    warn "device '$ALT_TARGET' not found, staying put"
+    return 0
+  fi
+  SwitchAudioSource -s "$ALT_TARGET" -t output >/dev/null
+  if [ "$(SwitchAudioSource -c -t output)" = "$ALT_TARGET" ]; then
+    MULTI_OUTPUT="$ALT_TARGET"
+    info "output -> $ALT_TARGET (press a to switch back)"
+  else
+    warn "could not switch to $ALT_TARGET"
+  fi
+}
+
+toggle_quiet() {
+  # $1 = pid to hush (or ""). Flips QUIET; 0 = skip ahead, 1 = keep waiting.
+  if [ "$QUIET" = 1 ]; then QUIET=0; info "sound on"
+  else QUIET=1; info "quiet: type + read from here"; fi
+  if [ -n "${1:-}" ]; then kill "$1" 2>/dev/null; return 0; fi
+  return 1
+}
+
 wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 = quit
   KEY_PRESSED=""
   if [ ! -t 0 ]; then
@@ -211,6 +250,8 @@ wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 =
       case "$key" in
         +) volume_step +0.1 ;;
         -) volume_step -0.1 ;;
+        a|A) toggle_output ;;
+        t|T) if toggle_quiet "$2"; then return 0; fi ;;
         q|Q|"$ETX"|"$EOT") return 2 ;;
         *) return 0 ;;
       esac
@@ -232,6 +273,8 @@ wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
       case "$key" in
         +) volume_step +0.1 ;;
         -) volume_step -0.1 ;;
+        a|A) toggle_output ;;
+        t|T) toggle_quiet "" ;;
         q|Q|"$ETX"|"$EOT") return 2 ;;
         [0-9]) DIGIT="$key"; return 0 ;;
       esac
@@ -241,6 +284,10 @@ wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
 }
 
 play_skippable() { # $1 = aiff file; any key skips, + / - adjusts volume
+  if [ "$QUIET" = 1 ]; then
+    info "(quiet: muted, read the line above)"
+    return 0
+  fi
   DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$1" 2>/dev/null)" || DUR="8"
   SECS=$((${DUR%.*} + 2))
   afplay -v "$TALK_VOLUME" "$1" & APID=$!
@@ -668,6 +715,9 @@ officer_scene() {
   info "officer voice: $OFF_VOICE"
   step "Connecting"
   what "Touch-tone beeps while the call goes through, then the officer answers."
+  if [ "$QUIET" = 1 ]; then
+    info "(quiet: beeps muted)"
+  else
   BEEPS_WAV="$REC_DIR/talk-$CALL_STAMP-beeps.wav"
   run "write DTMF beeps to $BEEPS_WAV"
   PYTHONPATH="$ROOT/src" python3 - "$BEEPS_WAV" <<'EOF' || fail "Could not make beeps"
@@ -678,6 +728,7 @@ EOF
   [ -s "$BEEPS_WAV" ] || fail "Beeps missing: $BEEPS_WAV"
   run "play beeps (any key skips, q quits, +/- volume)"
   play_skippable "$BEEPS_WAV"
+  fi
   OFF_AIFF="$REC_DIR/talk-$CALL_STAMP-officer.aiff"
   run "render officer ($OFF_VOICE)"
   OFF_OUT="$(TALK_MAP="$OFF_MAP" TALK_OFF_ID="$OFF_ID" \
@@ -766,10 +817,24 @@ run_identification() {
 ROUND=0
 while [ "$ROUND" -lt 6 ]; do
   ROUND=$((ROUND + 1))
-  title "Round $ROUND: speak now ($RECORD_SECONDS s; any key stops, q quits, +/- volume)"
+  if [ "$QUIET" = 1 ]; then
+    title "Round $ROUND: type instead of speaking (q quits, t for sound)"
+  else
+    title "Round $ROUND: speak now ($RECORD_SECONDS s; any key stops, q quits, +/- volume)"
+  fi
   WAV="$REC_DIR/talk-$CALL_STAMP-r$ROUND.wav"
   TXT="${WAV%.wav}.txt"
   ROBOT_AIFF="${WAV%.wav}-robot.aiff"
+  if [ "$QUIET" = 1 ]; then
+    printf 'Type now (q quits, empty skips): '
+    read -r typed || typed=""
+    if [ "$typed" = "q" ] || [ "$typed" = "Q" ]; then quit_call; fi
+    if [ -z "${typed//[[:space:]]/}" ]; then warn "nothing typed, skipping this round"; continue; fi
+    printf '%s\n' "$typed" > "$TXT"
+    run "ffmpeg silent stand-in $WAV"
+    ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=r=16000:cl=mono -t 0.5 -y "$WAV" \
+      || fail "Could not write silent audio"
+  else
   run "ffmpeg ... -t $RECORD_SECONDS $WAV"
   ffmpeg -hide_banner -loglevel error -f avfoundation -i ":$MIC_INDEX" \
     -t "$RECORD_SECONDS" -ar 16000 -ac 1 -y "$WAV" &
@@ -805,6 +870,7 @@ while [ "$ROUND" -lt 6 ]; do
     || fail "Transcription failed for $WAV"
   [ -f "$TXT" ] || fail "Transcript missing: $TXT"
   grep -q '[^[:space:]]' "$TXT" || { warn "nothing heard, skipping this round"; continue; }
+  fi
   run "render reply ($VOICE)"
   OUT="$(agda_says round "$TXT" "$ROBOT_AIFF" "$WAV")" || fail "Agda failed to answer"
   printf '%s\n' "$OUT" | grep -v '^TALK_'

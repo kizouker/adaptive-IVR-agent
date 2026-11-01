@@ -201,6 +201,7 @@ talk_menu() {
       "talk with AirPods" \
       "sound check only" \
       "talk as persona" \
+      "talk quietly (type + read)" \
       "back")"
     case "$choice" in
       1) "$HERE/talk.sh"; return 0 ;;
@@ -212,8 +213,9 @@ talk_menu() {
           "$HERE/talk.sh" --as "$persona"; return 0
         fi
         ;;
-      5|q|Q|b|B) return 0 ;;
-      *) warn "pick with arrows + Enter (or type 1-5)" ;;
+      5) "$HERE/talk.sh" --quiet; return 0 ;;
+      6|q|Q|b|B) return 0 ;;
+      *) warn "pick with arrows + Enter (or type 1-6)" ;;
     esac
   done
 }
