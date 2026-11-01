@@ -2,10 +2,13 @@
 
 The caller (Rickard) speaks, Agda answers from the real recorded lines:
 welcome + open question, then examples on a miss, then a yes/no question,
-then transfer. A keyword hit at any point transfers straight away.
+then transfer into a simulated queue with a place number. A keyword hit
+at any point transfers straight away.
 """
 
+import random
 from collections.abc import Callable
+from typing import NamedTuple
 
 
 def normalize(heard: str) -> str:
@@ -25,6 +28,16 @@ def with_aliases(
     return lambda heard: respond(clean.get(normalize(heard), heard))
 
 
+class AgdaReply(NamedTuple):
+    """One scripted answer. queue_place is set when the call reaches the queue."""
+
+    reply: str
+    matched: str | None
+    done: bool
+    misses: int
+    queue_place: int | None
+
+
 class AgdaCall:
     """One scripted call. Stateless across rounds: the miss count travels
     with the caller (the shell keeps it between recordings)."""
@@ -35,22 +48,34 @@ class AgdaCall:
         examples: str,
         yesno: str,
         transfer: str,
+        queue_line: str,
+        place_template: str,
         respond: Callable[[str], tuple[str, str | None]],
+        queue_place: Callable[[], int] | None = None,
     ) -> None:
         self.opening = opening
         self._examples = examples
         self._yesno = yesno
         self._transfer = transfer
+        self._queue_line = queue_line
+        self._place_template = place_template
         self._respond = respond
+        self._queue_place = queue_place or (lambda: random.randint(2, 5))
 
-    def reply_to(self, heard: str, misses: int) -> tuple[str, str | None, bool, int]:
-        """Answer HEARD text after MISSES misses. Returns (reply, matched,
-        done, new_misses)."""
+    def reply_to(self, heard: str, misses: int) -> AgdaReply:
+        """Answer HEARD text after MISSES misses."""
         confirm, matched = self._respond(heard)
         if matched is not None:
-            return f"{confirm} {self._transfer}", matched, True, misses
+            return self._finish(f"{confirm} {self._transfer}", matched, misses)
         if misses >= 2:
-            return self._transfer, None, True, misses
+            return self._finish(self._transfer, None, misses)
         if misses == 1:
-            return self._yesno, None, False, 2
-        return self._examples, None, False, 1
+            return AgdaReply(self._yesno, None, False, 2, None)
+        return AgdaReply(self._examples, None, False, 1, None)
+
+    def _finish(self, prefix: str, matched: str | None, misses: int) -> AgdaReply:
+        """Transfer into the simulated queue with a place number."""
+        place = self._queue_place()
+        # place_template is a recorded "plats 1" line; only the digit changes
+        line = f"{prefix} {self._queue_line} {self._place_template.replace('1', str(place), 1)}"
+        return AgdaReply(line, matched, True, misses, place)

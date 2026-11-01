@@ -1,6 +1,8 @@
 #!/bin/bash
 # Talk to the practice robot with your own voice (push-to-talk loop).
-# Runs on: Rickard's Mac (M4). Modes: talk (default) | check. Flag: --airpods.
+# Runs on: Rickard's Mac (M4). Modes: talk (default) | check.
+# Flags: --airpods, --as <persona> (role-play + tag rounds for Holdmate training).
+# Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
 # Each round records ~5s from the MacBook mic, transcribes with whisper.cpp,
 # and the robot answers aloud (Alva). Output goes through the IVR_Agent device
 # (speakers + BlackHole) and everything is switched back on exit.
@@ -13,12 +15,19 @@ ROOT="$(cd "$HERE/.." && pwd)"
 
 MODE="talk"
 AIRPODS=0
-for arg in "$@"; do
-  case "$arg" in
+PERSONA=""
+while [ $# -gt 0 ]; do
+  case "$1" in
     check|--check) MODE="check" ;;
     --airpods) AIRPODS=1 ;;
-    *) fail "Unknown argument: $arg (use: check, --airpods)" ;;
+    --as)
+      PERSONA="${2:-}"
+      [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
+      shift
+      ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>)" ;;
   esac
+  shift
 done
 
 OUTPUT_SPEAKERS="IVR_Agent_Speakers"   # MacBook speakers + BlackHole (default)
@@ -29,11 +38,13 @@ RECORD_SECONDS="${RECORD_SECONDS:-5}"
 MIC_INDEX="${MIC_INDEX:-}"             # empty = auto-detect; set to force an avfoundation index
 VOICE="${VOICE:-Alva}"
 TALK_VOLUME="${TALK_VOLUME:-0.4}"          # 1 = full blast; Rickard sets his own (e.g. TALK_VOLUME=0.7)
+AGDA_FORGIVING="${AGDA_FORGIVING:-0}"     # 1 = Agda's bad memory (learned aliases); 0 = exact AF words
 MODEL="$HOME/models/whisper/ggml-small.bin"
 REC_DIR="$ROOT/data/recordings"
 PHRASEBOOKS="$ROOT/data/role-phrasebooks.json"
 MISS_FILE="$ROOT/data/talk-misses.jsonl"
 LEARNED_FILE="$ROOT/data/learned-words.json"
+ROUNDS_FILE="$ROOT/data/talk-rounds.jsonl"
 
 MULTI_OUTPUT="$OUTPUT_SPEAKERS"
 [ "$AIRPODS" = 1 ] && MULTI_OUTPUT="$OUTPUT_AIRPODS"
@@ -77,6 +88,12 @@ mkdir -p "$REC_DIR"
 info "Recordings go to: $REC_DIR"
 info "Agda plays at volume $TALK_VOLUME (1 = full; change with TALK_VOLUME=0.7 sh/talk.sh)"
 info "Misses are logged to $MISS_FILE (teach them with sh/learn-words.sh)"
+info "Every round is logged to $ROUNDS_FILE (Holdmate's training data)"
+if [ "$AGDA_FORGIVING" = "1" ]; then
+  warn "bad memory ON: Agda accepts learned aliases (unrealistic practice)"
+else
+  info "bad memory off: Agda only knows exact AF words (realistic)"
+fi
 
 [ "$MODE" = "check" ] && { title "Check only: nothing changed"; exit 0; }
 
@@ -102,6 +119,24 @@ SwitchAudioSource -s "$MIC" -t input >/dev/null
 [ "$(SwitchAudioSource -c -t input)" = "$MIC" ] || fail "Could not switch input to $MIC"
 ok "input -> $MIC"
 
+if [ -n "$PERSONA" ]; then
+  step "Role card"
+  what "Show who you are calling as, so you can speak from that errand."
+  run "read $PERSONA from role-phrasebooks.json"
+  PYTHONPATH="$ROOT/src" python3 - "$PERSONA" "$PHRASEBOOKS" <<'CARD' || fail "Unknown persona '$PERSONA' (check data/role-phrasebooks.json)"
+import json
+import sys
+roles = json.load(open(sys.argv[2], encoding="utf-8"))["roles"]
+persona = next((r for r in roles if r["id"] == sys.argv[1]), None)
+if persona is None:
+    sys.exit(1)
+print(f"Role: {persona['label']}")
+print(f"Errand: {persona['errand']}")
+print(f"Try words like: {', '.join(persona['vocabulary'])}")
+CARD
+  ok "rounds will be tagged: $PERSONA"
+fi
+
 CALL_STAMP="$(date +%Y%m%d-%H%M%S)"
 MISSES=0
 TURNS_FILE="$REC_DIR/talk-$CALL_STAMP-turns.jsonl"
@@ -116,6 +151,7 @@ agda_says() {
     TALK_VOLUME="$TALK_VOLUME" TALK_CALL="$CALL_STAMP" TALK_ROUND="${ROUND:-0}" \
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
+    TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
 import json
 import os
@@ -133,12 +169,18 @@ voice = os.environ.get("TALK_VOICE", SAY_VOICE)
 lines = load_indexed_lines(os.path.join(root, "data/doorkeeper-lines.json"))
 ears = ReactiveRobot.from_phrasebooks(os.path.join(root, "data/role-phrasebooks.json"))
 learned_path = os.environ["TALK_LEARNED_FILE"]
-aliases = json.load(open(learned_path, encoding="utf-8")) if os.path.exists(learned_path) else {}
+forgiving = os.environ.get("TALK_FORGIVING") == "1"
+if forgiving and os.path.exists(learned_path):
+    aliases = json.load(open(learned_path, encoding="utf-8"))
+else:
+    aliases = {}
 agda = AgdaCall(
     opening=f"{lines['L01']} {lines['L02']}",
     examples=lines["L03"],
     yesno=lines["L22"],
     transfer=lines["L19"],
+    queue_line=lines["L13"],
+    place_template=lines["L29"],
     respond=with_aliases(ears.respond, aliases),
 )
 
@@ -148,9 +190,23 @@ def log_miss(heard):
         "ts": datetime.now().isoformat(timespec="seconds"),
         "call": os.environ["TALK_CALL"],
         "round": int(os.environ["TALK_ROUND"]),
+        "persona": os.environ.get("TALK_PERSONA", ""),
         "heard": heard.strip(),
     }
     with open(os.environ["TALK_MISS_FILE"], "a", encoding="utf-8") as handle:
+        handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+
+def log_round(heard, matched):
+    record = {
+        "ts": datetime.now().isoformat(timespec="seconds"),
+        "call": os.environ["TALK_CALL"],
+        "round": int(os.environ["TALK_ROUND"]),
+        "persona": os.environ.get("TALK_PERSONA", ""),
+        "heard": heard.strip(),
+        "matched": matched,
+    }
+    with open(os.environ["TALK_ROUNDS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
@@ -163,7 +219,7 @@ def say_and_save(text):
 
 def state_after(done, misses):
     if done:
-        return "transfer"
+        return "queue"
     if misses == 2:
         return "yes_no"
     if misses == 1:
@@ -180,7 +236,8 @@ def load_call():
                 turn = json.loads(line)
                 call.add_turn(turn["caller"], turn["robot"], turn["matched"], turn["state"],
                               turn.get("caller_audio"), turn.get("robot_audio"),
-                              turn.get("caller_captions"), turn.get("robot_captions"))
+                              turn.get("caller_captions"), turn.get("robot_captions"),
+                              turn.get("queue_place"))
     return call
 
 
@@ -218,10 +275,11 @@ if sys.argv[1] == "opening":
     print(f"ROBOT: {agda.opening}")
 else:
     heard = open(os.environ["TALK_TXT"], encoding="utf-8").read()
-    reply, matched, done, misses = agda.reply_to(heard, int(os.environ["TALK_MISSES"]))
-    if matched is None:
+    answer = agda.reply_to(heard, int(os.environ["TALK_MISSES"]))
+    log_round(heard, answer.matched)
+    if answer.matched is None:
         log_miss(heard)
-    say_and_save(reply)
+    say_and_save(answer.reply)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}"
@@ -235,19 +293,20 @@ else:
                     "-codec:a", "libmp3lame", "-q:a", "4",
                     os.path.join(audio_dir, agda_name)], check=True)
     write_captions(os.path.join(audio_dir, you_vtt), heard, duration_of(wav))
-    write_captions(os.path.join(audio_dir, agda_vtt), reply, duration_of(aiff))
+    write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
     call = load_call()
-    call.add_turn(heard.strip(), reply, matched is not None,
-                  state_after(done, misses),
+    call.add_turn(heard.strip(), answer.reply, answer.matched is not None,
+                  state_after(answer.done, answer.misses),
                   caller_audio=f"audio/{you_name}", robot_audio=f"audio/{agda_name}",
-                  caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{agda_vtt}")
+                  caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{agda_vtt}",
+                  queue_place=answer.queue_place)
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
     print(f"YOU:   {heard.strip()}")
-    print(f"ROBOT: {reply} (matched: {matched})")
-    print(f"TALK_DONE={'yes' if done else 'no'}")
-    print(f"TALK_MISSES={misses}")
+    print(f"ROBOT: {answer.reply} (matched: {answer.matched})")
+    print(f"TALK_DONE={'yes' if answer.done else 'no'}")
+    print(f"TALK_MISSES={answer.misses}")
 EOF
 }
 
@@ -299,6 +358,8 @@ while [ "$ROUND" -lt 6 ]; do
   VTT="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-agda.vtt"
   [ -s "$VTT" ] || fail "Board captions missing: $VTT"
   ok "board captions: $VTT"
+  [ -f "$ROUNDS_FILE" ] || fail "Rounds log missing: $ROUNDS_FILE"
+  ok "round logged for Holdmate training"
   [ -f "$BOARD_FILE" ] || fail "Board state missing: $BOARD_FILE"
   ok "board updated: $BOARD_FILE"
   if printf '%s\n' "$OUT" | grep -qx 'TALK_DONE=yes'; then

@@ -120,6 +120,7 @@ class LiveCall:
         robot_audio: str | None = None,
         caller_captions: str | None = None,
         robot_captions: str | None = None,
+        queue_place: int | None = None,
     ) -> None:
         """Append one exchange. Media paths are board-relative (audio/...) or None."""
         turn = {
@@ -137,6 +138,8 @@ class LiveCall:
             turn["caller_captions"] = caller_captions
         if robot_captions is not None:
             turn["robot_captions"] = robot_captions
+        if queue_place is not None:
+            turn["queue_place"] = queue_place
         self.turns.append(turn)
 
     @property

@@ -9,6 +9,7 @@ const stringsShape = PropTypes.shape({
   routed: PropTypes.string.isRequired,
   missed: PropTypes.string.isRequired,
   captions: PropTypes.string.isRequired,
+  queuePlace: PropTypes.string.isRequired,
 });
 
 function CallThread({ call, lang, t }) {
@@ -39,6 +40,9 @@ function CallThread({ call, lang, t }) {
             )}
             <div className="meta">
               <span className="badge">{`${t.state}: ${turn.state_name[lang]}`}</span>
+              {turn.queue_place != null && (
+                <span className="badge">{`${t.queuePlace} ${turn.queue_place}`}</span>
+              )}
               {turn.caller !== '' && (turn.matched
                 ? <span className="kw-ok">{`${turn.caller} → ${t.routed}`}</span>
                 : <span className="kw-miss">{t.missed}</span>)}
@@ -64,6 +68,7 @@ CallThread.propTypes = {
       robot_audio: PropTypes.string,
       caller_captions: PropTypes.string,
       robot_captions: PropTypes.string,
+      queue_place: PropTypes.number,
       state_name: PropTypes.shape({
         sv: PropTypes.string.isRequired,
         en: PropTypes.string.isRequired,

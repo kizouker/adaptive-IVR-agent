@@ -162,6 +162,14 @@ def test_opening_turn_is_robot_only():
     assert "caller_audio" not in turn
 
 
+def test_queue_turn_carries_place_number():
+    call = LiveCall()
+    call.add_turn("vab", "reply", True, "queue", queue_place=3)
+    turn = call.snapshot()["turns"][0]
+    assert turn["queue_place"] == 3
+    assert call.position == "queue"
+
+
 def test_live_call_carries_captions_and_speaker_names():
     call = LiveCall()
     call.add_turn("vab", "reply", True, "transfer",

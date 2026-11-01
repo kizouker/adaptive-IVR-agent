@@ -25,3 +25,9 @@ Feature: Queue alert
   Scenario: Place known without listening
     When the queue place changes
     Then the shown number updates without the caller listening to the call
+
+  @FN-REQ-IVR-011 @FN-REQ-IVR-011-S04
+  Scenario: Transfer lands in simulated queue with place number
+    Given a talk call that reaches transfer
+    When Agda finishes the transfer
+    Then she speaks the recorded queue lines with a place number and the board shows position queue plus the number

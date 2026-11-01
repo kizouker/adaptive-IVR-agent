@@ -37,3 +37,9 @@ Feature: Practice robot
     Given the caller has stayed silent before
     When the caller stays silent again
     Then the robot times out or follows its fallback path
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S04
+  Scenario: Role-play call as one persona
+    Given a persona with an errand and vocabulary
+    When Rickard calls with --as for that persona
+    Then he sees the role card and his rounds are tagged with the persona for Holdmate training
