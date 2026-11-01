@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
 PYTHONPATH=src python3 -c "
-from adaptive_ivr_agent.queue import find_place
+from adaptive_ivr_agent.queue import QueueWatch, find_place
 
 LINES = [
     'Det är 38 samtal före dig',
@@ -17,4 +17,9 @@ LINES = [
 ]
 for line in LINES:
     print(f'{line}  ->  {find_place(line)}')
+
+print('countdown:')
+watch = QueueWatch()
+for line in ['Du har plats 13 i kön', 'Tack för att du väntar', 'Du har plats 12 i kön']:
+    print(f'  {line}  ->  place={watch.update(line)}')
 "
