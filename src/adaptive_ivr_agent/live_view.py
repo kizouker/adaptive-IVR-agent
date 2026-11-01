@@ -73,6 +73,101 @@ def build_board(specs: list[tuple[str, int]], phrasebooks: str | Path) -> dict:
     }
 
 
+LIVE_PERSONA = "live-caller"
+LIVE_LABEL = "You (live)"
+LIVE_ERRAND = "Talking to Agda right now"
+LIVE_CALLER_NAME = "You"
+LIVE_ROBOT_NAME = "AF Agda (Alva)"
+LIVE_MAP = "swedish"
+OPEN_STATE = "open_question"
+
+
+def vtt_timestamp(seconds: float) -> str:
+    """Seconds as a WebVTT timestamp (HH:MM:SS.mmm)."""
+    total_ms = int(round(seconds * 1000))
+    hours, rest = divmod(total_ms, 3600000)
+    minutes, rest = divmod(rest, 60000)
+    secs, millis = divmod(rest, 1000)
+    return f"{hours:02d}:{minutes:02d}:{secs:02d}.{millis:03d}"
+
+
+def write_captions(path: str | Path, text: str, seconds: float) -> str:
+    """Write a one-cue WebVTT subtitle file. Returns the path as a string."""
+    cue = f"WEBVTT\n\n00:00.000 --> {vtt_timestamp(seconds)}\n{text.strip()}\n"
+    Path(path).write_text(cue, encoding=ENCODING)
+    return str(path)
+
+
+class LiveCall:
+    """One real call's turns, accumulated round by round for the board."""
+
+    def __init__(
+        self,
+        persona: str = LIVE_PERSONA,
+        label: str = LIVE_LABEL,
+        errand: str = LIVE_ERRAND,
+    ) -> None:
+        self._meta = {"persona": persona, "label": label, "errand": errand}
+        self.turns: list[dict] = []
+
+    def add_turn(
+        self,
+        caller: str,
+        robot: str,
+        matched: bool,
+        state_id: str,
+        caller_audio: str | None = None,
+        robot_audio: str | None = None,
+        caller_captions: str | None = None,
+        robot_captions: str | None = None,
+    ) -> None:
+        """Append one exchange. Media paths are board-relative (audio/...) or None."""
+        turn = {
+            "caller": caller,
+            "robot": robot,
+            "matched": matched,
+            "state": state_id,
+            "state_name": STATE_NAMES[state_id],
+        }
+        if caller_audio is not None:
+            turn["caller_audio"] = caller_audio
+        if robot_audio is not None:
+            turn["robot_audio"] = robot_audio
+        if caller_captions is not None:
+            turn["caller_captions"] = caller_captions
+        if robot_captions is not None:
+            turn["robot_captions"] = robot_captions
+        self.turns.append(turn)
+
+    @property
+    def position(self) -> str:
+        """Latest state, or the open question before the first turn."""
+        return self.turns[-1]["state"] if self.turns else OPEN_STATE
+
+    def snapshot(self) -> dict:
+        """Board-shaped call: build_call keys plus speaker names and media."""
+        return {
+            **self._meta,
+            "map": LIVE_MAP,
+            "position": self.position,
+            "caller_name": LIVE_CALLER_NAME,
+            "robot_name": LIVE_ROBOT_NAME,
+            "turns": self.turns,
+        }
+
+
+def build_live_board(calls: list[LiveCall]) -> dict:
+    """Board state for live calls. Same top-level shape as build_board."""
+    return {
+        "generated": datetime.now(timezone.utc).strftime("%H:%M:%S"),
+        "maps": {
+            "swedish": _map_blob(MenuMap.af_agda()),
+            "english": _map_blob(MenuMap.english_branch()),
+        },
+        "calls": [call.snapshot() for call in calls],
+    }
+
+
 def render_live_page(state: dict, template_path: str | Path) -> str:
     """Fill the template with board state; raises if the placeholder is gone."""
     template = Path(template_path).read_text(encoding=ENCODING)

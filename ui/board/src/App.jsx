@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ProcessHeader from './components/ProcessHeader';
+import FlowGraph from './components/FlowGraph';
 import CallThread from './components/CallThread';
 import { fetchBoard, setLang } from './store/boardSlice';
 
@@ -18,6 +18,7 @@ const STRINGS = {
     missed: 'uppfattades inte',
     caller: 'Uppringare (Oskar)',
     robot: 'AF Agda (Alva)',
+    captions: 'Textning',
     generated: 'Uppdaterad',
     level: 'Nivå',
     loading: 'Laddar…',
@@ -34,6 +35,7 @@ const STRINGS = {
     missed: 'not understood',
     caller: 'Caller (Oskar)',
     robot: 'AF Agda (Alva)',
+    captions: 'Subtitles',
     generated: 'Updated',
     level: 'Level',
     loading: 'Loading…',
@@ -87,7 +89,13 @@ function App() {
       </div>
       <div className="sub">{`${t.generated} ${data.generated}`}</div>
       <h2>{t.process}</h2>
-      <ProcessHeader states={states} positionId={live.position} lang={lang} levelWord={t.level} />
+      <FlowGraph
+        states={states}
+        positionId={live.position}
+        lang={lang}
+        levelWord={t.level}
+        paths={data.calls.map((call) => call.turns.map((turn) => turn.state))}
+      />
       <h2>{t.calls}</h2>
       {data.calls.map((call) => (
         <CallThread key={call.persona} call={call} lang={lang} t={t} />

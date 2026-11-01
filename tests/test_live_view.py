@@ -7,9 +7,13 @@ import pytest
 
 from adaptive_ivr_agent.live_view import (
     STATE_NAMES,
+    LiveCall,
     build_board,
     build_call,
+    build_live_board,
     render_live_page,
+    vtt_timestamp,
+    write_captions,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -101,3 +105,69 @@ def test_rendered_page_embeds_parseable_state(tmp_path):
     page = render_live_page(state, template)
     assert json.loads(page)["board"]["calls"][0]["persona"] == "ny-arbetslos"
     assert "Skriva in mig som arbetssökande" in page  # raw utf-8, not \u-escaped
+
+
+def test_live_call_accumulates_turns_and_tracks_position():
+    call = LiveCall()
+    assert call.position == "open_question"
+    call.add_turn("vabba", "reply one", False, "example_words")
+    call.add_turn("vab", "reply two", True, "transfer")
+    snapshot = call.snapshot()
+    assert snapshot["persona"] == "live-caller"
+    assert snapshot["position"] == "transfer"
+    assert [t["state"] for t in snapshot["turns"]] == ["example_words", "transfer"]
+    assert snapshot["turns"][0]["state_name"]["sv"] == "Exempelord"
+
+
+def test_live_call_carries_audio_only_when_given():
+    call = LiveCall()
+    call.add_turn("vab", "reply", True, "transfer",
+                 caller_audio="audio/r1-you.wav", robot_audio="audio/r1-agda.mp3")
+    call.add_turn("nej", "reply", False, "yes_no")
+    first, second = call.snapshot()["turns"]
+    assert (first["caller_audio"], first["robot_audio"]) == ("audio/r1-you.wav", "audio/r1-agda.mp3")
+    assert "caller_audio" not in second and "robot_audio" not in second
+
+
+def test_live_board_matches_board_shape():
+    call = LiveCall()
+    call.add_turn("vab", "reply", True, "transfer")
+    state = build_live_board([call])
+    assert set(state) == {"generated", "maps", "calls"}
+    assert set(state["maps"]) == {"swedish", "english"}
+    assert state["calls"][0]["label"] == "You (live)"
+    assert re.fullmatch(r"\d{2}:\d{2}:\d{2}", state["generated"])
+
+
+def test_vtt_timestamps_cover_minutes_and_hours():
+    assert vtt_timestamp(0) == "00:00:00.000"
+    assert vtt_timestamp(2.5) == "00:00:02.500"
+    assert vtt_timestamp(61.234) == "00:01:01.234"
+    assert vtt_timestamp(3661.5) == "01:01:01.500"
+
+
+def test_captions_file_is_valid_vtt(tmp_path):
+    path = tmp_path / "r1-you.vtt"
+    write_captions(path, "  vabba ", 3.2)
+    assert path.read_text(encoding="utf-8") == "WEBVTT\n\n00:00.000 --> 00:00:03.200\nvabba\n"
+
+
+def test_opening_turn_is_robot_only():
+    call = LiveCall()
+    call.add_turn("", "welcome, what is it?", False, "open_question",
+                 robot_audio="audio/r0-agda.mp3", robot_captions="audio/r0-agda.vtt")
+    turn = call.snapshot()["turns"][0]
+    assert turn["caller"] == ""
+    assert turn["robot_audio"] == "audio/r0-agda.mp3"
+    assert "caller_audio" not in turn
+
+
+def test_live_call_carries_captions_and_speaker_names():
+    call = LiveCall()
+    call.add_turn("vab", "reply", True, "transfer",
+                 caller_audio="audio/r1-you.wav", robot_audio="audio/r1-agda.mp3",
+                 caller_captions="audio/r1-you.vtt", robot_captions="audio/r1-agda.vtt")
+    snapshot = call.snapshot()
+    assert (snapshot["caller_name"], snapshot["robot_name"]) == ("You", "AF Agda (Alva)")
+    turn = snapshot["turns"][0]
+    assert (turn["caller_captions"], turn["robot_captions"]) == ("audio/r1-you.vtt", "audio/r1-agda.vtt")

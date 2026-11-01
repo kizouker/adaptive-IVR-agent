@@ -10,6 +10,9 @@ data/recordings/
 ui/board/node_modules/
 ui/board/dist/
 ui/board/public/board-state.json
+ui/board/public/audio/
+ui/board/.vite/
+data/talk-misses.jsonl
 
 ## generated + scratch
 __pycache__/

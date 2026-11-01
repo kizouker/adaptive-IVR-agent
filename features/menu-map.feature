@@ -37,3 +37,15 @@ Feature: Menu map
     Given an inferred hypothesis in the map
     When a new observation contradicts it
     Then the hypothesis is revised or rejected
+
+  @FN-REQ-IVR-005 @FN-REQ-IVR-005-S02
+  Scenario: Traveled path lights up with branches
+    Given a call with turns across several states
+    When the board draws the flow graph
+    Then visited states are lit, the live position pulses, and observed transitions (including skips) are drawn
+
+  @FN-REQ-IVR-005 @FN-REQ-IVR-005-S03
+  Scenario: New phrases type out live
+    Given a new turn arrives on the board
+    When it is shown the first time
+    Then its text types out, or appears instantly with reduced motion

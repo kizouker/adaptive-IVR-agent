@@ -55,6 +55,17 @@
         border-radius: 20px; }
       .kw-ok { color: #7ee2a8; }
       .kw-miss { color: #9aa3af; }
+      .flow { max-width: 340px; margin-bottom: 6px; }
+      .fname { fill: #e8eaed; font-size: 13px; text-anchor: middle; }
+      .flvl { fill: #9aa3af; font-size: 10px; text-anchor: middle; }
+      .caret { display: inline-block; width: 7px; height: 14px;
+        background: #7ee2a8; vertical-align: -2px; margin-left: 1px; }
+      @media (prefers-reduced-motion: no-preference) {
+        .fcurrent { animation: fpulse 1.6s infinite; }
+        @keyframes fpulse { 50% { opacity: 0.55; } }
+        .caret { animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+      }
     </style>
   </head>
   <body>
