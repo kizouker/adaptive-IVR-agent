@@ -12,6 +12,7 @@ def make_call(respond, queue_place=None):
         opening="welcome, what is it?",
         examples="for example say vab",
         yesno="are you enrolled?",
+        yesno_reprompt="please answer yes or no.",
         transfer="transferring you.",
         identify_line="identify with bankid or freja.",
         identified_line="identification worked.",
@@ -38,9 +39,21 @@ def test_second_miss_asks_yesno():
 
 def test_yesno_answer_transfers_and_asks_for_id():
     answer = make_call(lambda heard: MISS).reply_to("nej", 2)
-    assert answer.matched is None
+    assert answer.matched == "nej"
     assert (answer.done, answer.identify, answer.queue_place) == (False, True, None)
     assert answer.reply == "transferring you. identify with bankid or freja."
+
+
+def test_yesno_sentence_gets_one_reprompt():
+    answer = make_call(lambda heard: MISS).reply_to("jag vet inte riktigt", 2)
+    assert (answer.reply, answer.matched, answer.done, answer.misses) == (
+        "please answer yes or no.", None, False, 3)
+    assert (answer.identify, answer.queue_place) == (False, None)
+
+
+def test_third_miss_transfers():
+    answer = make_call(lambda heard: MISS).reply_to("fortfarande oklart", 3)
+    assert (answer.done, answer.identify, answer.misses) == (False, True, 3)
 
 
 def test_keyword_hit_transfers_and_asks_for_id():

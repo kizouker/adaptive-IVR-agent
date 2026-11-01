@@ -97,3 +97,9 @@ Feature: Practice robot
     Given AirPods are connected
     When the call starts with --airpods or Rickard presses a
     Then output goes to the physical AirPods (missing AirPods fails fast or warns), and the line replays on the new device
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S14
+  Scenario: Sentence at yes/no gets one reprompt
+    Given Agda asked a yes/no question
+    When Rickard answers with a sentence
+    Then she says "Var god svara ja eller nej." once, and the next miss transfers; clean ja or nej transfers at once

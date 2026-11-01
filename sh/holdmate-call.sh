@@ -100,9 +100,11 @@ words = known["words"]
 shown = {w: (w if w else "(silence)") for w in words}
 moved = sorted(shown[w] for w, e in words.items() if e["transfers"] == e["tries"] and e["tries"])
 mixed = sorted(shown[w] for w, e in words.items() if 0 < e["transfers"] < e["tries"])
+stuck = sorted(shown[w] for w, e in words.items() if e["transfers"] == 0 and e["tries"])
 print(f"words learned: {len(words)}")
 print(f"always transfer ({len(moved)}): {', '.join(moved) or '-'}")
 print(f"sometimes miss ({len(mixed)}): {', '.join(mixed) or '-'}")
+print(f"never transfer ({len(stuck)}): {', '.join(stuck) or '-'}")
 print(f"lessons saved: {len(known['lessons'])}")
 EOF
 

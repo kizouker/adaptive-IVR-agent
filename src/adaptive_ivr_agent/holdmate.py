@@ -61,6 +61,7 @@ def build_agda(lines: dict[str, str], respond) -> AgdaCall:
         opening=f"{lines['L01'].split(' For English, press 0.')[0]} {lines['L02']}",
         examples=lines["L03"],
         yesno=lines["L22"],
+        yesno_reprompt=lines["L41"],
         transfer=lines["L19"],
         identify_line=lines["L09"],
         identified_line=lines["L11"],
@@ -181,7 +182,8 @@ class Knowledge:
                 self.shown.observe("queue", "queue", "tick", origin)
             self.shown.observe("queue", "officer", "served", origin)
         else:
-            target = MISS_STATE[result.misses + 1]
+            # A reprompt at yes/no loops back to yes/no (misses keep counting).
+            target = MISS_STATE.get(result.misses + 1, "yes_no")
             self.shown.observe(source, target, label, origin, success=False)
 
     def add_lesson(self, summary: dict) -> None:

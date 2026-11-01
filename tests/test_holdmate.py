@@ -29,6 +29,7 @@ FAKE_LINES = {
     "L30": "Served.",
     "L13": "Queued.",
     "L29": "Place 1.",
+    "L41": "Please answer yes or no.",
 }
 
 
@@ -50,7 +51,7 @@ def test_bfs_tries_every_pair_once_in_level_order():
     pairs = [(s.misses, s.word) for s in lesson.sims]
     assert pairs == [(0, "kw"), (0, "eh"), (1, "kw"), (1, "eh"), (2, "kw"), (2, "eh")]
     assert summary["sims"] == 6
-    assert summary["transfers"] == 4  # kw x3 (matched) + eh at misses 2
+    assert summary["transfers"] == 3  # kw x3 (matched); eh reprompts at 2
     assert summary["matched"] == ["kw"]
 
 
@@ -77,7 +78,7 @@ def test_word_table_records_tries_transfers_keywords():
     words = lesson.knowledge.words
     assert words["kw"] == {"tries": 3, "transfers": 3, "keywords": {"kw": 3}}
     assert words["eh"]["tries"] == 3
-    assert words["eh"]["transfers"] == 1  # only at misses 2
+    assert words["eh"]["transfers"] == 0  # reprompt at misses 2, never transfers
     assert words["eh"]["keywords"] == {}
 
 

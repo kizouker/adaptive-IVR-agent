@@ -49,6 +49,7 @@ class AgdaCall:
         opening: str,
         examples: str,
         yesno: str,
+        yesno_reprompt: str,
         transfer: str,
         identify_line: str,
         identified_line: str,
@@ -61,6 +62,7 @@ class AgdaCall:
         self.opening = opening
         self._examples = examples
         self._yesno = yesno
+        self._yesno_reprompt = yesno_reprompt
         self._transfer = transfer
         self._identify_line = identify_line
         self._identified_line = identified_line
@@ -75,8 +77,13 @@ class AgdaCall:
         confirm, matched = self._respond(heard)
         if matched is not None:
             return self._ask_for_id(f"{confirm} {self._transfer}", matched, misses)
-        if misses >= 2:
+        if misses >= 3:
             return self._ask_for_id(self._transfer, None, misses)
+        if misses == 2:
+            word = normalize(heard)
+            if word in ("ja", "nej"):
+                return self._ask_for_id(self._transfer, word, misses)
+            return AgdaReply(self._yesno_reprompt, None, False, 3, False, None)
         if misses == 1:
             return AgdaReply(self._yesno, None, False, 2, False, None)
         return AgdaReply(self._examples, None, False, 1, False, None)

@@ -513,6 +513,7 @@ agda = AgdaCall(
     opening=f"{welcome} {lines['L02']}",
     examples=lines["L03"],
     yesno=lines["L22"],
+    yesno_reprompt=lines["L41"],
     transfer=lines["L19"],
     identify_line=lines["L09"],
     identified_line=lines["L11"],
@@ -559,7 +560,7 @@ def state_after(done, misses, identify):
         return "queue"
     if identify:
         return "transfer"
-    if misses == 2:
+    if misses >= 2:
         return "yes_no"
     if misses == 1:
         return "example_words"

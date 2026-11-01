@@ -49,3 +49,5 @@ def test_served_and_english_lines_have_verbatim_flags():
     assert "handläggare" in by_id["L39"]["text"]
     assert by_id["L40"]["verbatim"] is False
     assert by_id["L40"]["lang"] == "en"
+    assert by_id["L41"]["text"] == "Var god svara ja eller nej."
+    assert by_id["L41"]["verbatim"] is False  # Rickard-specified, confirm Monday
