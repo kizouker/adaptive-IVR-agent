@@ -17,6 +17,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0A5BBA6F3098D50700F3B58B"
                BuildableName = "HoldmateWatch Watch App.app"
+               BlueprintName = "HoldmateWatch Watch App"
                ReferencedContainer = "container:Holdmate.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -30,6 +31,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0A5BBA6A3098D50700F3B58B"
                BuildableName = "HoldmateWatch.app"
+               BlueprintName = "HoldmateWatch"
                ReferencedContainer = "container:Holdmate.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -97,6 +99,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0A5BBA6A3098D50700F3B58B"
             BuildableName = "HoldmateWatch.app"
+            BlueprintName = "HoldmateWatch"
             ReferencedContainer = "container:Holdmate.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
