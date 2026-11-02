@@ -83,7 +83,8 @@ struct ContentView: View {
     @AppStorage("boardHost") private var host =
         "ricks-mbp-m4.local"
     @State private var place: String = "N/A"
-    @State private var sub: String = "starting…"
+    @State private var sub: String = ""
+    @State private var detail: String = "waiting for board…"
     @State private var diag: String = ""
     @State private var showSettings = false
     @State private var debugOpen = false
@@ -140,9 +141,11 @@ struct ContentView: View {
                     .font(.system(size: 120, weight: .bold))
                     .foregroundColor(statusColor)
                     .opacity(isYourTurn ? (flash ? 1.0 : 0.3) : 1.0)
-                Text(sub)
-                    .font(.title3)
-                    .foregroundColor(.secondary)
+                if !sub.isEmpty {
+                    Text(sub)
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                }
             }
             .padding(32)
             .background(
@@ -164,6 +167,11 @@ struct ContentView: View {
                             .font(.system(.body, design: .monospaced))
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
+                    }
+                    Section("Details") {
+                        Text(detail)
+                            .font(.system(.callout, design: .monospaced))
+                            .foregroundColor(.gray)
                     }
                     DisclosureGroup("Debug", isExpanded: $debugOpen) {
                         Text(boardURL?.absoluteString ?? "bad URL")
@@ -270,6 +278,7 @@ struct ContentView: View {
                     self.connected = false
                     self.place = "N/A"
                     self.sub = "board unreachable"
+                    self.detail = "board unreachable"
                 }
                 return
             }
@@ -281,23 +290,22 @@ struct ContentView: View {
                     self.connected = true
                     self.place = "✓"
                     self.sub = "connected to officer"
+                    self.detail = "connected to officer"
                 } else if let p = turn?.queue_place {
                     self.connected = false
                     let was = self.isYourTurn
                     self.place = String(p)
                     let total = turn?.queue_total.map { "/\($0)" } ?? ""
-                    if p == 0 {
-                        self.sub = "YOUR TURN — answer now"
-                    } else {
-                        self.sub = "in queue\(total) · \(board.generated ?? "")"
-                    }
+                    self.detail = "in queue\(total) · \(board.generated ?? "")"
+                    self.sub = p == 0 ? "YOUR TURN — answer now" : ""
                     if !was && self.isYourTurn {
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                     }
                 } else {
                     self.connected = false
                     self.place = "N/A"
-                    self.sub = "\(live.position ?? "") · \(board.generated ?? "")"
+                    self.sub = ""
+                    self.detail = "\(live.position ?? "") · \(board.generated ?? "")"
                 }
             }
         }.resume()
