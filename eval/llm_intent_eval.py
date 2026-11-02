@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from adaptive_ivr_agent.intent import (  # noqa: E402
     HeuristicNormalizer,
     NotConfiguredError,
+    OpenWeightNormalizer,
     SparkNormalizer,
     resolve,
 )
@@ -69,6 +70,14 @@ def main() -> int:
             return 2
         print(f"live: model={normalizer.model} endpoint={normalizer.endpoint} "
               f"(max {len(CASES)} calls)")
+    elif "--openweight" in sys.argv[1:]:
+        try:
+            normalizer = OpenWeightNormalizer()
+        except NotConfiguredError as err:
+            print(f"openweight needs configuration: {err}")
+            return 2
+        print(f"openweight: model={normalizer.model} runtime={normalizer.runtime} "
+              f"endpoint={normalizer.endpoint} (max {len(CASES)} calls)")
     else:
         normalizer = HeuristicNormalizer()
     rescue_ok = rescue_n = abstain_ok = abstain_n = exact_ok = exact_n = 0
