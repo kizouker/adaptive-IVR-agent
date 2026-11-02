@@ -1,6 +1,6 @@
 # Transcript: AF Agda call 5 (English branch), 29 Oct 2026
 
-About 14:55. Made by Rickard by hand. Text comes from Claude's voice mode (not Whisper).
+About 14:55. Made by Rickard by hand. Text comes from AI voice mode (not Whisper).
 Only AF Agda's side is kept. No personnummer, no staff names, no staff voices.
 The caller's own words and key presses are **not in the text**.
 

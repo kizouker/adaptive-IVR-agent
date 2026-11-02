@@ -256,6 +256,17 @@ def build_live_board(calls: list[LiveCall]) -> dict:
     }
 
 
+def carry_board_lines(board: dict, path: str | Path) -> dict:
+    """Keep baked CLI lines when talk mode rewrites the board file."""
+    try:
+        old = json.loads(Path(path).read_text(encoding=ENCODING))
+    except (OSError, ValueError):
+        return board
+    if isinstance(old, dict) and "lines" in old:
+        board["lines"] = old["lines"]
+    return board
+
+
 def render_live_page(state: dict, template_path: str | Path) -> str:
     """Fill the template with board state; raises if the placeholder is gone."""
     template = Path(template_path).read_text(encoding=ENCODING)

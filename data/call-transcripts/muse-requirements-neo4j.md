@@ -20,10 +20,10 @@ We have made six test calls by hand and written down what AF Agda says. This tas
 
 | File | What it is |
 |---|---|
-| `claude/af-agda-graph.cypher` | **Draft** Cypher script with the full graph (calls 4, 5, 6). Start here. |
-| `claude/af-agda-model.json` | Agent model (states, transitions, PEAS). Version 0.1 only has call 4. |
-| `claude/ivr-calls-2026-10-29.md` | Notes from call 4. |
-| `claude/ivr-calls-2026-10-27.md`, `claude/ivr-calls-2026-10-28.md` | Notes from calls 1–3. |
+| `notes:/af-agda-graph.cypher` | **Draft** Cypher script with the full graph (calls 4, 5, 6). Start here. |
+| `notes:/af-agda-model.json` | Agent model (states, transitions, PEAS). Version 0.1 only has call 4. |
+| `notes:/ivr-calls-2026-10-29.md` | Notes from call 4. |
+| `notes:/ivr-calls-2026-10-27.md`, `notes:/ivr-calls-2026-10-28.md` | Notes from calls 1–3. |
 
 ## 3. Hard rules (privacy and Meta rules)
 
@@ -82,7 +82,7 @@ Create the unique constraints for `State.id`, `Call.id`, `Word.text` and `IVR.id
 - **Done when:** running setup twice gives no error and no duplicates.
 
 ### FR-2 Load the menu map
-Load all states, `NEXT` arrows and example words. The content must match `claude/af-agda-graph.cypher`.
+Load all states, `NEXT` arrows and example words. The content must match `notes:/af-agda-graph.cypher`.
 
 - **Done when:** the graph has 21 known states (14 Swedish, 7 English) + 9 unexplored states, and loading twice gives the same graph (idempotent, use `MERGE`).
 

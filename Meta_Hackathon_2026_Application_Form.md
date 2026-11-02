@@ -69,7 +69,7 @@ I already have a recorded call through the full menu to start from.
 
 ## 2. Tell us about an AI project you recently built
 
-**`swedish-jobs-mcp`** — an MCP server that lets AI assistants like Claude
+**`swedish-jobs-mcp`** — an MCP server that lets AI assistants
 search live Swedish job ads from Arbetsförmedlingen's JobTech API.
 
 - Written in Python, published on PyPI (`v0.1.1`) and open source on GitHub.
@@ -98,4 +98,4 @@ data, or tickets in this repo.
 | 4 | Calls via 46elks or Twilio | ⏸ paused | Backlog ticket; sim only for now |
 | 5 | Muse Spark understands prompts, decides next answer | 🟡 partial | Exact/keyword matching (`classify.py`); no LLM in the loop yet |
 | 6 | Meta speech-to-text for the robot voice | ⬜ not yet | macOS `say` voices only (Alva/Oskar) |
-| 7 | A recorded call through the full menu to start from | ✅ have it | `data/call-transcripts-by-claude/`, `data/doorkeeper-lines.json` L01–L43; more sampling Monday (#106) |
+| 7 | A recorded call through the full menu to start from | ✅ have it | `data/call-transcripts/`, `data/doorkeeper-lines.json` L01–L43; more sampling Monday (#106) |

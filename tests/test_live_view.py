@@ -12,6 +12,7 @@ from adaptive_ivr_agent.live_view import (
     build_call,
     build_coverage,
     build_live_board,
+    carry_board_lines,
     line_translations,
     render_live_page,
     translate_robot,
@@ -270,3 +271,17 @@ def test_live_call_carries_captions_and_speaker_names():
     assert (snapshot["caller_name"], snapshot["robot_name"]) == ("You", "AF Agda (Alva)")
     turn = snapshot["turns"][0]
     assert (turn["caller_captions"], turn["robot_captions"]) == ("audio/r1-you.vtt", "audio/r1-agda.vtt")
+
+
+def test_talk_rewrite_carries_baked_lines(tmp_path):
+    board = build_live_board([])
+    old = tmp_path / "board-state.json"
+    old.write_text(json.dumps({"lines": [{"id": "L01", "text": "hej", "en": None}]}), encoding="utf-8")
+    carried = carry_board_lines(board, old)
+    assert carried["lines"] == [{"id": "L01", "text": "hej", "en": None}]
+
+
+def test_talk_rewrite_without_old_board_keeps_no_lines(tmp_path):
+    board = build_live_board([])
+    carried = carry_board_lines(board, tmp_path / "missing.json")
+    assert "lines" not in carried
