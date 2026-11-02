@@ -1,7 +1,18 @@
 import PropTypes from 'prop-types';
 
 function QueueWidget({ place, total, label }) {
-  if (place == null) return null;
+  if (place == null) {
+    return (
+      <div className="queue">
+        <div className="flap">
+          <div className="half top" />
+          <div className="half bottom" />
+          <div className="fdigit na">N/A</div>
+          <div className="split" />
+        </div>
+      </div>
+    );
+  }
   const showBar = total != null && total > 0;
   const done = showBar ? Math.min(100, Math.max(0, ((total - place) / total) * 100)) : 0;
   return (

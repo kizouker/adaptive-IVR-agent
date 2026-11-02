@@ -1,4 +1,5 @@
 """Mini practice robot: plays fixed lines, saves each as a step (FN-REQ-IVR-006)."""
+import hashlib
 import json
 import shutil
 import subprocess
@@ -33,6 +34,24 @@ def load_indexed_lines(path: str | Path) -> dict[str, str]:
     """Load doorkeeper lines keyed by id (L01, L02, ...) for scripted calls."""
     raw = json.loads(Path(path).read_text(encoding=ENCODING))
     return {entry["id"]: entry[LINE_TEXT_KEY] for entry in raw[LINES_KEY]}
+
+
+def opening_cache_path(
+    cache_dir: str | Path, voice: str, en_voice: str, text: str
+) -> Path:
+    """Path of the cached rendered opening aiff for these exact inputs.
+
+    The filename is the sha1 of voice + en_voice + text, so identical
+    openings reuse one file while any change renders fresh. Creates
+    cache_dir when missing.
+    """
+    digest = hashlib.sha1(
+        "\0".join([voice, en_voice, text]).encode(ENCODING),
+        usedforsecurity=False,
+    ).hexdigest()
+    directory = Path(cache_dir)
+    directory.mkdir(parents=True, exist_ok=True)
+    return directory / f"opening-{digest}.aiff"
 
 
 class PracticeRobot:

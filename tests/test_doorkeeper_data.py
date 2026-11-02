@@ -32,6 +32,9 @@ def test_role_phrasebooks_have_roles_with_words():
     for role in roles:
         assert role["id"] and role["af_sections"] and role["vocabulary"]
         assert role["goal"] and role["errand"] and role["errand_en"]
+        assert len(role["checklist"]) >= 3
+        for item in role["checklist"]:
+            assert item["say"] and item["why"] and item["source_url"]
 
 
 def test_served_and_english_lines_have_verbatim_flags():
@@ -58,6 +61,10 @@ def test_served_and_english_lines_have_verbatim_flags():
     assert by_id["L43"]["verbatim"] is False  # mirrors L32, UNVERIFIED
     assert "For English, press 0." in by_id["L01"]["text"]
     assert by_id["L01"]["verbatim"] is True
+    assert by_id["L44"]["text"].startswith("Välkommen till Arbetsförmedlingen")
+    assert "försenade" in by_id["L44"]["text"]
+    assert by_id["L44"]["verbatim"] is True
+    assert by_id["L44"]["en"].strip()
 
 
 def test_spoken_swedish_lines_have_english():

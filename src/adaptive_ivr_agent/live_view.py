@@ -23,6 +23,7 @@ STATE_NAMES = {
     "transfer": {"sv": "Kopplar vidare", "en": "Transferring"},
     "identification": {"sv": "Identifiering", "en": "Identification"},
     "queue": {"sv": "Kö", "en": "Queue"},
+    "survey": {"sv": "Enkät", "en": "Survey"},
     "english_menu": {"sv": "Engelsk knappmeny", "en": "English key menu"},
     "english_submenu": {"sv": "Engelsk undermeny", "en": "English sub-menu"},
     "sms": {"sv": "SMS-erbjudande", "en": "SMS offer"},

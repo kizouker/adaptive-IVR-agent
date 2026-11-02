@@ -66,7 +66,8 @@ class Edge:
 
 # AF Agda fallback chain, verified against calls 1, 2, 4, 5: open question,
 # example alternatives, yes/no, transfer, then identification (BankID/Freja)
-# before the queue. Failed ID still lands in the queue.
+# before the queue. Failed ID still lands in the queue. Survey is optional
+# (call 4 has it, call 6 does not): queue -> survey -> officer, or served.
 AF_AGDA_STATES = [
     State("open_question", "Beskriv vad du vill ha hjälp med?"),
     State("example_words", "Du kan till exempel säga... (alt 1, 2, 3)"),
@@ -74,6 +75,7 @@ AF_AGDA_STATES = [
     State("transfer", "Kopplar dig direkt till kön."),
     State("identification", "Identifiering: BankID eller Freja?"),
     State("queue", "Du blir nu placerad i kö."),
+    State("survey", "Enkät: vill du delta? Tryck 1."),
     State("officer", "En handläggare svarar."),
 ]
 
@@ -84,6 +86,8 @@ AF_AGDA_EDGES = [
     Edge("transfer", "identification", "kopplar"),
     Edge("identification", "queue", "legitimerad"),
     Edge("queue", "officer", "served"),
+    Edge("queue", "survey", "enkät erbjuds"),
+    Edge("survey", "officer", "klar"),
 ]
 
 NO_INPUT_EDGE_LABEL = "silence"

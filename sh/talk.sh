@@ -4,7 +4,8 @@
 # Flags: --airpods (physical AirPods; must be connected), --as <persona> (role-play + tag rounds for Holdmate training),
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
 #   --quiet (type + read instead of speak + listen), --sound (force sound on),
-#   --floor (level the system volume first; default leaves it untouched).
+#   --floor (level the system volume first; default leaves it untouched),
+#   --busy (delay-notice welcome instead of the plain one).
 # The quiet/sound choice is remembered in .talk-quiet; flags override it and save.
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
@@ -29,6 +30,7 @@ PERSONA=""
 QUIET=0
 QUIET_FORCED=""
 FLOOR=0
+BUSY=0
 QUEUE_START=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -37,6 +39,7 @@ while [ $# -gt 0 ]; do
     --quiet) QUIET=1; QUIET_FORCED=1 ;;
     --sound) QUIET=0; QUIET_FORCED=0 ;;
     --floor) FLOOR=1 ;;
+    --busy) BUSY=1 ;;
     --as)
       PERSONA="${2:-}"
       [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
@@ -52,7 +55,7 @@ while [ $# -gt 0 ]; do
       fi
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor)" ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor, --busy)" ;;
   esac
   shift
 done
@@ -306,6 +309,10 @@ if persona is None:
 print(f"Role: {persona['label']}")
 print(f"Errand: {persona['errand']}")
 print(f"Try words like: {', '.join(persona['vocabulary'])}")
+print("Checklist (guidance, not legal advice):")
+for i, item in enumerate(persona.get("checklist", []), 1):
+    print(f"  {i}. Say: {item['say']}")
+    print(f"     Why: {item['why']}")
 CARD
   then
     info "valid persona ids:"
@@ -376,6 +383,12 @@ toggle_quiet() {
   return 1
 }
 
+drain_keys() {
+  # Drop stale buffered stdin bytes (leftover Enter etc.) so a fresh wait starts clean.
+  [ -t 0 ] || return 0
+  while read -t 0 -n 1 -s _drain_key; do :; done
+}
+
 poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, consumes file
   # No Mac beep here: the browser already beeps instantly (else it sounds twice).
   DTMF_DIGIT=""
@@ -392,6 +405,7 @@ poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, consumes file
 }
 
 wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 = quit
+  drain_keys
   KEY_PRESSED=""
   if [ ! -t 0 ]; then
     return 1
@@ -421,6 +435,7 @@ wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 =
 }
 
 wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
+  drain_keys
   DIGIT=""
   if [ ! -t 0 ]; then
     return 1
@@ -530,7 +545,7 @@ agda_says() {
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
     TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
-    TALK_QUEUE_START="$QUEUE_START" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
+    TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
 import json
 import os
@@ -549,7 +564,7 @@ from adaptive_ivr_agent.live_view import (
     write_captions,
 )
 from adaptive_ivr_agent.reactive import ReactiveRobot
-from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines
+from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines, opening_cache_path
 from adaptive_ivr_agent.talk import AgdaCall, with_aliases
 
 root = os.environ["TALK_ROOT"]
@@ -566,7 +581,8 @@ else:
 forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
 forced = int(forced_start) if forced_start.isdigit() else None
 # Full verbatim L01: the English sentence is spoken by an English voice.
-welcome = lines["L01"]
+# --busy swaps in the L44 delay notice; the rest is identical (call 5 part 3).
+welcome = lines["L44"] if os.environ.get("TALK_BUSY") == "1" else lines["L01"]
 # L30: Rickard's pick 1 Nov (UNVERIFIED memory). Replace with verbatim
 # from Monday's sampling.
 SERVED_LINE = lines["L30"]
@@ -689,11 +705,16 @@ def write_board(call):
 if sys.argv[1] == "opening":
     marker = "For English, press 0."
     out_aiff = os.environ["TALK_AIFF"]
-    if marker in agda.opening:
+    en_voice = os.environ.get("TALK_EN_VOICE", voice)
+    cached = opening_cache_path(
+        os.path.join(root, "data/recordings/.opening-cache"),
+        voice, en_voice, agda.opening)
+    if cached.exists() and cached.stat().st_size > 0:
+        shutil.copy(cached, out_aiff)
+    elif marker in agda.opening:
         sv1, _, rest = agda.opening.partition(marker)
         sv1_aiff, en_aiff, sv2_aiff = out_aiff + ".sv1", out_aiff + ".en", out_aiff + ".sv2"
         subprocess.run(["say", "-v", voice, "-o", sv1_aiff, sv1.strip()], check=True)
-        en_voice = os.environ.get("TALK_EN_VOICE", voice)
         subprocess.run(["say", "-v", en_voice, "-o", en_aiff, marker], check=True)
         subprocess.run(["say", "-v", voice, "-o", sv2_aiff, rest.strip()], check=True)
         subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
@@ -703,8 +724,10 @@ if sys.argv[1] == "opening":
         os.remove(sv1_aiff)
         os.remove(en_aiff)
         os.remove(sv2_aiff)
+        shutil.copy(out_aiff, cached)
     else:
         render_reply(agda.opening)
+        shutil.copy(out_aiff, cached)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r0"

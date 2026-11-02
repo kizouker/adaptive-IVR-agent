@@ -47,14 +47,14 @@ jobs:
 
       - name: Tests
         run: |
-          if [ -d tests ]; then pip install pytest coverage && coverage run --source=src -m pytest -q 2>&1 | tee /tmp/pytest.log; else echo "no tests yet"; fi
+          if [ -d tests ]; then pip install pytest coverage && coverage run -m pytest -q 2>&1 | tee /tmp/pytest.log; else echo "no tests yet"; fi
 
       - name: Test stats
         if: always()
         run: |
           TESTS="$(grep -E 'passed|failed|error' /tmp/pytest.log 2>/dev/null | tail -1 | sed 's/^ *//')"
           [ -n "$TESTS" ] || TESTS="n/a"
-          COV="$(coverage report 2>/dev/null | awk '$1 == "TOTAL" { print $NF }')"
+          COV="$(coverage report --include='*adaptive_ivr_agent*' 2>/dev/null | awk '$1 == "TOTAL" { print $NF }')"
           [ -n "$COV" ] || COV="n/a"
           {
             echo "## Test stats"
@@ -82,10 +82,10 @@ jobs:
         run: |
           pip install -e . >/dev/null
           pip install pytest coverage >/dev/null
-          coverage run --source=src -m pytest -q 2>&1 | tee /tmp/pytest.log
+          coverage run -m pytest -q 2>&1 | tee /tmp/pytest.log
           PASSED="$(grep -Eo '[0-9]+ passed' /tmp/pytest.log | tail -1 | grep -Eo '[0-9]+')"
           SKIPPED="$(grep -Eo '[0-9]+ skipped' /tmp/pytest.log | tail -1 | grep -Eo '[0-9]+' || true)"
-          COV="$(coverage report 2>/dev/null | awk '$1 == "TOTAL" { print $NF }')"
+          COV="$(coverage report --include='*adaptive_ivr_agent*' 2>/dev/null | awk '$1 == "TOTAL" { print $NF }')"
           jq -n --arg p "${PASSED:-0}" --arg s "${SKIPPED:-0}" --arg c "${COV:-n/a}" \
             '{tests: {passed: ($p | tonumber), skipped: ($s | tonumber)}, coverage: $c, owasp: "pass"}' \
             > test-stats.json
