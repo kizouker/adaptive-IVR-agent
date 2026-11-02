@@ -12,23 +12,23 @@ Holdmate learns these lines for you: it maps the menu by practicing on a scripte
 
 **Screenshot 1 — live board overview:** the call mapped onto the process, live.
 
-![Screenshot 1: live board overview](docs/images/board-overview.png)
+[![Screenshot 1: live board overview](docs/images/board-overview.png)](docs/images/board-overview.png)
 
 **Screenshot 2 — queue ticket:** your place, counting down; N/A until the queue arrives.
 
-![Screenshot 2: queue ticket](docs/images/board-queue.png)
+[![Screenshot 2: queue ticket](docs/images/board-queue.png)](docs/images/board-queue.png)
 
 **Screenshot 3 — BFS lessons:** every sim run, and what Holdmate learned from it.
 
-![Screenshot 3: BFS lessons](docs/images/board-lessons.png)
+[![Screenshot 3: BFS lessons](docs/images/board-lessons.png)](docs/images/board-lessons.png)
 
 **Screenshot 4 — menu map maze:** exploration drawn as a maze; dead ends are walls.
 
-![Screenshot 4: menu map maze](docs/images/board-pacman.png)
+[![Screenshot 4: menu map maze](docs/images/board-pacman.png)](docs/images/board-pacman.png)
 
 **Screenshot 5 — iPhone queue ticket:** the same countdown on the phone, big and glanceable.
 
-![Screenshot 5: iPhone queue ticket](docs/images/iphone-queue.png)
+[![Screenshot 5: iPhone queue ticket](docs/images/iphone-queue.png)](docs/images/iphone-queue.png)
 
 Screenshot 6 (Watch queue ticket) is taken on the watch and added next.
 
@@ -63,7 +63,7 @@ Full menu instead (talk options, teach words, lessons, sound):
 
 Menu: 1 = board + talk, 2 = talk options, 3 = teach Agda words, 4 = Holdmate calls by itself, 5 = sound, 6 = quit.
 
-Demo the queue on all screens (board, iPhone, Watch):
+Demo the queue on all screens (board, iPhone, Watch) — Screenshot 2 shows the ticket counting down, Screenshot 5 the same on the phone:
 
 ```bash
 ./sh/demo-queue.sh
@@ -84,8 +84,8 @@ Six stages, full detail in [docs/system-overview.md](docs/system-overview.md):
 1. **Record** real calls (Voice Memo on iPhone).
 2. **Transcribe** with Claude into `data/call-transcripts-by-claude/`.
 3. **Build the practice robot**: 43 verbatim lines + finite-state machine + keyword matching.
-4. **Agent practices**: Russell & Norvig loop, BFS lessons over phrasebooks, word → transfer counts in `data/holdmate-knowledge.json`.
-5. **Real calls** via iPhone + speakerphone today, 46elks API next.
+4. **Agent practices**: Russell & Norvig loop, BFS lessons over phrasebooks, word → transfer counts in `data/holdmate-knowledge.json` (Screenshots 1, 3, 4).
+5. **Real calls** via iPhone + speakerphone today, 46elks API next (Screenshots 2, 5).
 6. **Handover**: agent handles everything up to identification; human approves BankID on another device.
 
 ## Repo map
@@ -114,6 +114,6 @@ npm run build --prefix ui/board
 
 ## Status and next steps
 
-Status: device day on branch `batch/night-pocs` — iPhone + Watch LAN queue, board N/A state, queue demo, Spark intent wiring, video script draft. Test suite green (190 passed, 2 skipped), board builds, CI + CodeQL pass.
+Status: v0.3.1 on main — iPhone + Watch LAN queue, queue demo, Spark intent wiring, video script draft. Test suite green (194 passed, 2 skipped), board builds, CI + CodeQL + e2e pass.
 
 Next: 46elks live call to compare against scripted Agda, then the speakerphone loop end to end (iPhone loudspeaker, Holdmate listens first, then answers). Submission video follows [docs/video-script-draft.md](docs/video-script-draft.md): problem, live demo, tech, next steps.
