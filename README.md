@@ -36,7 +36,7 @@ Screenshot 6 (Watch queue ticket) is taken on the watch and added next.
 
 ```mermaid
 flowchart LR
-    REC["1 Record\nVoice Memo"] --> TR["2 Transcribe\nClaude"]
+    REC["1 Record\nVoice Memo"] --> TR["2 Transcribe\nAI"]
     TR --> ROB["3 Practice robot\n43 lines + FSM"]
     ROB --> AGT["4 Agent learns\nBFS lessons + knowledge"]
     AGT --> LIVE["5 Live board\nReact + queue"]
@@ -88,7 +88,7 @@ Keys: any key skips ahead, `0` English menu, `t` quiet type-and-read mode, `q` q
 Six stages, full detail in [docs/system-overview.md](docs/system-overview.md):
 
 1. **Record** real calls (Voice Memo on iPhone).
-2. **Transcribe** with Claude into `data/call-transcripts-by-claude/`.
+2. **Transcribe** with AI into `data/call-transcripts/`.
 3. **Build the practice robot**: 43 verbatim lines + finite-state machine + keyword matching.
 4. **Agent practices**: Russell & Norvig loop, BFS lessons over phrasebooks, word → transfer counts in `data/holdmate-knowledge.json` (Screenshots 1, 3, 4).
 5. **Real calls** via iPhone + speakerphone today, 46elks API next (Screenshots 2, 5).

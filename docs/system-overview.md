@@ -17,7 +17,7 @@ flowchart LR
     APP["Holdmate app<br/>board + CLI + widget<br/>+ iPhone/Watch"]
     ROB["Practice robot<br/>scripted Castle copy"]
     CAS["The Castle<br/>real IVR line"]
-    TR["Transcription<br/>Claude today"]
+    TR["Transcription<br/>AI today"]
     TRM["Meta STT API"]:::alt
     TRW["Whisper"]:::alt
     TEL["Telephony: iPhone+speaker today"] 
@@ -49,7 +49,7 @@ flowchart TB
         VM["Voice Memo on iPhone<br/>m4a, e.g. 2026-11-02 queue run"]
     end
     subgraph S2["2 · Transcribe"]
-        CL["Transcribe with Claude<br/>into data/call-transcripts-by-claude/"]
+        CL["Transcribe with AI<br/>into data/call-transcripts/"]
         M2["Meta STT API"]:::alt
         W2["Whisper (local or API)"]:::alt
     end

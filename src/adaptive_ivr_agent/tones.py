@@ -1,7 +1,7 @@
 """DTMF connecting beeps for the handover: stdlib WAV synth, no dependencies.
 
 When Agda hands over, the call beeps like touch tones (tyt-tyt-tyt) while
-connecting, then the officer answers. If Rickard pastes the Codex DTMF
+connecting, then the officer answers. If Rickard drops a DTMF
 library into the repo, this module is the seam to swap it in.
 """
 
