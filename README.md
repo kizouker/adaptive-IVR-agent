@@ -69,6 +69,12 @@ Demo the queue on all screens (board, iPhone, Watch) — Screenshot 2 shows the 
 ./sh/demo-queue.sh
 ```
 
+Live app: https://kizouker.github.io/adaptive-IVR-agent/ (GitHub Pages, current on main). Or run the board in Docker:
+
+```bash
+docker compose up --build # board on http://localhost:8080/
+```
+
 Talk to Agda with your own voice:
 
 ```bash
