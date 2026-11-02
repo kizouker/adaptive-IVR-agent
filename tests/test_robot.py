@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from tests.test_data import ROBOT_LINES, SPEAKER_ROBOT, STEP_FILE_NAME
-from adaptive_ivr_agent.robot import PracticeRobot, load_indexed_lines
+from adaptive_ivr_agent.robot import PracticeRobot, load_indexed_lines, opening_cache_path
 from adaptive_ivr_agent.steps import StepFile
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -28,3 +28,15 @@ def test_lines_load_by_id_for_scripted_calls():
     lines = load_indexed_lines(DATA_DIR / "doorkeeper-lines.json")
     assert lines["L01"].startswith("Välkommen till Arbetsförmedlingen")
     assert lines["L19"] == "Jag kopplar dig vidare till en handläggare."
+
+
+def test_opening_cache_path_stable_and_distinct(tmp_path):
+    cache = tmp_path / "cache" / "nested"
+    first = opening_cache_path(cache, "Alva", "Samantha", "hej")
+    assert first.parent == cache
+    assert cache.is_dir()
+    assert first.suffix == ".aiff"
+    assert opening_cache_path(cache, "Alva", "Samantha", "hej") == first
+    assert opening_cache_path(cache, "Alva", "Samantha", "hejdå") != first
+    assert opening_cache_path(cache, "Klara", "Samantha", "hej") != first
+    assert opening_cache_path(cache, "Alva", "Daniel", "hej") != first

@@ -380,6 +380,12 @@ toggle_quiet() {
   return 1
 }
 
+drain_keys() {
+  # Drop stale buffered stdin bytes (leftover Enter etc.) so a fresh wait starts clean.
+  [ -t 0 ] || return 0
+  while read -t 0 -n 1 -s _drain_key; do :; done
+}
+
 poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, consumes file
   # No Mac beep here: the browser already beeps instantly (else it sounds twice).
   DTMF_DIGIT=""
@@ -396,6 +402,7 @@ poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, consumes file
 }
 
 wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 = quit
+  drain_keys
   KEY_PRESSED=""
   if [ ! -t 0 ]; then
     return 1
@@ -425,6 +432,7 @@ wait_keys() { # $1 seconds, $2 pid to watch (or ""); 0 = skip, 1 = time out, 2 =
 }
 
 wait_digit() { # $1 seconds; 0 = digit in DIGIT, 1 = silence, 2 = quit
+  drain_keys
   DIGIT=""
   if [ ! -t 0 ]; then
     return 1
@@ -553,7 +561,7 @@ from adaptive_ivr_agent.live_view import (
     write_captions,
 )
 from adaptive_ivr_agent.reactive import ReactiveRobot
-from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines
+from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines, opening_cache_path
 from adaptive_ivr_agent.talk import AgdaCall, with_aliases
 
 root = os.environ["TALK_ROOT"]
@@ -693,11 +701,16 @@ def write_board(call):
 if sys.argv[1] == "opening":
     marker = "For English, press 0."
     out_aiff = os.environ["TALK_AIFF"]
-    if marker in agda.opening:
+    en_voice = os.environ.get("TALK_EN_VOICE", voice)
+    cached = opening_cache_path(
+        os.path.join(root, "data/recordings/.opening-cache"),
+        voice, en_voice, agda.opening)
+    if cached.exists() and cached.stat().st_size > 0:
+        shutil.copy(cached, out_aiff)
+    elif marker in agda.opening:
         sv1, _, rest = agda.opening.partition(marker)
         sv1_aiff, en_aiff, sv2_aiff = out_aiff + ".sv1", out_aiff + ".en", out_aiff + ".sv2"
         subprocess.run(["say", "-v", voice, "-o", sv1_aiff, sv1.strip()], check=True)
-        en_voice = os.environ.get("TALK_EN_VOICE", voice)
         subprocess.run(["say", "-v", en_voice, "-o", en_aiff, marker], check=True)
         subprocess.run(["say", "-v", voice, "-o", sv2_aiff, rest.strip()], check=True)
         subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
@@ -707,8 +720,10 @@ if sys.argv[1] == "opening":
         os.remove(sv1_aiff)
         os.remove(en_aiff)
         os.remove(sv2_aiff)
+        shutil.copy(out_aiff, cached)
     else:
         render_reply(agda.opening)
+        shutil.copy(out_aiff, cached)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r0"
