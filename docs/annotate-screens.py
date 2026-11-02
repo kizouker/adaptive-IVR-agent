@@ -18,6 +18,7 @@ SHOTS = (
     ("board-queue.png", "2"),
     ("board-lessons.png", "3"),
     ("board-pacman.png", "4"),
+    ("iphone-queue.png", "5"),
 )
 RADIUS = 64
 CENTER = (104, 104)
