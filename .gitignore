@@ -20,3 +20,4 @@ data/talk-misses.jsonl
 __pycache__/
 research_notes/
 reports/
+ui/board/test-results/

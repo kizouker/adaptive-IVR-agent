@@ -1,0 +1,25 @@
+name: e2e
+on:
+  push:
+    branches: [main, batch/night-pocs]
+  pull_request:
+jobs:
+  board:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ui/board/package-lock.json
+      - run: npm ci --prefix ui/board
+      - run: npx playwright install --with-deps chromium
+        working-directory: ui/board
+      - run: npm run build --prefix ui/board
+      - run: npm run test:e2e --prefix ui/board
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: board-screenshots
+          path: ui/board/test-results/*.png
