@@ -26,7 +26,11 @@ Holdmate learns these lines for you: it maps the menu by practicing on a scripte
 
 ![Screenshot 4: menu map maze](docs/images/board-pacman.png)
 
-Screenshots 5–6 (iPhone + Watch queue ticket) are taken on the devices and added next — image 5 is the number Rickard asked for.
+**Screenshot 5 — iPhone queue ticket:** the same countdown on the phone, big and glanceable.
+
+![Screenshot 5: iPhone queue ticket](docs/images/iphone-queue.png)
+
+Screenshot 6 (Watch queue ticket) is taken on the watch and added next.
 
 ## Architecture (high level)
 
