@@ -95,6 +95,9 @@ struct ContentView: View {
     private let timer = Timer.publish(
         every: 5, on: .main, in: .common
     ).autoconnect()
+    private let blinkTimer = Timer.publish(
+        every: 0.6, on: .main, in: .common
+    ).autoconnect()
 
     private var boardURL: URL? {
         URL(string: "http://\(host):5173/board-state.json")
@@ -188,7 +191,8 @@ struct ContentView: View {
                 }
             }
         }
-        .onReceive(timer) { _ in flash.toggle(); refresh() }
+        .onReceive(timer) { _ in refresh() }
+        .onReceive(blinkTimer) { _ in flash.toggle() }
         .onAppear { startupDiagnostics(); refresh() }
     }
 

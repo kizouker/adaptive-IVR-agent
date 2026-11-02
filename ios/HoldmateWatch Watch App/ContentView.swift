@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import WatchConnectivity
+import WatchKit
 
 struct BoardTurn: Decodable, Sendable {
     var queue_place: Int?
@@ -55,11 +56,19 @@ struct ContentView: View {
     @State private var sub = "starting…"
     @State private var diag = ""
     @State private var showSettings = false
+    @State private var flash = false
     @StateObject private var phone = PhoneLink()
 
     private let timer = Timer.publish(
         every: 5, on: .main, in: .common
     ).autoconnect()
+    private let blinkTimer = Timer.publish(
+        every: 0.6, on: .main, in: .common
+    ).autoconnect()
+
+    private var isYourTurn: Bool {
+        place == "0"
+    }
 
     private var boardURL: URL? {
         URL(string: "http://\(host):5173/board-state.json")
@@ -75,6 +84,7 @@ struct ContentView: View {
         VStack {
             Text(place)
                 .font(.system(size: 64, weight: .bold))
+                .opacity(isYourTurn ? (flash ? 1.0 : 0.3) : 1.0)
             Text(sub)
                 .font(.footnote)
                 .foregroundColor(.secondary)
@@ -113,6 +123,7 @@ struct ContentView: View {
             .padding()
         }
         .onReceive(timer) { _ in refresh() }
+        .onReceive(blinkTimer) { _ in flash.toggle() }
         .onAppear { refresh() }
     }
 
@@ -185,8 +196,12 @@ struct ContentView: View {
                     $0.queue_place != nil
                 }
                 if let p = turn?.queue_place {
+                    let was = self.isYourTurn
                     self.place = String(p)
-                    self.sub = "in queue"
+                    self.sub = p == 0 ? "YOUR TURN" : "in queue"
+                    if !was && self.isYourTurn {
+                        WKInterfaceDevice.current().play(.success)
+                    }
                 } else {
                     self.place = "N/A"
                     self.sub = "\(live.position ?? "")"
