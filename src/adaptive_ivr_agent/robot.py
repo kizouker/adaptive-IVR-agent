@@ -46,7 +46,8 @@ def opening_cache_path(
     cache_dir when missing.
     """
     digest = hashlib.sha1(
-        "\0".join([voice, en_voice, text]).encode(ENCODING)
+        "\0".join([voice, en_voice, text]).encode(ENCODING),
+        usedforsecurity=False,
     ).hexdigest()
     directory = Path(cache_dir)
     directory.mkdir(parents=True, exist_ok=True)
