@@ -22,3 +22,10 @@ __pycache__/
 research_notes/
 reports/
 ui/board/test-results/
+generated_images/.tbh-generated-images.lock
+
+## Xcode user-local state
+*.xcuserstate
+*.xcuserdata/
+project.xcworkspace/xcuserdata/
+xcuserdata/
