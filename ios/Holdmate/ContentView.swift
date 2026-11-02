@@ -13,6 +13,25 @@ struct BoardTurn: Decodable, Sendable {
     var queue_place: Int?
     var queue_total: Int?
     var state: String?
+    var caller: String?
+    var robot: String?
+}
+
+struct BoardCoverage: Decodable, Sendable {
+    var total: Int?
+    var tried: Int?
+}
+
+struct BoardWord: Decodable, Sendable {
+    var tries: Int?
+    var transfers: Int?
+}
+
+struct VocabRow: Identifiable, Sendable {
+    var id: String { word }
+    var word: String
+    var tries: Int
+    var transfers: Int
 }
 
 struct BoardCall: Decodable, Sendable {
@@ -23,6 +42,8 @@ struct BoardCall: Decodable, Sendable {
 struct BoardState: Decodable, Sendable {
     var generated: String?
     var calls: [BoardCall]?
+    var coverage: BoardCoverage?
+    var words: [String: BoardWord]?
 }
 
 final class WatchLink: NSObject, ObservableObject, WCSessionDelegate {
@@ -93,6 +114,10 @@ struct ContentView: View {
     @State private var connected = false
     @StateObject private var watch = WatchLink()
     @AppStorage("alarmOn") private var alarmOn = true
+    @State private var showMap = false
+    @State private var coverage: BoardCoverage?
+    @State private var vocab: [VocabRow] = []
+    @State private var path: [String] = []
 
     private let timer = Timer.publish(
         every: 5, on: .main, in: .common
@@ -156,9 +181,19 @@ struct ContentView: View {
             .background(
                 RoundedRectangle(cornerRadius: 24).fill(statusTint)
             )
+            if let cov = coverage, let total = cov.total, total > 0 {
+                VStack(spacing: 2) {
+                    ProgressView(value: Double(cov.tried ?? 0), total: Double(total))
+                        .frame(width: 140)
+                    Text("explored \(cov.tried ?? 0)/\(total)")
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                }
+            }
             HStack(spacing: 24) {
                 Button("server") { showSettings = true }
                 Button("test") { testConnection() }
+                Button("map") { showMap = true }
             }
             .font(.title2)
             .buttonStyle(.bordered)
@@ -199,6 +234,9 @@ struct ContentView: View {
         .onReceive(timer) { _ in refresh() }
         .onReceive(blinkTimer) { _ in flash.toggle() }
         .onAppear { startupDiagnostics(); refresh() }
+        .fullScreenCover(isPresented: $showMap) {
+            MapView(vocab: vocab, path: path)
+        }
     }
 
     private func reason(_ error: Error?) -> String {
@@ -295,6 +333,27 @@ struct ContentView: View {
                 $0.queue_place != nil
             }
             DispatchQueue.main.async {
+                self.coverage = board.coverage
+                let words = board.words ?? [:]
+                self.vocab = words.map {
+                    VocabRow(
+                        word: $0.key,
+                        tries: $0.value.tries ?? 0,
+                        transfers: $0.value.transfers ?? 0
+                    )
+                }.sorted {
+                    $0.transfers == $1.transfers
+                        ? $0.tries > $1.tries
+                        : $0.transfers > $1.transfers
+                }
+                var states: [String] = []
+                for turn in live.turns ?? [] {
+                    let state = turn.state ?? ""
+                    if !state.isEmpty && state != states.last {
+                        states.append(state)
+                    }
+                }
+                self.path = states
                 if live.position == "officer" {
                     self.connected = true
                     self.place = "✓"
@@ -321,5 +380,86 @@ struct ContentView: View {
                 }
             }
         }.resume()
+    }
+}
+
+struct MapView: View {
+    var vocab: [VocabRow]
+    var path: [String]
+    @Environment(\.dismiss) private var dismiss
+    @State private var tab = 0
+    private let rotate = Timer.publish(
+        every: 6, on: .main, in: .common
+    ).autoconnect()
+
+    var body: some View {
+        NavigationStack {
+            TabView(selection: $tab) {
+                VocabView(vocab: vocab).tag(0)
+                PathView(path: path).tag(1)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .navigationTitle(tab == 0 ? "Discovered words" : "Call path")
+            .toolbar {
+                Button("Done") { dismiss() }
+            }
+        }
+        .onReceive(rotate) { _ in tab = 1 - tab }
+    }
+}
+
+struct VocabView: View {
+    var vocab: [VocabRow]
+
+    var body: some View {
+        Group {
+            if vocab.isEmpty {
+                Text("No words yet — run lessons.")
+                    .foregroundColor(.secondary)
+            } else {
+                List(vocab) { row in
+                    HStack {
+                        Text(row.word)
+                        Spacer()
+                        Text("\(row.transfers)/\(row.tries)")
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct PathView: View {
+    var path: [String]
+
+    var body: some View {
+        Group {
+            if path.isEmpty {
+                Text("No call yet.")
+                    .foregroundColor(.secondary)
+            } else {
+                ScrollView {
+                    VStack(spacing: 4) {
+                        ForEach(Array(path.enumerated()), id: \.offset) { index, state in
+                            if index > 0 {
+                                Text("↓")
+                                    .foregroundColor(.gray)
+                            }
+                            Text(state)
+                                .font(.headline)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.teal.opacity(0.15))
+                                )
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
     }
 }
