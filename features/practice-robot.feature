@@ -115,3 +115,15 @@ Feature: Practice robot
     Given a persona with an errand and vocabulary
     When Rickard calls with --as for that persona
     Then the role card lists what to say and why, grounded in AF rules with sources
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S16
+  Scenario: Busy day plays the delay welcome
+    Given a busy day at the agency
+    When the call starts
+    Then Agda opens with the delay notice (L44) and the rest of the flow is unchanged
+
+  @FN-REQ-IVR-007 @FN-REQ-IVR-007-S17
+  Scenario: Survey offer after handover
+    Given a talk call that reaches the served line
+    When the handover finishes
+    Then Agda asks the survey question (L15), pressing 1 plays the accept line (L16), and the board shows a survey node
