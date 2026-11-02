@@ -148,11 +148,6 @@ struct ContentView: View {
             .background(
                 RoundedRectangle(cornerRadius: 24).fill(statusTint)
             )
-            if !diag.isEmpty {
-                Text(diag)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.gray)
-            }
             HStack(spacing: 24) {
                 Button("server") { showSettings = true }
                 Button("test") { testConnection() }
