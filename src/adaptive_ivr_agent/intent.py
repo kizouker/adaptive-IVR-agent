@@ -65,7 +65,10 @@ SPARK_SYSTEM = (
 
 
 class NotConfiguredError(RuntimeError):
-    """No Spark endpoint/key (Monday brings both)."""
+    """No Spark endpoint/key (set MODEL_API_KEY, like the helloworld)."""
+
+
+DEFAULT_SPARK_URL = "https://api.meta.ai/v1/chat/completions"
 
 
 class SparkNormalizer(Normalizer):
@@ -76,16 +79,30 @@ class SparkNormalizer(Normalizer):
         self,
         endpoint: str = "",
         api_key: str = "",
-        model: str = "muse-spark",
+        model: str = "",
         timeout: int = 3,
     ) -> None:
-        self.endpoint = endpoint or os.environ.get("SPARK_API_URL", "")
-        self.api_key = api_key or os.environ.get("SPARK_API_KEY", "")
-        if not self.endpoint or not self.api_key:
-            raise NotConfiguredError("set SPARK_API_URL + SPARK_API_KEY")
+        self.endpoint = (
+            endpoint
+            or os.environ.get("SPARK_API_URL", "")
+            or os.environ.get("MODEL_API_URL", "")
+            or DEFAULT_SPARK_URL
+        )
+        self.api_key = (
+            api_key
+            or os.environ.get("SPARK_API_KEY", "")
+            or os.environ.get("MODEL_API_KEY", "")
+        )
+        if not self.api_key:
+            raise NotConfiguredError("set MODEL_API_KEY (or SPARK_API_KEY)")
         if urllib.parse.urlparse(self.endpoint).scheme != "https":
-            raise NotConfiguredError("SPARK_API_URL must be https")
-        self.model = model
+            raise NotConfiguredError("Spark endpoint must be https")
+        self.model = (
+            model
+            or os.environ.get("SPARK_MODEL", "")
+            or os.environ.get("MODEL_API_MODEL", "")
+            or "muse-spark"
+        )
         self.timeout = timeout
 
     def _prompt(self, heard: str, vocab: list[str]) -> list[dict]:
@@ -114,10 +131,16 @@ class SparkNormalizer(Normalizer):
                 payload = json.load(res)
             content = payload["choices"][0]["message"]["content"]
             verdict = json.loads(content)
-        except Exception:
+        except Exception as err:
+            if os.environ.get("SPARK_DEBUG"):
+                print(f"[spark-debug] request failed: {type(err).__name__}: {err}",
+                      file=sys.stderr)
             return None, 0.0
         keyword = verdict.get("keyword")
         if keyword not in vocab:
+            if os.environ.get("SPARK_DEBUG"):
+                print(f"[spark-debug] out-of-vocab: {keyword!r} conf={verdict.get('confidence')}",
+                      file=sys.stderr)
             return None, 0.0
         try:
             conf = float(verdict.get("confidence", 0.0))

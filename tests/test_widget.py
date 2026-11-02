@@ -35,3 +35,18 @@ def test_parse_ticket_tolerates_garbage():
     assert widget.parse_ticket({})["place"] is None
     assert widget.parse_ticket({"calls": []})["place"] is None
     assert widget.format_once(None) == "ticket unreachable"
+
+
+def test_display_shows_na_without_place():
+    assert widget.format_display(None) == ("N/A", "board unreachable")
+    line, sub = widget.format_display(
+        {"place": None, "total": None, "state": "open_question", "updated": "x"})
+    assert line == "N/A"
+    assert "open_question" in sub
+
+
+def test_display_shows_number_in_queue():
+    line, sub = widget.format_display(
+        {"place": 3, "total": 9, "state": "queue", "updated": "x"})
+    assert line == "3"
+    assert sub.startswith("in queue/9")

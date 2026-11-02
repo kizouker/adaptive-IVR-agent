@@ -11,10 +11,11 @@ import json
 import os
 import sys
 import urllib.request
-from typing import Optional
+from typing import Optional, Tuple
 
 BOARD_URL = os.environ.get("BOARD_URL", "http://localhost:5173")
 POLL_MS = 5000
+NO_PLACE = "N/A"
 
 
 def parse_ticket(data: dict) -> dict:
@@ -54,6 +55,19 @@ def format_once(ticket: Optional[dict]) -> str:
     )
 
 
+def format_display(ticket: Optional[dict]) -> Tuple[str, str]:
+    """Number + sub line for the window. Never blank, never raises."""
+    if ticket is None:
+        return NO_PLACE, "board unreachable"
+    try:
+        if ticket["place"] is None:
+            return NO_PLACE, f"{ticket['state']} · {ticket['updated']}"
+        total = f"/{ticket['total']}" if ticket["total"] else ""
+        return str(ticket["place"]), f"in queue{total} · {ticket['updated']}"
+    except (AttributeError, TypeError, KeyError):
+        return NO_PLACE, "-"
+
+
 def run_widget() -> int:
     import tkinter as tk
 
@@ -61,23 +75,18 @@ def run_widget() -> int:
     root.title("Holdmate queue")
     root.attributes("-topmost", True)
     root.resizable(False, False)
-    number = tk.Label(root, text="-", font=("Helvetica", 64))
+    root.configure(bg="white")
+    number = tk.Label(root, text=NO_PLACE, font=("Helvetica", 64),
+                      bg="white", fg="black")
     number.pack(padx=24, pady=(12, 0))
-    sub = tk.Label(root, text="starting…", font=("Helvetica", 12))
+    sub = tk.Label(root, text="starting…", font=("Helvetica", 12),
+                   bg="white", fg="black")
     sub.pack(padx=24, pady=(0, 12))
 
     def refresh():
-        ticket = fetch_ticket()
-        if ticket is None:
-            number.config(text="-")
-            sub.config(text="board unreachable")
-        elif ticket["place"] is None:
-            number.config(text="-")
-            sub.config(text=f"{ticket['state']} · {ticket['updated']}")
-        else:
-            number.config(text=str(ticket["place"]))
-            total = f"/{ticket['total']}" if ticket["total"] else ""
-            sub.config(text=f"in queue{total} · {ticket['updated']}")
+        line, subline = format_display(fetch_ticket())
+        number.config(text=line)
+        sub.config(text=subline)
         root.after(POLL_MS, refresh)
 
     refresh()

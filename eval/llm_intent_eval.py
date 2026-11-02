@@ -14,7 +14,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from adaptive_ivr_agent.intent import HeuristicNormalizer, resolve  # noqa: E402
+from adaptive_ivr_agent.intent import (  # noqa: E402
+    HeuristicNormalizer,
+    NotConfiguredError,
+    SparkNormalizer,
+    resolve,
+)
 from adaptive_ivr_agent.reactive import ReactiveRobot  # noqa: E402
 
 PHRASEBOOKS = ROOT / "data" / "role-phrasebooks.json"
@@ -52,7 +57,20 @@ def main() -> int:
         import json
         raw = json.loads(PHRASEBOOKS.read_text(encoding="utf-8"))
         vocab = sorted({w for r in raw["roles"] for w in r["vocabulary"]})
-    normalizer = HeuristicNormalizer()
+    if "--live" in sys.argv[1:]:
+        if "--debug" in sys.argv[1:]:
+            import os
+
+            os.environ["SPARK_DEBUG"] = "1"
+        try:
+            normalizer = SparkNormalizer()
+        except NotConfiguredError as err:
+            print(f"live needs configuration: {err}")
+            return 2
+        print(f"live: model={normalizer.model} endpoint={normalizer.endpoint} "
+              f"(max {len(CASES)} calls)")
+    else:
+        normalizer = HeuristicNormalizer()
     rescue_ok = rescue_n = abstain_ok = abstain_n = exact_ok = exact_n = 0
     adversarial_fail = []
     latencies = []

@@ -10,6 +10,7 @@ from adaptive_ivr_agent.holdmate import (
     Knowledge,
     Lesson,
     build_agda,
+    lesson_call,
     lesson_log,
     main,
     run_call,
@@ -81,7 +82,7 @@ def test_run_call_returns_board_exchanges_with_states():
     agda = build_agda(FAKE_LINES, fake_respond)
     result, turns, exchanges = run_call(agda, "kw", 0)
     assert turns[0] == "YOU: kw"
-    assert exchanges[0] == ("kw", result and exchanges[0].robot, True, "transfer")
+    assert exchanges[0] == ("kw", result and exchanges[0].robot, True, "transfer", None)
     assert [e.state for e in exchanges[1:]] == ["queue"] * (FIXED_PLACE + 1)
     assert result.exchanges == tuple(exchanges)
     missed, _, missed_ex = run_call(agda, "eh", 0)
@@ -284,3 +285,20 @@ def test_main_writes_lesson_board_with_words(tmp_path):
     assert "I will connect you to an officer." in raw["calls"][0]["turns"][0]["robot_en"]
     assert raw["coverage"]["tried"] > 0
     assert raw["coverage"]["total"] >= raw["coverage"]["tried"]
+
+
+def test_run_call_carries_queue_places():
+    agda = build_agda(FAKE_LINES, fake_respond)
+    _, _, exchanges = run_call(agda, "kw", 0)
+    places = [e.queue_place for e in exchanges if e.state == "queue"]
+    assert places and places[0] == FIXED_PLACE
+    assert all(p is None or p >= 0 for p in places)
+
+
+def test_lesson_call_keeps_queue_place_on_board():
+    lesson = make_lesson(["kw"])
+    lesson.run()
+    role = {"id": "test-persona", "label": "Test", "errand": "x"}
+    call = lesson_call(role, lesson, {})
+    turns = [t for t in call.turns if t["state"] == "queue"]
+    assert turns and turns[0]["queue_place"] == FIXED_PLACE

@@ -119,4 +119,8 @@ function versionApi() {
 export default defineConfig({
   plugins: [react(), volumeApi(), dtmfApi(), versionApi()],
   base: './',
+  server: {
+    // Always on LAN: the iPhone/Watch apps poll over .local.
+    host: true,
+  },
 });
