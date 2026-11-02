@@ -1,4 +1,5 @@
 import SwiftUI
+import AudioToolbox
 import Combine
 import Darwin
 import UIKit
@@ -91,6 +92,7 @@ struct ContentView: View {
     @State private var flash = false
     @State private var connected = false
     @StateObject private var watch = WatchLink()
+    @AppStorage("alarmOn") private var alarmOn = true
 
     private let timer = Timer.publish(
         every: 5, on: .main, in: .common
@@ -175,6 +177,9 @@ struct ContentView: View {
                         Text(detail)
                             .font(.system(.callout, design: .monospaced))
                             .foregroundColor(.gray)
+                    }
+                    Section("Alarm") {
+                        Toggle("Sound at your turn", isOn: $alarmOn)
                     }
                     DisclosureGroup("Debug", isExpanded: $debugOpen) {
                         Text(boardURL?.absoluteString ?? "bad URL")
@@ -304,6 +309,9 @@ struct ContentView: View {
                     self.sub = p == 0 ? "YOUR TURN — answer now" : ""
                     if !was && self.isYourTurn {
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
+                        if self.alarmOn {
+                            AudioServicesPlaySystemSound(1005)
+                        }
                     }
                 } else {
                     self.connected = false
