@@ -1,250 +1,250 @@
 {
-  "updated": "2026-11-02T21:02:37+00:00",
+  "updated": "2026-11-02T22:08:27+00:00",
   "words": {
     "skriva in mig": {
-      "tries": 30,
-      "transfers": 30,
+      "tries": 41,
+      "transfers": 41,
       "keywords": {
-        "skriva in mig": 30
+        "skriva in mig": 41
       }
     },
     "skriv in dig": {
-      "tries": 53,
-      "transfers": 53,
+      "tries": 75,
+      "transfers": 75,
       "keywords": {
-        "skriv in dig": 53
+        "skriv in dig": 75
       }
     },
     "inskrivning": {
-      "tries": 53,
-      "transfers": 53,
+      "tries": 75,
+      "transfers": 75,
       "keywords": {
-        "inskrivning": 53
+        "inskrivning": 75
       }
     },
     "a-kassa": {
-      "tries": 29,
-      "transfers": 29,
+      "tries": 40,
+      "transfers": 40,
       "keywords": {
-        "a-kassa": 29
+        "a-kassa": 40
       }
     },
     "aktivitetsrapport": {
-      "tries": 98,
-      "transfers": 98,
+      "tries": 142,
+      "transfers": 142,
       "keywords": {
-        "aktivitetsrapport": 98
+        "aktivitetsrapport": 142
       }
     },
     "planeringssamtal": {
-      "tries": 29,
-      "transfers": 29,
+      "tries": 40,
+      "transfers": 40,
       "keywords": {
-        "planeringssamtal": 29
+        "planeringssamtal": 40
       }
     },
     "ja": {
-      "tries": 190,
+      "tries": 278,
       "transfers": 33,
       "keywords": {
         "ja": 33
       }
     },
     "nej": {
-      "tries": 190,
+      "tries": 278,
       "transfers": 33,
       "keywords": {
         "nej": 33
       }
     },
     "hej": {
-      "tries": 189,
+      "tries": 277,
       "transfers": 0,
       "keywords": {}
     },
     "tack": {
-      "tries": 189,
+      "tries": 277,
       "transfers": 0,
       "keywords": {}
     },
     "": {
-      "tries": 189,
+      "tries": 277,
       "transfers": 0,
       "keywords": {}
     },
     "rusta och matcha": {
-      "tries": 46,
-      "transfers": 46,
+      "tries": 68,
+      "transfers": 68,
       "keywords": {
-        "rusta och matcha": 46
+        "rusta och matcha": 68
       }
     },
     "arbetsmarknadsutbildning": {
-      "tries": 46,
-      "transfers": 46,
+      "tries": 68,
+      "transfers": 68,
       "keywords": {
-        "arbetsmarknadsutbildning": 46
+        "arbetsmarknadsutbildning": 68
       }
     },
     "aktivitetsrapportera": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "aktivitetsrapportera": 23
+        "aktivitetsrapportera": 34
       }
     },
     "program": {
-      "tries": 46,
-      "transfers": 46,
+      "tries": 68,
+      "transfers": 68,
       "keywords": {
-        "program": 46
+        "program": 68
       }
     },
     "meddela förhinder": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "meddela förhinder": 23
+        "meddela förhinder": 34
       }
     },
     "bokat möte": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "bokat möte": 23
+        "bokat möte": 34
       }
     },
     "anmäl sjukfrånvaro": {
-      "tries": 48,
-      "transfers": 48,
+      "tries": 70,
+      "transfers": 70,
       "keywords": {
-        "anmäl sjukfrånvaro": 48
+        "anmäl sjukfrånvaro": 70
       }
     },
     "vab": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "vab": 23
+        "vab": 34
       }
     },
     "föräldrapenning": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "föräldrapenning": 23
+        "föräldrapenning": 34
       }
     },
     "meddela förändring": {
-      "tries": 46,
-      "transfers": 46,
+      "tries": 68,
+      "transfers": 68,
       "keywords": {
-        "meddela förändring": 46
+        "meddela förändring": 68
       }
     },
     "mitt ärende": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "mitt ärende": 23
+        "mitt ärende": 34
       }
     },
     "pågående ärende": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "pågående ärende": 23
+        "pågående ärende": 34
       }
     },
     "handläggare": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "handläggare": 23
+        "handläggare": 34
       }
     },
     "automatisk växel": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "automatisk växel": 23
+        "automatisk växel": 34
       }
     },
     "sjukskriven": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "sjukskriven": 23
+        "sjukskriven": 34
       }
     },
     "sjukpenning": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "sjukpenning": 23
+        "sjukpenning": 34
       }
     },
     "arbeta i sverige": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "arbeta i sverige": 23
+        "arbeta i sverige": 34
       }
     },
     "jobba i sverige": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "jobba i sverige": 23
+        "jobba i sverige": 34
       }
     },
     "flytta för jobb": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "flytta för jobb": 23
+        "flytta för jobb": 34
       }
     },
     "stöd vid funktionsnedsättning": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "stöd vid funktionsnedsättning": 23
+        "stöd vid funktionsnedsättning": 34
       }
     },
     "välja yrke": {
-      "tries": 24,
-      "transfers": 24,
+      "tries": 35,
+      "transfers": 35,
       "keywords": {
-        "välja yrke": 24
+        "välja yrke": 35
       }
     },
     "vilket yrke passar mig": {
-      "tries": 24,
-      "transfers": 24,
+      "tries": 35,
+      "transfers": 35,
       "keywords": {
-        "vilket yrke passar mig": 24
+        "vilket yrke passar mig": 35
       }
     },
     "utbildning": {
-      "tries": 24,
-      "transfers": 24,
+      "tries": 35,
+      "transfers": 35,
       "keywords": {
-        "utbildning": 24
+        "utbildning": 35
       }
     },
     "yrkesval": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "yrkesval": 23
+        "yrkesval": 34
       }
     },
     "platsbanken": {
-      "tries": 23,
-      "transfers": 23,
+      "tries": 34,
+      "transfers": 34,
       "keywords": {
-        "platsbanken": 23
+        "platsbanken": 34
       }
     }
   },
@@ -273,6 +273,10 @@
       {
         "id": "queue",
         "label": "Du blir nu placerad i kö."
+      },
+      {
+        "id": "survey",
+        "label": "Enkät: vill du delta? Tryck 1."
       },
       {
         "id": "officer",
@@ -308,80 +312,96 @@
         "source": "transfer",
         "target": "identification",
         "label": "kopplar",
-        "tries": 1053,
-        "successes": 1053,
+        "tries": 1504,
+        "successes": 1504,
         "status": "observed"
       },
       {
         "source": "identification",
         "target": "queue",
         "label": "legitimerad",
-        "tries": 1053,
-        "successes": 1053,
+        "tries": 1504,
+        "successes": 1504,
         "status": "observed"
       },
       {
         "source": "queue",
         "target": "officer",
         "label": "served",
-        "tries": 1053,
-        "successes": 1053,
+        "tries": 1504,
+        "successes": 1504,
         "status": "observed"
+      },
+      {
+        "source": "queue",
+        "target": "survey",
+        "label": "enkät erbjuds",
+        "tries": 0,
+        "successes": 0,
+        "status": "untested"
+      },
+      {
+        "source": "survey",
+        "target": "officer",
+        "label": "klar",
+        "tries": 0,
+        "successes": 0,
+        "status": "untested"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "skriva in mig",
-        "tries": 20,
-        "successes": 20,
+        "tries": 31,
+        "successes": 31,
         "status": "observed"
       },
       {
         "source": "queue",
         "target": "queue",
         "label": "tick",
-        "tries": 2106,
-        "successes": 2106,
+        "tries": 3008,
+        "successes": 3008,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "skriv in dig",
-        "tries": 35,
-        "successes": 35,
+        "tries": 57,
+        "successes": 57,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "inskrivning",
-        "tries": 35,
-        "successes": 35,
+        "tries": 57,
+        "successes": 57,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "a-kassa",
-        "tries": 19,
-        "successes": 19,
+        "tries": 30,
+        "successes": 30,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "aktivitetsrapport",
-        "tries": 64,
-        "successes": 64,
+        "tries": 108,
+        "successes": 108,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "planeringssamtal",
-        "tries": 19,
-        "successes": 19,
+        "tries": 30,
+        "successes": 30,
         "status": "observed"
       },
       {
@@ -500,48 +520,48 @@
         "source": "open_question",
         "target": "transfer",
         "label": "rusta och matcha",
-        "tries": 30,
-        "successes": 30,
+        "tries": 52,
+        "successes": 52,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "arbetsmarknadsutbildning",
-        "tries": 30,
-        "successes": 30,
+        "tries": 52,
+        "successes": 52,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "aktivitetsrapportera",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "program",
-        "tries": 30,
-        "successes": 30,
+        "tries": 52,
+        "successes": 52,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "meddela förhinder",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "bokat möte",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
@@ -644,32 +664,32 @@
         "source": "open_question",
         "target": "transfer",
         "label": "anmäl sjukfrånvaro",
-        "tries": 32,
-        "successes": 32,
+        "tries": 54,
+        "successes": 54,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "vab",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "föräldrapenning",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "meddela förändring",
-        "tries": 30,
-        "successes": 30,
+        "tries": 52,
+        "successes": 52,
         "status": "observed"
       },
       {
@@ -740,32 +760,32 @@
         "source": "open_question",
         "target": "transfer",
         "label": "mitt ärende",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "pågående ärende",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "handläggare",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "automatisk växel",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
@@ -836,16 +856,16 @@
         "source": "open_question",
         "target": "transfer",
         "label": "sjukskriven",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "sjukpenning",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
@@ -884,24 +904,24 @@
         "source": "open_question",
         "target": "transfer",
         "label": "arbeta i sverige",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "jobba i sverige",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "flytta för jobb",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
@@ -956,8 +976,8 @@
         "source": "open_question",
         "target": "transfer",
         "label": "stöd vid funktionsnedsättning",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
@@ -980,40 +1000,40 @@
         "source": "open_question",
         "target": "transfer",
         "label": "välja yrke",
-        "tries": 16,
-        "successes": 16,
+        "tries": 27,
+        "successes": 27,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "vilket yrke passar mig",
-        "tries": 16,
-        "successes": 16,
+        "tries": 27,
+        "successes": 27,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "utbildning",
-        "tries": 16,
-        "successes": 16,
+        "tries": 27,
+        "successes": 27,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "yrkesval",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
         "source": "open_question",
         "target": "transfer",
         "label": "platsbanken",
-        "tries": 15,
-        "successes": 15,
+        "tries": 26,
+        "successes": 26,
         "status": "observed"
       },
       {
@@ -2942,6 +2962,1249 @@
         "yrkesval"
       ],
       "ts": "2026-11-02T21:02:37+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:08:35+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:08:35+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:08:35+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:08:35+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:08:35+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:08:35+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:08:35+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:08:35+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:16:11+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:16:11+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:16:11+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:16:11+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:16:11+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:16:11+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:16:11+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:16:11+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:23:17+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:23:17+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:23:17+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:23:17+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:23:17+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:23:17+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:23:17+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:23:17+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:29:40+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:29:40+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:29:40+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:29:40+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:29:40+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:29:40+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:29:40+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:29:40+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:30:24+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:30:24+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:30:24+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:30:24+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:30:24+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:30:24+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:30:24+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:30:24+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:37:23+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:37:23+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:37:23+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:37:23+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:37:23+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:37:23+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:37:23+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:37:23+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:45:24+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:45:24+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:45:24+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:45:24+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:45:24+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:45:24+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:45:24+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:45:24+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:45:57+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:45:57+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:45:57+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:45:57+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:45:57+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:45:57+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:45:57+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:45:57+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T21:54:25+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T21:54:25+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T21:54:25+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T21:54:25+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T21:54:25+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T21:54:25+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T21:54:25+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T21:54:25+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T22:01:30+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T22:01:30+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T22:01:30+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T22:01:30+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T22:01:30+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T22:01:30+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T22:01:30+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T22:01:30+00:00"
+    },
+    {
+      "persona": "ny-arbetslos",
+      "sims": 11,
+      "transfers": 6,
+      "served": 6,
+      "matched": [
+        "a-kassa",
+        "aktivitetsrapport",
+        "inskrivning",
+        "planeringssamtal",
+        "skriv in dig",
+        "skriva in mig"
+      ],
+      "ts": "2026-11-02T22:08:27+00:00"
+    },
+    {
+      "persona": "programdeltagare",
+      "sims": 12,
+      "transfers": 7,
+      "served": 7,
+      "matched": [
+        "aktivitetsrapport",
+        "aktivitetsrapportera",
+        "arbetsmarknadsutbildning",
+        "bokat möte",
+        "meddela förhinder",
+        "program",
+        "rusta och matcha"
+      ],
+      "ts": "2026-11-02T22:08:27+00:00"
+    },
+    {
+      "persona": "smabarnsforalder",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "föräldrapenning",
+        "meddela förändring",
+        "vab"
+      ],
+      "ts": "2026-11-02T22:08:27+00:00"
+    },
+    {
+      "persona": "arendeagare",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "automatisk växel",
+        "handläggare",
+        "mitt ärende",
+        "pågående ärende"
+      ],
+      "ts": "2026-11-02T22:08:27+00:00"
+    },
+    {
+      "persona": "sjukskriven",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "aktivitetsrapport",
+        "anmäl sjukfrånvaro",
+        "meddela förändring",
+        "sjukpenning",
+        "sjukskriven"
+      ],
+      "ts": "2026-11-02T22:08:27+00:00"
+    },
+    {
+      "persona": "ny-i-sverige",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "arbeta i sverige",
+        "flytta för jobb",
+        "inskrivning",
+        "jobba i sverige",
+        "skriv in dig"
+      ],
+      "ts": "2026-11-02T22:08:27+00:00"
+    },
+    {
+      "persona": "funktionsnedsatt",
+      "sims": 9,
+      "transfers": 4,
+      "served": 4,
+      "matched": [
+        "arbetsmarknadsutbildning",
+        "program",
+        "rusta och matcha",
+        "stöd vid funktionsnedsättning"
+      ],
+      "ts": "2026-11-02T22:08:27+00:00"
+    },
+    {
+      "persona": "yrkesbytare",
+      "sims": 10,
+      "transfers": 5,
+      "served": 5,
+      "matched": [
+        "platsbanken",
+        "utbildning",
+        "vilket yrke passar mig",
+        "välja yrke",
+        "yrkesval"
+      ],
+      "ts": "2026-11-02T22:08:27+00:00"
     }
   ]
 }

@@ -39,6 +39,7 @@ FAKE_LINES = {
     "L15": "Survey? Press 1.",
     "L16": "Thanks, noted.",
     "L44": "Busy welcome.",
+    "L17": "English menu. Press 1, 2 or 4.",
 }
 
 
@@ -87,6 +88,34 @@ def test_busy_day_uses_delay_welcome():
     busy = build_agda(FAKE_LINES, fake_respond, busy=True)
     assert calm.opening.startswith("Welcome.")
     assert busy.opening.startswith("Busy welcome.")
+
+
+def test_busy_day_opening_is_language_choice_only():
+    busy = build_agda(FAKE_LINES, fake_respond, busy=True)
+    assert busy.opening == "Busy welcome."
+    assert FAKE_LINES["L02"] not in busy.opening
+
+
+def test_press_zero_reaches_english_menu():
+    busy = build_agda(FAKE_LINES, fake_respond, busy=True)
+    for heard in ("0", "press 0", "For English"):
+        answer = busy.reply_to(heard, 0)
+        assert answer.reply == "English menu. Press 1, 2 or 4."
+        assert (answer.matched, answer.done, answer.identify) == ("0", False, False)
+    calm = build_agda(FAKE_LINES, fake_respond)
+    assert calm.reply_to("0", 0).reply == "English menu. Press 1, 2 or 4."
+
+
+def test_busy_path_reaches_english_menu_with_real_lines():
+    from adaptive_ivr_agent.robot import load_indexed_lines
+
+    lines = load_indexed_lines(LINES)
+    busy = build_agda(lines, fake_respond, busy=True)
+    assert "försenade" in busy.opening
+    assert lines["L02"] not in busy.opening
+    answer = busy.reply_to("0", 0)
+    assert answer.reply == lines["L17"]
+    assert answer.reply.startswith("Welcome to Arbetsförmedlingen")
 
 
 def test_survey_decline_skips_accept_line():
