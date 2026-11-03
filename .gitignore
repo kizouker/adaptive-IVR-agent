@@ -16,6 +16,7 @@ data/talk-misses.jsonl
 .talk-volume
 .talk-quiet
 ui/board/public/doorkeeper-lines.json
+ui/board/public/telemetry.json
 
 ## generated + scratch
 __pycache__/

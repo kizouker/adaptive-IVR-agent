@@ -114,6 +114,21 @@ class SparkNormalizer(Normalizer):
             {"role": "user", "content": normalize(heard)},
         ]
 
+    def _provenance(self, heard: str, vocab: list[str], keyword, conf, ms: float) -> None:
+        prompt = json.dumps(self._prompt(heard, vocab), ensure_ascii=False)
+        log_provenance(
+            {
+                "model": self.model,
+                "runtime": "spark-hosted",
+                "endpoint": self.endpoint,
+                "latency_ms": round(ms, 1),
+                "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest()[:16],
+                "heard_sha256": hashlib.sha256(heard.encode()).hexdigest()[:16],
+                "keyword": keyword,
+                "confidence": conf,
+            }
+        )
+
     def map(self, heard: str, vocab: list[str]) -> tuple[str | None, float]:
         clean = normalize(heard)
         if not clean or clean == SILENCE:
@@ -129,6 +144,7 @@ class SparkNormalizer(Normalizer):
                 "Authorization": f"Bearer {self.api_key}",
             },
         )
+        t0 = time.perf_counter()
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as res:  # nosec B310: https validated
                 payload = json.load(res)
@@ -139,17 +155,21 @@ class SparkNormalizer(Normalizer):
                 print(f"[spark-debug] request failed: {type(err).__name__}: {err}",
                       file=sys.stderr)
             return None, 0.0
+        ms = (time.perf_counter() - t0) * 1000
         keyword = verdict.get("keyword")
         if keyword not in vocab:
             if os.environ.get("SPARK_DEBUG"):
                 print(f"[spark-debug] out-of-vocab: {keyword!r} conf={verdict.get('confidence')}",
                       file=sys.stderr)
+            self._provenance(heard, vocab, None, 0.0, ms)
             return None, 0.0
         try:
             conf = float(verdict.get("confidence", 0.0))
         except (TypeError, ValueError):
             conf = 0.0
-        return keyword, min(1.0, max(0.0, conf))
+        conf = min(1.0, max(0.0, conf))
+        self._provenance(heard, vocab, keyword, conf, ms)
+        return keyword, conf
 
 
 DEFAULT_OPENWEIGHT_URL = "http://127.0.0.1:11434/v1"
