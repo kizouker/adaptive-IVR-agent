@@ -12,3 +12,4 @@ Tags give views: #decision #command #release #submission #partner #idea.
 - [[checklist]] — what Rickard checks off, live
 - [[glossary]] — ordlista: provenance, NFR, ladder…
 - [[eval]] — domarkriterier vs nuläge
+- [[workers]] — vem gör vad, status
