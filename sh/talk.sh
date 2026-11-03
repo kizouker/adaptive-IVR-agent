@@ -559,6 +559,7 @@ from adaptive_ivr_agent.live_view import (
     LiveCall,
     build_coverage,
     build_live_board,
+    carry_board_lines,
     line_translations,
     translate_robot,
     write_captions,
@@ -581,13 +582,15 @@ else:
 forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
 forced = int(forced_start) if forced_start.isdigit() else None
 # Full verbatim L01: the English sentence is spoken by an English voice.
-# --busy swaps in the L44 delay notice; the rest is identical (call 5 part 3).
-welcome = lines["L44"] if os.environ.get("TALK_BUSY") == "1" else lines["L01"]
+# --busy swaps in the L44 delay notice with language choice only (call 5
+# part 3); press 0 reaches the English menu, other input reprompts as usual.
+busy = os.environ.get("TALK_BUSY") == "1"
+welcome = lines["L44"] if busy else lines["L01"]
 # L30: Rickard's pick 1 Nov (UNVERIFIED memory). Replace with verbatim
 # from Monday's sampling.
 SERVED_LINE = lines["L30"]
 agda = AgdaCall(
-    opening=f"{welcome} {lines['L02']}",
+    opening=welcome if busy else f"{welcome} {lines['L02']}",
     examples=lines["L03"],
     yesno=lines["L22"],
     yesno_reprompt=lines["L41"],
@@ -600,6 +603,7 @@ agda = AgdaCall(
     place_template=lines["L29"],
     respond=with_aliases(ears.respond, aliases),
     queue_place=(lambda: forced) if forced else None,
+    english_menu=lines["L17"],
 )
 
 
@@ -698,6 +702,7 @@ def write_board(call):
             all_roles = []
         if all_roles:
             board["coverage"] = build_coverage(all_roles, known.get("words", {}))
+    board = carry_board_lines(board, os.environ["TALK_BOARD_FILE"])
     with open(os.environ["TALK_BOARD_FILE"], "w", encoding="utf-8") as handle:
         handle.write(json.dumps(board, ensure_ascii=False))
 

@@ -28,6 +28,9 @@ def with_aliases(
     return lambda heard: respond(clean.get(normalize(heard), heard))
 
 
+PRESS_ZERO_FORMS = ("0", "press 0", "for english", "english")
+
+
 class AgdaReply(NamedTuple):
     """One scripted answer. identify asks for ID next; queue_place is set
     once the call reaches the queue."""
@@ -61,6 +64,7 @@ class AgdaCall:
         failed_line: str = "",
         survey_line: str = "",
         survey_done: str = "",
+        english_menu: str = "",
     ) -> None:
         self.opening = opening
         self._examples = examples
@@ -72,6 +76,7 @@ class AgdaCall:
         self._failed_line = failed_line
         self._survey_line = survey_line
         self._survey_done = survey_done
+        self._english_menu = english_menu
         self._served_line = served_line
         self._queue_line = queue_line
         self._place_template = place_template
@@ -80,6 +85,8 @@ class AgdaCall:
 
     def reply_to(self, heard: str, misses: int) -> AgdaReply:
         """Answer HEARD text after MISSES misses."""
+        if self._english_menu and normalize(heard) in PRESS_ZERO_FORMS:
+            return AgdaReply(self._english_menu, "0", False, misses, False, None)
         confirm, matched = self._respond(heard)
         if normalize(heard) == "(silence)":
             matched = None

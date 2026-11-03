@@ -7,6 +7,8 @@ import CallThread from './components/CallThread';
 import Subtitle from './components/Subtitle';
 import VolumeWidget from './components/VolumeWidget';
 import CIWidget from './components/CIWidget';
+import FreezeCountdown from './components/FreezeCountdown';
+import TelemetryPanel from './components/TelemetryPanel';
 import LessonsView from './components/LessonsView';
 import KeypadWidget from './components/KeypadWidget';
 import CoverageWidget from './components/CoverageWidget';
@@ -39,6 +41,14 @@ const STRINGS = {
     browser: 'webbläsare',
     builds: 'Byggen',
     allBuilds: 'alla →',
+    freeze: 'Freeze om',
+    frozen: 'FRYST — inga fler pushar',
+    telemetry: 'Modellanrop',
+    model: 'Modell',
+    runtime: 'Drift',
+    latency: 'Tid',
+    keyword: 'Nyckelord',
+    noCalls: 'Inga modellanrop ännu',
     level: 'Nivå',
     loading: 'Laddar…',
     failed: 'Kunde inte hämta data',
@@ -104,6 +114,14 @@ const STRINGS = {
     browser: 'browser',
     builds: 'Builds',
     allBuilds: 'all →',
+    freeze: 'Freeze in',
+    frozen: 'FROZEN — no more pushes',
+    telemetry: 'Model calls',
+    model: 'Model',
+    runtime: 'Runtime',
+    latency: 'Latency',
+    keyword: 'Keyword',
+    noCalls: 'No model calls yet',
     level: 'Level',
     loading: 'Loading…',
     failed: 'Could not fetch data',
@@ -224,6 +242,7 @@ function App() {
       <div className="sub">{`${t.generated} ${data.generated}`}</div>
       <VolumeWidget label={t.volume} quieter={t.quieter} louder={t.louder} browser={t.browser} />
       <CIWidget label={t.builds} all={t.allBuilds} />
+      <FreezeCountdown label={t.freeze} frozen={t.frozen} />
       <div className="tabs">
         <button
           type="button"
@@ -284,6 +303,8 @@ function App() {
             />
             <h2>{t.keypad}</h2>
             <KeypadWidget label={t.keypad} />
+            <h2>{t.telemetry}</h2>
+            <TelemetryPanel t={t} />
           </div>
         </div>
       )}

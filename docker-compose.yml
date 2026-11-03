@@ -1,0 +1,9 @@
+# Holdmate live app (the board) in one command.
+services:
+  board:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${BOARD_PORT:-8080}:80"
+    restart: unless-stopped

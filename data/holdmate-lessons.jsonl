@@ -2686,3 +2686,894 @@
 {"ts": "2026-11-02T21:02:37+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
 {"ts": "2026-11-02T21:02:37+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
 {"ts": "2026-11-02T21:02:37+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:08:35+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:16:11+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:23:17+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:29:40+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:30:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:37:23+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:24+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:45:57+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T21:54:25+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:01:30+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriva in mig", "matched": "skriva in mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "a-kassa", "matched": "a-kassa", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "planeringssamtal", "matched": "planeringssamtal", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-arbetslos", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "aktivitetsrapportera", "matched": "aktivitetsrapportera", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "meddela förhinder", "matched": "meddela förhinder", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "bokat möte", "matched": "bokat möte", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "programdeltagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "vab", "matched": "vab", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "föräldrapenning", "matched": "föräldrapenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "smabarnsforalder", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "mitt ärende", "matched": "mitt ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "pågående ärende", "matched": "pågående ärende", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "handläggare", "matched": "handläggare", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "automatisk växel", "matched": "automatisk växel", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "arendeagare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "anmäl sjukfrånvaro", "matched": "anmäl sjukfrånvaro", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukskriven", "matched": "sjukskriven", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "sjukpenning", "matched": "sjukpenning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "aktivitetsrapport", "matched": "aktivitetsrapport", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "meddela förändring", "matched": "meddela förändring", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "sjukskriven", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "arbeta i sverige", "matched": "arbeta i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "jobba i sverige", "matched": "jobba i sverige", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "skriv in dig", "matched": "skriv in dig", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "inskrivning", "matched": "inskrivning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "flytta för jobb", "matched": "flytta för jobb", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "ny-i-sverige", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "stöd vid funktionsnedsättning", "matched": "stöd vid funktionsnedsättning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "program", "matched": "program", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "arbetsmarknadsutbildning", "matched": "arbetsmarknadsutbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "rusta och matcha", "matched": "rusta och matcha", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "funktionsnedsatt", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "välja yrke", "matched": "välja yrke", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "vilket yrke passar mig", "matched": "vilket yrke passar mig", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "utbildning", "matched": "utbildning", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "yrkesval", "matched": "yrkesval", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "platsbanken", "matched": "platsbanken", "transferred": true, "served": true}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "ja", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "nej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "hej", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "tack", "matched": null, "transferred": false, "served": false}
+{"ts": "2026-11-02T22:08:27+00:00", "persona": "yrkesbytare", "misses": 0, "word": "(silence)", "matched": null, "transferred": false, "served": false}

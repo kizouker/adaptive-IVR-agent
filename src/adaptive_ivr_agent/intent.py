@@ -8,8 +8,11 @@ Never raises into the call path: any failure abstains to the ladder.
 from __future__ import annotations
 
 import difflib
+import hashlib
 import json
 import os
+import sys
+import time
 import urllib.parse
 import urllib.request
 
@@ -111,6 +114,21 @@ class SparkNormalizer(Normalizer):
             {"role": "user", "content": normalize(heard)},
         ]
 
+    def _provenance(self, heard: str, vocab: list[str], keyword, conf, ms: float) -> None:
+        prompt = json.dumps(self._prompt(heard, vocab), ensure_ascii=False)
+        log_provenance(
+            {
+                "model": self.model,
+                "runtime": "spark-hosted",
+                "endpoint": self.endpoint,
+                "latency_ms": round(ms, 1),
+                "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest()[:16],
+                "heard_sha256": hashlib.sha256(heard.encode()).hexdigest()[:16],
+                "keyword": keyword,
+                "confidence": conf,
+            }
+        )
+
     def map(self, heard: str, vocab: list[str]) -> tuple[str | None, float]:
         clean = normalize(heard)
         if not clean or clean == SILENCE:
@@ -126,6 +144,7 @@ class SparkNormalizer(Normalizer):
                 "Authorization": f"Bearer {self.api_key}",
             },
         )
+        t0 = time.perf_counter()
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as res:  # nosec B310: https validated
                 payload = json.load(res)
@@ -136,17 +155,164 @@ class SparkNormalizer(Normalizer):
                 print(f"[spark-debug] request failed: {type(err).__name__}: {err}",
                       file=sys.stderr)
             return None, 0.0
+        ms = (time.perf_counter() - t0) * 1000
         keyword = verdict.get("keyword")
         if keyword not in vocab:
             if os.environ.get("SPARK_DEBUG"):
                 print(f"[spark-debug] out-of-vocab: {keyword!r} conf={verdict.get('confidence')}",
                       file=sys.stderr)
+            self._provenance(heard, vocab, None, 0.0, ms)
             return None, 0.0
         try:
             conf = float(verdict.get("confidence", 0.0))
         except (TypeError, ValueError):
             conf = 0.0
-        return keyword, min(1.0, max(0.0, conf))
+        conf = min(1.0, max(0.0, conf))
+        self._provenance(heard, vocab, keyword, conf, ms)
+        return keyword, conf
+
+
+DEFAULT_OPENWEIGHT_URL = "http://127.0.0.1:11434/v1/chat/completions"
+DEFAULT_OPENWEIGHT_MODEL = "meta-models/muse-spark-open-1026"
+LOCALHOSTS = ("127.0.0.1", "localhost", "::1")
+
+
+def log_provenance(event: dict) -> None:
+    """Best-effort JSONL provenance row. Never raises."""
+    try:
+        path = os.environ.get("OPENWEIGHT_LOG", "data/provenance.jsonl")
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(event, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
+class OpenWeightNormalizer(Normalizer):
+    """Muse Spark Open / Glimmer as a load-bearing intent stage (#171).
+
+    Any OpenAI-chat-compatible endpoint: Ollama locally (default, no key)
+    or a partner endpoint (Baseten/Modal/Fireworks) via OPENWEIGHT_URL +
+    OPENWEIGHT_API_KEY. Same closed-vocab contract as Spark; every call
+    appends a provenance row. Any error abstains to the ladder.
+    """
+
+    def __init__(
+        self,
+        endpoint: str = "",
+        api_key: str | None = None,
+        model: str = "",
+        timeout: int = 30,
+    ) -> None:
+        self.endpoint = (
+            endpoint
+            or os.environ.get("OPENWEIGHT_URL", "")
+            or DEFAULT_OPENWEIGHT_URL
+        )
+        host = urllib.parse.urlparse(self.endpoint).hostname or ""
+        self.runtime = (
+            "openweight-local" if host in LOCALHOSTS else "openweight-partner"
+        )
+        key = (
+            api_key
+            if api_key is not None
+            else os.environ.get("OPENWEIGHT_API_KEY", "")
+        )
+        scheme = urllib.parse.urlparse(self.endpoint).scheme
+        if self.runtime == "openweight-local":
+            if scheme not in ("http", "https"):
+                raise NotConfiguredError("OpenWeight local endpoint must be http(s)")
+        else:
+            if scheme != "https":
+                raise NotConfiguredError("OpenWeight partner endpoint must be https")
+            if not key:
+                raise NotConfiguredError("set OPENWEIGHT_API_KEY for partner endpoint")
+        self.api_key = key
+        self.model = (
+            model
+            or os.environ.get("OPENWEIGHT_MODEL", "")
+            or DEFAULT_OPENWEIGHT_MODEL
+        )
+        self.timeout = timeout
+
+    def _prompt(self, heard: str, vocab: list[str]) -> list[dict]:
+        return [
+            {"role": "system", "content": f"{SPARK_SYSTEM} Keywords: {vocab}"},
+            {"role": "user", "content": normalize(heard)},
+        ]
+
+    def _provenance(self, heard: str, vocab: list[str], keyword, conf, ms: float) -> None:
+        prompt = json.dumps(self._prompt(heard, vocab), ensure_ascii=False)
+        log_provenance(
+            {
+                "model": self.model,
+                "runtime": self.runtime,
+                "endpoint": self.endpoint,
+                "latency_ms": round(ms, 1),
+                "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest()[:16],
+                "heard_sha256": hashlib.sha256(heard.encode()).hexdigest()[:16],
+                "keyword": keyword,
+                "confidence": conf,
+            }
+        )
+
+    def map(self, heard: str, vocab: list[str]) -> tuple[str | None, float]:
+        clean = normalize(heard)
+        if not clean or clean == SILENCE:
+            return None, 0.0
+        body = json.dumps(
+            {"model": self.model, "messages": self._prompt(heard, vocab)}
+        ).encode("utf-8")
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        req = urllib.request.Request(self.endpoint, data=body, headers=headers)
+        t0 = time.perf_counter()
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as res:  # nosec B310: scheme validated
+                payload = json.load(res)
+            content = payload["choices"][0]["message"]["content"]
+            verdict = json.loads(content)
+        except Exception as err:
+            if os.environ.get("SPARK_DEBUG"):
+                print(f"[openweight-debug] request failed: {type(err).__name__}: {err}",
+                      file=sys.stderr)
+            return None, 0.0
+        ms = (time.perf_counter() - t0) * 1000
+        keyword = verdict.get("keyword")
+        if keyword not in vocab:
+            self._provenance(heard, vocab, None, 0.0, ms)
+            return None, 0.0
+        try:
+            conf = float(verdict.get("confidence", 0.0))
+        except (TypeError, ValueError):
+            conf = 0.0
+        conf = min(1.0, max(0.0, conf))
+        self._provenance(heard, vocab, keyword, conf, ms)
+        return keyword, conf
+
+
+def resolve_chain(heard: str, respond, normalizers, vocab: list[str]):
+    """Chain exact match -> each (name, normalizer) -> abstain.
+
+    Returns (keyword, conf, source) where source names the stage that hit.
+    """
+    try:
+        _, matched = respond(heard)
+    except Exception:
+        matched = None
+    if matched is not None:
+        return matched, 1.0, "exact"
+    clean = normalize(heard)
+    if not clean or clean == SILENCE:
+        return None, 0.0, "abstain"
+    for name, normalizer in normalizers:
+        try:
+            keyword, conf = normalizer.map(heard, vocab)
+        except Exception:
+            continue
+        if keyword is not None:
+            return keyword, conf, name
+    return None, 0.0, "abstain"
 
 
 def resolve(heard: str, respond, normalizer: Normalizer, vocab: list[str]):

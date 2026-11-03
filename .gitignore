@@ -13,12 +13,21 @@ ui/board/public/board-state.json
 ui/board/public/audio/
 ui/board/.vite/
 data/talk-misses.jsonl
+data/provenance.jsonl
 .talk-volume
 .talk-quiet
 ui/board/public/doorkeeper-lines.json
+ui/board/public/telemetry.json
 
 ## generated + scratch
 __pycache__/
 research_notes/
 reports/
 ui/board/test-results/
+generated_images/.tbh-generated-images.lock
+
+## Xcode user-local state
+*.xcuserstate
+*.xcuserdata/
+project.xcworkspace/xcuserdata/
+xcuserdata/

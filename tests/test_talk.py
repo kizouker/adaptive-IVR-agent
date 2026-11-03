@@ -7,8 +7,9 @@ MISS = ("sorry", None)
 HIT = ("thanks", "vab")
 
 
-def make_call(respond, queue_place=None):
+def make_call(respond, queue_place=None, english_menu=""):
     return AgdaCall(
+        english_menu=english_menu,
         opening="welcome, what is it?",
         examples="for example say vab",
         yesno="are you enrolled?",
@@ -135,3 +136,18 @@ def test_skipped_alias_passes_through():
     respond = with_aliases(robot.respond, {"vabba": None})
     _, matched = respond("vabba")
     assert matched is None
+
+
+def test_zero_without_english_menu_stays_a_miss():
+    answer = make_call(lambda heard: MISS).reply_to("0", 0)
+    assert (answer.reply, answer.matched, answer.misses) == (
+        "for example say vab", None, 1)
+
+
+def test_zero_with_english_menu_answers_the_menu():
+    call = make_call(lambda heard: MISS, english_menu="english menu here.")
+    answer = call.reply_to("0", 1)
+    assert (answer.reply, answer.matched, answer.misses) == (
+        "english menu here.", "0", 1)
+    assert (answer.done, answer.identify, answer.queue_place) == (
+        False, False, None)

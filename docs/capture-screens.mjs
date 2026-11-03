@@ -21,14 +21,18 @@ const ROOT = new URL('../', import.meta.url);
 const BOARD_DIR = new URL('../ui/board/', import.meta.url);
 const DIST = new URL('../ui/board/dist/board-state.json', import.meta.url);
 const SAMPLE = new URL('../ui/board/public/board-state.sample.json', import.meta.url);
+const LIVE = new URL('../ui/board/public/board-state.json', import.meta.url);
+// SEED=live seeds everything from the live board (real lessons/words);
+// default sample seeds from the fixture (deterministic N/A + queue).
+const SEED_FILE = process.env.SEED === 'live' ? LIVE : SAMPLE;
 const IMAGES = new URL('./images/', import.meta.url);
 
 const PORT = 5197; // odd, and clear of the 5199 in playwright.config.js
 const BASE = `http://localhost:${PORT}/`;
 const VIEWPORT = { width: 1280, height: 800 };
 
-function seed(patch) {
-  const board = JSON.parse(fs.readFileSync(SAMPLE, 'utf8'));
+function seedFrom(file, patch) {
+  const board = JSON.parse(fs.readFileSync(file, 'utf8'));
   const call = board.calls[board.calls.length - 1];
   if (patch) {
     call.position = 'queue';
@@ -37,6 +41,14 @@ function seed(patch) {
     turn.queue_total = patch.total;
   }
   fs.writeFileSync(DIST, JSON.stringify(board));
+}
+
+function seed(patch) {
+  seedFrom(SEED_FILE, patch);
+}
+
+function seedLive() {
+  fs.writeFileSync(DIST, fs.readFileSync(LIVE));
 }
 
 function startServer() {
@@ -96,6 +108,8 @@ async function main() {
 
     const lessonsTab = page.getByRole('button', { name: 'Lessons' });
     if (await lessonsTab.count() > 0) {
+      seedLive(); // lessons/words/coverage come from the live board
+      await page.waitForTimeout(4000); // let the 3s poll pick it up
       await lessonsTab.click();
       await page.waitForTimeout(800);
       await page.screenshot({ path: new URL('board-lessons.png', IMAGES).pathname });

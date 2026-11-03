@@ -127,8 +127,9 @@ class Exchange(NamedTuple):
 def build_agda(lines: dict[str, str], respond, busy: bool = False) -> AgdaCall:
     """Scripted Agda with the recorded lines; fixed queue place for lessons."""
     welcome = lines["L44"] if busy else lines["L01"]
+    opening = welcome if busy else f"{welcome} {lines['L02']}"
     return AgdaCall(
-        opening=f"{welcome} {lines['L02']}",
+        opening=opening,
         examples=lines["L03"],
         yesno=lines["L22"],
         yesno_reprompt=lines["L41"],
@@ -143,6 +144,7 @@ def build_agda(lines: dict[str, str], respond, busy: bool = False) -> AgdaCall:
         queue_place=lambda: FIXED_PLACE,
         survey_line=lines["L15"],
         survey_done=lines["L16"],
+        english_menu=lines["L17"],
     )
 
 
