@@ -63,7 +63,10 @@ SPARK_SYSTEM = (
     "You map one Swedish IVR caller utterance to exactly one keyword "
     "from the list, or null if unclear. Output JSON "
     '{"keyword": str|null, "confidence": 0-1} and nothing else. '
-    "Never invent keywords. Map ja/nej only for exactly that word."
+    "Never invent keywords. Map ja/nej only for exactly that word. "
+    "Return null for garbled or fragmentary utterances even when a "
+    "keyword looks close; only map when the keyword or a clear "
+    "paraphrase is present."
 )
 
 
@@ -72,6 +75,9 @@ class NotConfiguredError(RuntimeError):
 
 
 DEFAULT_SPARK_URL = "https://api.meta.ai/v1/chat/completions"
+DEFAULT_SPARK_MODEL = "muse-spark-1.3"  # Meta quickstart default 2026-11
+DEFAULT_SPARK_TIMEOUT = 30  # live Spark p95 ~20 s; SPARK_TIMEOUT overrides
+SPARK_MIN_CONFIDENCE = 0.8  # below this, Spark maps abstain to the ladder
 
 
 class SparkNormalizer(Normalizer):
@@ -83,7 +89,7 @@ class SparkNormalizer(Normalizer):
         endpoint: str = "",
         api_key: str = "",
         model: str = "",
-        timeout: int = 3,
+        timeout: int = 0,  # 0 = SPARK_TIMEOUT env or DEFAULT_SPARK_TIMEOUT
     ) -> None:
         self.endpoint = (
             endpoint
@@ -104,9 +110,13 @@ class SparkNormalizer(Normalizer):
             model
             or os.environ.get("SPARK_MODEL", "")
             or os.environ.get("MODEL_API_MODEL", "")
-            or "muse-spark"
+            or DEFAULT_SPARK_MODEL
         )
-        self.timeout = timeout
+        self.timeout = (
+            timeout
+            or int(os.environ.get("SPARK_TIMEOUT", "0") or "0")
+            or DEFAULT_SPARK_TIMEOUT
+        )
 
     def _prompt(self, heard: str, vocab: list[str]) -> list[dict]:
         return [
@@ -134,7 +144,8 @@ class SparkNormalizer(Normalizer):
         if not clean or clean == SILENCE:
             return None, 0.0
         body = json.dumps(
-            {"model": self.model, "messages": self._prompt(heard, vocab)}
+            {"model": self.model, "temperature": 0,
+             "messages": self._prompt(heard, vocab)}
         ).encode("utf-8")
         req = urllib.request.Request(
             self.endpoint,
@@ -168,6 +179,9 @@ class SparkNormalizer(Normalizer):
         except (TypeError, ValueError):
             conf = 0.0
         conf = min(1.0, max(0.0, conf))
+        if conf < SPARK_MIN_CONFIDENCE:
+            self._provenance(heard, vocab, None, conf, ms)
+            return None, 0.0
         self._provenance(heard, vocab, keyword, conf, ms)
         return keyword, conf
 
