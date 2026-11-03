@@ -1,37 +1,53 @@
-# Holdmate — 3-minute submission video script (draft)
+# Holdmate — 3-minute submission video script (v2, judging blueprint)
 
-Total: ~3:00. English voiceover. Swedish voices in demo: Agda = Alva, caller = Oskar, officer = Klara.
+Total ≤ 2:55. English voiceover + burned-in captions. Demo voices: Roksolana = Alva,
+caller = Oskar, officer = Klara. No slides: 80%+ live product.
 
-## 0:00–0:20 Problem (20s)
+## 0:00–0:15 Hook & provenance (15s)
 
-> "Calling a robot operator like Sweden's Public Employment Service means menus, queues, and waiting on hold. Holdmate is an adaptive IVR agent that learns to make those calls for you — and it practices safely against AF Agda, a scripted copy of the real line built from recorded calls, so the real line is never touched during training."
+> "Sweden's phone robots only understand exact words — nobody tells you which.
+> Holdmate learns them for you. Built from scratch Oct 26 to Nov 4 — repo
+> predates the window with audio experiments only."
 
-VISUAL: title card "Holdmate — an adaptive IVR agent"; cut to phone-on-hold stock or waveform.
+VISUAL: title card + on-screen provenance callout (same sentence, first 10s).
 
-## 0:20–2:20 Live demo (2min)
+## 0:15–1:35 Live walkthrough (80s)
 
-Narration under live screen + audio. One command starts everything:
+One command starts everything: `./sh/holdmate.sh` (menu item 1).
 
-```bash
-./start.sh
-```
+- **Talk (0:15–0:55):** live call against Roksolana (The Castle sim): open
+  question → keyword → yes/no → faked ID → queue ticket counting down →
+  handover beeps. Show the queue ticket big.
+- **Board (0:55–1:15):** every turn lands on the live board: call thread,
+  mapped state, learned keywords, queue place. Show telemetry panel: each
+  Meta model call with model name + latency, visible on screen.
+- **iPhone + Watch (1:15–1:35):** YOUR TURN alert mirrors to iPhone and Watch
+  over LAN. Show 0-place blink + beep.
 
-- **Talk (0:20–1:10):** "This is talk mode — I speak, Agda answers as Alva." Show `./sh/talk.sh` call: any key skips ahead, `0` jumps to the English menu, `t` toggles quiet type-and-read mode, faked ID accepts the test number on Enter. Agda greets, caller gives a keyword, Agda routes.
-- **Board (1:10–1:40):** "Every turn lands on the live React board." Show `./sh/watch-board.sh` / `watch-calls.sh`: turns, keywords with why, queue place; `watch-map.sh` graphical map with position marker; `./sh/show-map.sh` menu map. Run `./sh/show-call.sh` for the silent printable version.
-- **iPhone + Watch (1:40–2:20):** "And it works from the couch: iPhone on speakerphone, Holdmate listens, then responds — queue alert fires on the Mac and mirrors to iPhone and Watch." Show `./sh/alert-demo.sh` firing the queue-place alert; `./sh/holdmate.sh` menu item 1 (board + talk), item 5 sound to speakers/AirPods.
+## 1:35–2:15 Meta AI architecture (40s)
 
-## 2:20–2:50 Tech (30s)
+> "Under the hood: an intent ladder — exact match, then Muse Spark over
+> api.meta.ai for live normalization, then Muse Spark Open as the
+> load-bearing open-weight stage, local or partner-hosted. Every call is
+> logged with model, runtime, and latency."
 
-> "Under the hood: a finite-state menu map learned per persona — the explorer tries words, the map grows every call. BFS lessons teach Holdmate to phone Agda by itself, headless. An intent ladder maps what you said to the keyword Agda understands, with teachable aliases for words she mishears."
+VISUAL: block diagram Spark + Spark Open + provenance log tail; eval A/B
+`eval/llm_intent_eval.py --live` vs `--openweight` (shortened, 4x SPEED ok).
 
-VISUAL: `./sh/explore-demo.sh` map growing; `./sh/holdmate-call.sh` headless call; `./sh/learn-words.sh` alias teaching; `./sh/route-demo.sh` loop-free route to the queue.
+## 2:15–2:45 Benchmarks & proof (30s)
 
-## 2:50–3:10 Next steps (20s)
+On-screen cards, read aloud:
 
-> "Next: real telephony with 46elks — funded account, live call to AF through ELK to compare against the scripted Agda — and the speakerphone loop: iPhone loudspeaker, Holdmate listens first, then answers, so a real queue works end to end."
+- 212 tests green + e2e queue spec, CI + CodeQL passing
+- Rescue/abstain safety eval: adversarial cases never mis-transfer
+- One-command keyless replay: `./sh/holdmate.sh` (no keys, no login)
 
-VISUAL: 46elks dashboard + iPhone-on-speakerphone sketch.
+VISUAL: pytest tail, eval output, GitHub Actions green.
 
-## Close (one line)
+## 2:45–2:55 Summary & clean stop (10s)
+
+Card: repo URL, models used (Muse Spark + Spark Open), headline metrics.
 
 > "Holdmate waits on hold, so you don't have to."
+
+Stop at 2:55. Nothing after — playback cuts at 3:00.

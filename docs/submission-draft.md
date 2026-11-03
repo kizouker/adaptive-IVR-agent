@@ -9,7 +9,10 @@ https://github.com/kizouker/adaptive-IVR-agent
 
 ## 2. 3-minute Video URL
 
-TBD — upload to YouTube (public or unlisted) Nov 3, paste link here.
+Attempt 1 (done): https://youtu.be/6KtzT4xfa5k (v1, unlisted). Paste into the
+form, submit draft. Nothing is judged before the freeze.
+Attempt 2 (Nov 3): record final per docs/video-script-draft.md (v2 blueprint),
+replace link in the form before the freeze.
 Rules: ≤ 3:00 (all key content before 2:55), provenance line in first 10s,
 80%+ live product, Meta calls visible, English audio + captions (NFR-001…005).
 Shot plan: docs/video-plan.md.
