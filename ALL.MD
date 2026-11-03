@@ -11,3 +11,4 @@ Always read state.json before starting. Update it when finishing.
 Maximum 10 lines per response. Continue with Space.
 
 No ticket no work. A ticket is always a GitHub issue (Why, What, Done when), never a local file. Exception: basic file system maintenance (moving, renaming or tidying files and folders, and fixing the references to them) needs no ticket.
+Every ticket carries test steps (Så testar du) for Rickard: added at creation, kept current on every change.
