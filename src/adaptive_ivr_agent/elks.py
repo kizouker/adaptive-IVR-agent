@@ -54,8 +54,14 @@ class ElksClient:
         from_number: str,
         recordcall: str = "true",
         whenhangup: str = "",
+        voice_start: str = "",
     ) -> dict:
-        """Start an outbound call. Returns the 46elks call object (has id)."""
+        """Start an outbound call. Returns the 46elks call object (has id).
+
+        voice_start: first thing said on answer (plain text) or a webhook
+        URL returning call actions. Played once; 46elks REST has no
+        mid-call injection, so later turns need the webhook loop (#203).
+        """
         if not valid_e164(to):
             raise ValueError(f"bad callee E.164: {to!r}")
         if not valid_e164(from_number):
@@ -63,6 +69,8 @@ class ElksClient:
         fields = {"from": from_number, "to": to, "recordcall": recordcall}
         if whenhangup:
             fields["whenhangup"] = whenhangup
+        if voice_start:
+            fields["voice_start"] = voice_start
         return self._post("/calls", fields)
 
 
