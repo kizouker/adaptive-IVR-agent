@@ -1,8 +1,9 @@
 #!/bin/bash
 # Board stack: infra + tests together (#169). up starts the container
 # detached on a free port and waits until healthy; test runs e2e against
-# it; down stops everything. The port is remembered between calls.
-# Runs on: Rickard's Mac (M4). Run: ./sh/board-stack.sh [up|test|down]
+# it; status checks container + endpoints; down stops everything.
+# The port is remembered between calls.
+# Runs on: Rickard's Mac (M4). Run: ./sh/board-stack.sh [up|test|status|down]
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=ui.sh
@@ -59,8 +60,31 @@ if [ "$MODE" = "test" ]; then
   exit $?
 fi
 
+if [ "$MODE" = "status" ]; then
+  step "Container"
+  what "The board container must exist and run."
+  cd "$ROOT" || fail "cannot cd to $ROOT"
+  STATE="$(docker compose ps --format '{{.State}}' 2>/dev/null | head -1)"
+  [ "$STATE" = "running" ] || fail "container state: ${STATE:-missing} (run ./sh/board-stack.sh up)"
+  ok "container running"
+  PORT="$(cat "$PORT_FILE" 2>/dev/null || echo 8080)"
+  ok "port file: $PORT"
+
+  step "Endpoints"
+  what "Front page, state, version and volume API must answer."
+  for path in "" "board-state.json" "version.json" "api/volume"; do
+    curl -sf --max-time 5 "http://127.0.0.1:$PORT/$path" >/dev/null 2>&1 \
+      || fail "http://localhost:$PORT/$path does not answer"
+  done
+  ok "all endpoints answer on http://localhost:$PORT"
+
+  title "Verdict"
+  ok "board stack healthy"
+  exit 0
+fi
+
 if [ "$MODE" != "up" ]; then
-  fail "unknown mode: $MODE (use up, test or down)"
+  fail "unknown mode: $MODE (use up, test, status or down)"
 fi
 
 step "Pick a free port"
