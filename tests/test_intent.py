@@ -74,7 +74,8 @@ def test_spark_requires_config(monkeypatch):
         SparkNormalizer(endpoint="http://x.test/v1", api_key="k")
 
 
-def test_spark_parses_and_validates(monkeypatch):
+def test_spark_parses_and_validates(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(tmp_path / "prov.jsonl"))
     norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
     body = json.dumps(
         {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 0.8}'}}]}
@@ -91,7 +92,8 @@ def test_spark_parses_and_validates(monkeypatch):
     assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.8)
 
 
-def test_spark_rejects_unknown_keyword_and_errors(monkeypatch):
+def test_spark_rejects_unknown_keyword_and_errors(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(tmp_path / "prov.jsonl"))
     norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
     body = json.dumps(
         {"choices": [{"message": {"content": '{"keyword": "umlaut", "confidence": 9}'}}]}
