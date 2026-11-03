@@ -11,6 +11,7 @@
 - **Bonus Prize Categories Targeted**: Best Agentic Use-Case · Best Creative Build
 - **3-Minute Demo Video**: https://youtu.be/6KtzT4xfa5k (draft v1)
 - **Quickstart & Keyless Replay**: `./sh/holdmate.sh` runs the full sim keyless; live Meta calls need `MODEL_API_KEY` (see `.env.example`).
+- **Real lines**: Holdmate trains against a scripted copy of the line, so the real government line is never spammed. Real calls today: human in the loop on speakerphone. Next: telephony via 46elks, and a free BlackHole path ([#190](https://github.com/kizouker/adaptive-IVR-agent/issues/190)).
 
 Calling a robot operator like Sweden's Public Employment Service means menus, queues, and waiting on hold. Holdmate is an adaptive IVR agent that learns to make those calls for you: it practices safely against AF Agda, a scripted copy of the real line built from recorded calls, so the real line is never touched during training — then it helps on real calls with a live board, queue ticket, and handover prompts up to BankID identification.
 
