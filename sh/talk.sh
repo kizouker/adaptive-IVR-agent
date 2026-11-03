@@ -1,6 +1,8 @@
 #!/bin/bash
 # Talk to the practice robot with your own voice (push-to-talk loop).
 # Runs on: Rickard's Mac (M4). Modes: talk (default) | check.
+# check mode warns (exit 0) when audio devices are absent — a missing device on a
+# clean machine is not an error; talk mode still fails loudly without them.
 # Flags: --airpods (physical AirPods; must be connected), --as <persona> (role-play + tag rounds for Holdmate training),
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
 #   --quiet (type + read instead of speak + listen), --sound (force sound on),
@@ -26,6 +28,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 
 MODE="talk"
+AUDIO_DEGRADED=0 # check mode: 1 once a missing device downgrades a fail to a warn
 AIRPODS=0
 PERSONA=""
 QUIET=0
@@ -106,8 +109,14 @@ find_airpods() {
 MULTI_OUTPUT="$OUTPUT_SPEAKERS"
 AUTO_PODS="$(find_airpods)"
 if [ "$AIRPODS" = 1 ]; then
-  [ -n "$AUTO_PODS" ] || fail "No AirPods found among output devices (connect them first, then retry)"
-  MULTI_OUTPUT="$AUTO_PODS"
+  if [ -n "$AUTO_PODS" ]; then
+    MULTI_OUTPUT="$AUTO_PODS"
+  elif [ "$MODE" = "check" ]; then
+    AUDIO_DEGRADED=1
+    warn "No AirPods found among output devices (check continues on $OUTPUT_SPEAKERS)"
+  else
+    fail "No AirPods found among output devices (connect them first, then retry)"
+  fi
 elif [ -n "$AUTO_PODS" ]; then
   MULTI_OUTPUT="$AUTO_PODS"
 fi
@@ -188,10 +197,19 @@ ok "tools: ffmpeg, ffprobe, whisper-cli, say, afplay, SwitchAudioSource, python3
 ok "Whisper model: $MODEL"
 [ -f "$PHRASEBOOKS" ] || fail "Phrasebooks not found: $PHRASEBOOKS"
 ok "phrasebooks: $PHRASEBOOKS"
-SwitchAudioSource -a -t output | grep -Fxq "$MULTI_OUTPUT" \
-  || fail "Output device '$MULTI_OUTPUT' not found (open Audio MIDI Setup and check the Multi-Output device)"
-ok "output device: $MULTI_OUTPUT"
-if [ "$AIRPODS" = 0 ]; then
+OUTPUT_LIST="$(SwitchAudioSource -a -t output 2>/dev/null)" \
+  || fail "Could not list output devices (SwitchAudioSource errored — broken audio setup?)"
+OUTPUT_OK=1
+if printf '%s\n' "$OUTPUT_LIST" | grep -Fxq "$MULTI_OUTPUT"; then
+  ok "output device: $MULTI_OUTPUT"
+elif [ "$MODE" = "check" ]; then
+  OUTPUT_OK=0
+  AUDIO_DEGRADED=1
+  warn "Output device '$MULTI_OUTPUT' not found — clean machine? (create it in Audio MIDI Setup; talk mode needs it)"
+else
+  fail "Output device '$MULTI_OUTPUT' not found (open Audio MIDI Setup and check the Multi-Output device)"
+fi
+if [ "$AIRPODS" = 0 ] && [ "$OUTPUT_OK" = 1 ]; then
   if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then
     info "auto output: speakers (no AirPods connected)"
   else
@@ -231,14 +249,27 @@ fi
 if [ "$QUIET" = 1 ]; then
   info "quiet mode: type + read, t toggles sound back on"
 fi
-SwitchAudioSource -a -t input | grep -Fxq "$MIC" \
-  || fail "Mic '$MIC' not found (check System Settings -> Sound -> Input)"
-ok "mic: $MIC"
-if [ -z "$MIC_INDEX" ]; then
+INPUT_LIST="$(SwitchAudioSource -a -t input 2>/dev/null)" \
+  || fail "Could not list input devices (SwitchAudioSource errored — broken audio setup?)"
+MIC_OK=1
+if printf '%s\n' "$INPUT_LIST" | grep -Fxq "$MIC"; then
+  ok "mic: $MIC"
+elif [ "$MODE" = "check" ]; then
+  MIC_OK=0
+  AUDIO_DEGRADED=1
+  warn "Mic '$MIC' not found — clean machine? (check System Settings -> Sound -> Input; talk mode needs it)"
+else
+  fail "Mic '$MIC' not found (check System Settings -> Sound -> Input)"
+fi
+if [ -z "$MIC_INDEX" ] && [ "$MIC_OK" = 1 ]; then
   MIC_INDEX="$(audio_index_for "$MIC")"
   [ -n "$MIC_INDEX" ] || fail "Could not find '$MIC' in the ffmpeg device list (first run may need mic permission: allow Terminal, then re-run)"
 fi
-ok "ffmpeg mic index: $MIC_INDEX"
+if [ "$MIC_OK" = 1 ]; then
+  ok "ffmpeg mic index: $MIC_INDEX"
+else
+  warn "ffmpeg mic index: skipped (no mic '$MIC' to match)"
+fi
 mkdir -p "$REC_DIR"
 info "Recordings go to: $REC_DIR"
 info "Agda plays at volume $TALK_VOLUME (1 = normal, up to 4 = boost; + / - during the call or the board slider)"
@@ -261,7 +292,14 @@ else
   info "queue starts at random 2-5, ticks every ${QUEUE_TICK}s (any key hurries)"
 fi
 
-[ "$MODE" = "check" ] && { title "Check only: nothing changed"; exit 0; }
+if [ "$MODE" = "check" ]; then
+  if [ "$AUDIO_DEGRADED" = 1 ]; then
+    title "Check only: nothing changed (audio devices missing — see warnings; talk mode needs them)"
+  else
+    title "Check only: nothing changed"
+  fi
+  exit 0
+fi
 
 step "Switch audio"
 what "Route audio through $MULTI_OUTPUT (--floor levels the physical output first). Originals are restored on exit."
