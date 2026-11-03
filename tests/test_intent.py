@@ -157,6 +157,29 @@ def test_openweight_logs_provenance(monkeypatch, tmp_path):
     assert "latency_ms" in row
 
 
+def test_spark_logs_provenance(monkeypatch, tmp_path):
+    log = tmp_path / "prov.jsonl"
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
+    body = json.dumps(
+        {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 0.8}'}}]}
+    ).encode()
+
+    class FakeRes:
+        def __enter__(self):
+            return io.BytesIO(body)
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout: FakeRes())
+    assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.8)
+    row = json.loads(log.read_text(encoding="utf-8").strip())
+    assert row["runtime"] == "spark-hosted"
+    assert row["model"] == "muse-spark"
+    assert row["keyword"] == "vab"
+
+
 def test_resolve_chain_names_stage():
     class First:
         def map(self, heard, vocab):

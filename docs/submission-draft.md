@@ -30,10 +30,7 @@ Build for Your World (citizens vs. government phone robots).
 - Muse Spark (api.meta.ai, hosted): opt-in live intent normalization mapping
   noisy caller utterances onto the closed IVR vocabulary, plus the A/B eval
   harness (eval/llm_intent_eval.py --live). Set MODEL_API_KEY; sim runs keyless.
-- Muse Spark Open (meta-models/muse-spark-open-1026): wired as a load-bearing
-  intent stage (OpenWeightNormalizer, #171) — Ollama-local default, partner
-  inference via env. Live verification + metrics before the freeze.
-- Every model call writes a JSONL provenance row (model, runtime, latency).
+- (Next release: Muse Spark Open as load-bearing stage — in progress, #171.)
 - Planned before freeze: Meta speech-to-text for the robot voice (vs macOS say).
 
 ## 6. X Post URL
