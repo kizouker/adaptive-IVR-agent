@@ -8,6 +8,9 @@ QUEUE_START=50 ./sh/demo-queue.sh  # countdown demo
 PYTHONPATH=src python3 eval/llm_intent_eval.py --openweight  # intent eval vs open weights
 PYTHONPATH=src pytest -q         # full suite (runs from repo root)
 docker compose up --build        # board on :8080 (or BOARD_PORT)
+npm run test:e2e --prefix ui/board  # local e2e (spins preview server)
+BOARD_URL=http://localhost:8080 npm run test:e2e --prefix ui/board  # e2e vs Docker
+BOARD_URL=https://<azure-fqdn> npm run test:e2e --prefix ui/board  # e2e vs Azure
 ```
 
 See also: [[submission]] for portal copy-paste, [[partners]] for env values.
