@@ -6,7 +6,7 @@ COPY src/ ./src/
 COPY data/doorkeeper-lines.json data/role-phrasebooks.json ./data/
 COPY ui/board/public/board-state.sample.json /sample.json
 COPY sh/bake-board.py ./sh/bake-board.py
-COPY pyproject.toml ./
+COPY pyproject.toml README.md ./
 RUN pip install --no-cache-dir -e . \
   && mkdir -p /out \
   && (PYTHONPATH=src python3 -m adaptive_ivr_agent.holdmate \
