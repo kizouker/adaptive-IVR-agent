@@ -8,3 +8,4 @@
 - Small releases with codenames; replan 10:30/14:00/17:00/23:00.
 - Submit draft early (v1 video), replace with final before freeze.
 - Freeze: Thu Nov 5 03:00 CET — zero pushes after.
+- Demo target: localhost:5173 only (live sim). Docker/Pages = dead snapshots, Azure pending.
