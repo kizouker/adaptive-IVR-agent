@@ -62,6 +62,9 @@ if [ "$MODE" = "test" ]; then
   VER="$(curl -sf --max-time 5 "http://127.0.0.1:$FOUND/version.json")" || fail "version.json did not answer"
   printf '%s' "$VER" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d.get('version'), 'no version'" || fail "version.json has no version"
   ok "version.json ok"
+  VOL="$(curl -sf --max-time 5 "http://127.0.0.1:$FOUND/api/volume")" || fail "/api/volume did not answer"
+  printf '%s' "$VOL" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d.get('volume'), 'no volume'" || fail "/api/volume has no volume"
+  ok "/api/volume ok"
 
   title "Verdict"
   ok "docker board smoke-test holds on port $FOUND"
