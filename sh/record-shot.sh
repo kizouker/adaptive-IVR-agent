@@ -35,6 +35,8 @@ OUT="$ROOT/data/video/shot-$(printf '%02d' "$NUM")-$NAME.mov"
 
 step "Record"
 what "Capture the screen to $OUT. Press q in this window to stop."
-[ ! -f "$OUT" ] || fail "$OUT exists already (pick another number or name)"
+if [ -f "$OUT" ] && [ "${OVERWRITE:-0}" != "1" ]; then
+  fail "$OUT exists already (retake with OVERWRITE=1 or pick another number)"
+fi
 ok "recording to $OUT (q stops)"
 ffmpeg -f avfoundation -framerate 30 -i "$SCREEN_INDEX:none" -c:v libx264 -pix_fmt yuv420p "$OUT"
