@@ -75,6 +75,9 @@ class NotConfiguredError(RuntimeError):
 
 
 DEFAULT_SPARK_URL = "https://api.meta.ai/v1/chat/completions"
+DEFAULT_SPARK_MODEL = "muse-spark-1.3"  # Meta quickstart default 2026-11
+DEFAULT_SPARK_TIMEOUT = 30  # live Spark p95 ~20 s; SPARK_TIMEOUT overrides
+SPARK_MIN_CONFIDENCE = 0.8  # below this, Spark maps abstain to the ladder
 
 
 class SparkNormalizer(Normalizer):
@@ -86,7 +89,7 @@ class SparkNormalizer(Normalizer):
         endpoint: str = "",
         api_key: str = "",
         model: str = "",
-        timeout: int = 20,
+        timeout: int = 0,  # 0 = SPARK_TIMEOUT env or DEFAULT_SPARK_TIMEOUT
     ) -> None:
         self.endpoint = (
             endpoint
@@ -107,9 +110,13 @@ class SparkNormalizer(Normalizer):
             model
             or os.environ.get("SPARK_MODEL", "")
             or os.environ.get("MODEL_API_MODEL", "")
-            or "muse-spark-1.3"  # Meta quickstart default 2026-11
+            or DEFAULT_SPARK_MODEL
         )
-        self.timeout = timeout
+        self.timeout = (
+            timeout
+            or int(os.environ.get("SPARK_TIMEOUT", "0") or "0")
+            or DEFAULT_SPARK_TIMEOUT
+        )
 
     def _prompt(self, heard: str, vocab: list[str]) -> list[dict]:
         return [
@@ -137,7 +144,8 @@ class SparkNormalizer(Normalizer):
         if not clean or clean == SILENCE:
             return None, 0.0
         body = json.dumps(
-            {"model": self.model, "messages": self._prompt(heard, vocab)}
+            {"model": self.model, "temperature": 0,
+             "messages": self._prompt(heard, vocab)}
         ).encode("utf-8")
         req = urllib.request.Request(
             self.endpoint,
@@ -171,7 +179,7 @@ class SparkNormalizer(Normalizer):
         except (TypeError, ValueError):
             conf = 0.0
         conf = min(1.0, max(0.0, conf))
-        if conf < 0.8:  # low-confidence Spark maps abstain to the ladder
+        if conf < SPARK_MIN_CONFIDENCE:
             self._provenance(heard, vocab, None, conf, ms)
             return None, 0.0
         self._provenance(heard, vocab, keyword, conf, ms)
@@ -295,6 +303,52 @@ class OpenWeightNormalizer(Normalizer):
         conf = min(1.0, max(0.0, conf))
         self._provenance(heard, vocab, keyword, conf, ms)
         return keyword, conf
+
+
+def maybe_spark_normalizer(enabled: bool = True) -> SparkNormalizer | None:
+    """SparkNormalizer when ENABLED and a key is set, else None.
+
+    Keyless runs get None: the talk loop skips the Spark step and the
+    sim continues. Never raises.
+    """
+    if not enabled:
+        return None
+    try:
+        return SparkNormalizer()
+    except Exception:
+        return None
+
+
+class SparkFallback:
+    """Optional talk-loop fallback: one normalizer call on word-step miss (#205).
+
+    Wraps a RESPOND callable (reply, matched). Exact hits pass through
+    untouched; only a miss triggers one normalizer.map call against VOCAB.
+    Never raises: a failing normalizer just leaves the miss a miss. LAST
+    holds the most recent {"word", "confidence"} for the board badge, or
+    None when the last round was exact or still a miss.
+    """
+
+    def __init__(self, respond, normalizer: Normalizer, vocab: list[str]) -> None:
+        self._respond = respond
+        self._normalizer = normalizer
+        self._vocab = vocab
+        self.last: dict | None = None
+
+    def respond(self, heard: str) -> tuple[str, str | None]:
+        reply, matched = self._respond(heard)
+        if matched is not None:
+            self.last = None
+            return reply, matched
+        try:
+            keyword, conf = self._normalizer.map(heard, self._vocab)
+        except Exception:
+            keyword, conf = None, 0.0
+        if keyword is None:
+            self.last = None
+            return reply, None
+        self.last = {"word": keyword, "confidence": conf}
+        return f"Du sa {keyword}. Tack. Jag kopplar dig vidare.", keyword
 
 
 def resolve_chain(heard: str, respond, normalizers, vocab: list[str]):
