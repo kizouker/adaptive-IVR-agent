@@ -65,6 +65,7 @@ class AgdaCall:
         survey_line: str = "",
         survey_done: str = "",
         english_menu: str = "",
+        yesno_words: tuple[str, str] = ("ja", "nej"),
     ) -> None:
         self.opening = opening
         self._examples = examples
@@ -81,6 +82,7 @@ class AgdaCall:
         self._queue_line = queue_line
         self._place_template = place_template
         self._respond = respond
+        self._yesno_words = tuple(w.lower() for w in yesno_words)
         self._queue_place = queue_place or (lambda: random.randint(2, 5))
 
     def reply_to(self, heard: str, misses: int) -> AgdaReply:
@@ -96,7 +98,7 @@ class AgdaCall:
             return self._ask_for_id(self._transfer, None, misses)
         if misses == 2:
             word = normalize(heard)
-            if word in ("ja", "nej"):
+            if word in self._yesno_words:
                 return self._ask_for_id(self._transfer, word, misses)
             return AgdaReply(self._yesno_reprompt, None, False, 3, False, None)
         if misses == 1:
