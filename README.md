@@ -134,3 +134,15 @@ npm run build --prefix ui/board
 Status: v0.3.1 on main — iPhone + Watch LAN queue, queue demo, Spark intent wiring, video script draft. Test suite green (194 passed, 2 skipped), board builds, CI + CodeQL + e2e pass.
 
 Next: 46elks live call to compare against scripted Agda, then the speakerphone loop end to end (iPhone loudspeaker, Holdmate listens first, then answers). Submission video follows [docs/video-script-draft.md](docs/video-script-draft.md): problem, live demo, tech, next steps.
+
+## Prior work (before the hackathon)
+
+The repo existed before the hackathon (Oct 26) with exactly 3 commits, all from 2026-09-28 — an audio-classifier learning lab, not Holdmate:
+
+- `05e25cd` Initial commit: audio numbers lab setup — TODO-only `classifier.py` skeleton (librosa + RandomForest), `src/audio_numbers_lab/` package, Python scaffolding.
+- `793d614` Repo for Adaptive IVR agent — README idea draft: recognizing IVR queue numbers, with architecture options (A) record + OpenAI Whisper + regexp, (B) NLU-based, (C) iOS `AVAudioRecorder`.
+- `8addab6` Add user stories for audio classifier lab — `USER_STORIES.md` with 4 learner stories for the audio lab.
+
+None of it is used: the lab files were removed during the hackathon and have zero references on main, and the Sep-28 README draft was fully rewritten (no draft text survives). Whisper in today's tree is hackathon-era work (`whisper.cpp`/`whisper-cli` transcription pipeline) — the pre-hackathon tree contained no Whisper code, only the one-line mention in the draft.
+
+Verify: `git log --oneline --before 2026-10-26`
