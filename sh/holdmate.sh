@@ -13,14 +13,17 @@ MODE="menu"
 SOUND="speakers"
 SOUND_DIRTY=0
 sync_sound() {
-  # Follow the real current output until Rickard picks sound explicitly.
+  # Follow AirPods when worn (current output OR just connected) until
+  # Rickard picks sound explicitly (#191).
   if [ "$SOUND_DIRTY" = 1 ]; then return 0; fi
-  if command -v SwitchAudioSource >/dev/null 2>&1 \
-     && SwitchAudioSource -c -t output 2>/dev/null | grep -qi 'airpods'; then
-    SOUND="airpods"
-  else
-    SOUND="speakers"
+  if command -v SwitchAudioSource >/dev/null 2>&1; then
+    if SwitchAudioSource -c -t output 2>/dev/null | grep -qi 'airpods' \
+      || SwitchAudioSource -a -t output 2>/dev/null | grep -qi 'airpods'; then
+      SOUND="airpods"
+      return 0
+    fi
   fi
+  SOUND="speakers"
 }
 sound_label() {
   case "$SOUND" in
