@@ -10,7 +10,8 @@ Command: `PYTHONPATH=src python3 eval/llm_intent_eval.py --live`
 - rescue: 3/3 (heuristic baseline: 2/3)
 - abstain: 10/10 (one run 9/10: `jobbcoach → rusta och matcha`, defensible)
 - exact: 3/3
-- p95 latency: ~13–16 s per call (Spark reasoning; timeout raised 3 → 20 s)
+- p95 latency: ~13–20 s per call (Spark reasoning; timeout default 30 s, SPARK_TIMEOUT overrides)
+- temperature 0 for deterministic judging runs
 - SAFETY OK
 
 ## Fixes on the way
@@ -24,6 +25,8 @@ Command: `PYTHONPATH=src python3 eval/llm_intent_eval.py --live`
 
 `data/provenance.jsonl` now holds real `api.meta.ai` rows (38 at write time)
 with non-zero `latency_ms` — evidence, not `x.test` stubs.
+Committed sample (hashes only, no personal data):
+`spark-live-provenance-2026-11-03.jsonl` in this folder.
 
 ## Full transcript
 

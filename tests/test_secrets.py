@@ -9,8 +9,9 @@ def test_env_ignored_at_root_and_board():
     out = subprocess.run(
         ["git", "check-ignore", ".env", "ui/board/.env"],
         capture_output=True, text=True, cwd=REPO)
-    assert ".env" in out.stdout
-    assert "ui/board/.env" in out.stdout
+    lines = out.stdout.splitlines()
+    assert ".env" in lines
+    assert "ui/board/.env" in lines
 
 
 def test_env_not_tracked():
