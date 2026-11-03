@@ -55,6 +55,26 @@ echo "    $PYTEST_TAIL"
 ok "suite green (keyless)"
 warn "manual: verify on a clean clone before the freeze"
 
+step "Partner inference (open weights)"
+what "OPENWEIGHT_URL must be set; remote hosts need a key (never printed)."
+OW_URL="${OPENWEIGHT_URL:-http://127.0.0.1:11434/v1/chat/completions}"
+OW_KEY="${OPENWEIGHT_API_KEY:-}"
+case "$OW_URL" in
+  *127.0.0.1*|*localhost*)
+    ok "local runtime (Ollama/Glimmer): $OW_URL"
+    ;;
+  https://*)
+    if [ -n "$OW_KEY" ]; then
+      ok "partner runtime configured: $OW_URL (key set, not shown)"
+    else
+      warn "partner URL without OPENWEIGHT_API_KEY: $OW_URL"
+    fi
+    ;;
+  *)
+    fail "OPENWEIGHT_URL must be localhost or https: $OW_URL"
+    ;;
+esac
+
 step "NFR-012 freeze"
 what "No commits to the submission branch after $FREEZE."
 NOW="$(date -u +%s)"
