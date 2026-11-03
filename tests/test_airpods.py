@@ -6,6 +6,7 @@ shared with tests/test_playback.py.
 """
 import os
 import pty
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -13,6 +14,10 @@ from pathlib import Path
 import pytest
 
 from tests.test_playback import ROOT, STUBS, TALK, extract, stub_bin
+
+pytestmark = pytest.mark.skipif(
+    shutil.which("bash") is None, reason="bash not installed (minimal container)"
+)
 
 
 def extract_one(name):
