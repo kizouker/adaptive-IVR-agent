@@ -63,7 +63,10 @@ SPARK_SYSTEM = (
     "You map one Swedish IVR caller utterance to exactly one keyword "
     "from the list, or null if unclear. Output JSON "
     '{"keyword": str|null, "confidence": 0-1} and nothing else. '
-    "Never invent keywords. Map ja/nej only for exactly that word."
+    "Never invent keywords. Map ja/nej only for exactly that word. "
+    "Return null for garbled or fragmentary utterances even when a "
+    "keyword looks close; only map when the keyword or a clear "
+    "paraphrase is present."
 )
 
 
@@ -83,7 +86,7 @@ class SparkNormalizer(Normalizer):
         endpoint: str = "",
         api_key: str = "",
         model: str = "",
-        timeout: int = 3,
+        timeout: int = 20,
     ) -> None:
         self.endpoint = (
             endpoint
@@ -104,7 +107,7 @@ class SparkNormalizer(Normalizer):
             model
             or os.environ.get("SPARK_MODEL", "")
             or os.environ.get("MODEL_API_MODEL", "")
-            or "muse-spark"
+            or "muse-spark-1.3"  # Meta quickstart default 2026-11
         )
         self.timeout = timeout
 
@@ -168,6 +171,9 @@ class SparkNormalizer(Normalizer):
         except (TypeError, ValueError):
             conf = 0.0
         conf = min(1.0, max(0.0, conf))
+        if conf < 0.8:  # low-confidence Spark maps abstain to the ladder
+            self._provenance(heard, vocab, None, conf, ms)
+            return None, 0.0
         self._provenance(heard, vocab, keyword, conf, ms)
         return keyword, conf
 
