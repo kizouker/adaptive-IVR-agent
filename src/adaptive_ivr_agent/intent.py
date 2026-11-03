@@ -172,7 +172,7 @@ class SparkNormalizer(Normalizer):
         return keyword, conf
 
 
-DEFAULT_OPENWEIGHT_URL = "http://127.0.0.1:11434/v1"
+DEFAULT_OPENWEIGHT_URL = "http://127.0.0.1:11434/v1/chat/completions"
 DEFAULT_OPENWEIGHT_MODEL = "meta-models/muse-spark-open-1026"
 LOCALHOSTS = ("127.0.0.1", "localhost", "::1")
 
