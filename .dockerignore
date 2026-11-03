@@ -1,0 +1,9 @@
+.git
+node_modules
+ui/board/node_modules
+ui/board/dist
+ui/board/test-results
+__pycache__
+.venv
+data/recordings
+*.wav
