@@ -9,8 +9,8 @@ https://github.com/kizouker/adaptive-IVR-agent
 
 ## 2. 3-minute Video URL
 
-Attempt 1 (now): upload data/video/holdmate-v1.mp4 (97s assembly) as UNLISTED
-to YouTube, paste link, submit draft. Nothing is judged before the freeze.
+Attempt 1 (done): https://youtu.be/6KtzT4xfa5k (v1, unlisted). Paste into the
+form, submit draft. Nothing is judged before the freeze.
 Attempt 2 (Nov 3): record final per docs/video-script-draft.md (v2 blueprint),
 replace link in the form before the freeze.
 Rules: ≤ 3:00 (all key content before 2:55), provenance line in first 10s,
