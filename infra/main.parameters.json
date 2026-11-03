@@ -3,7 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "image": {
-      "value": "ghcr.io/kizouker/adaptive-ivr-board:v0.3.2"
+      "value": "ghcr.io/kizouker/adaptive-ivr-board:v0.3.4"
+    },
+    "alertEmail": {
+      "value": "FILL-IN-BEFORE-DEPLOY"
     }
   }
 }

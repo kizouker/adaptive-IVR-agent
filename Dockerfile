@@ -29,7 +29,10 @@ COPY --from=gen /out/board-state.json ./public/board-state.json
 RUN printf '{"version":"docker","built":"%s"}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > ./public/version.json \
   && npm run build
 
-FROM nginx:1.27-alpine
-COPY --from=build /repo/ui/board/dist /usr/share/nginx/html
+FROM node:20-alpine
+WORKDIR /srv
+COPY --from=build /repo/ui/board/dist ./dist
+COPY ui/board/server.js ./
+ENV PORT=80
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "server.js"]
