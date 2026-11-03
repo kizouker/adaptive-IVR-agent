@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 // Remote board smoke: read-only, works against Docker and Azure (#169).
 // The queue countdown spec needs local dist/ writes, so it stays local-only.
 test('remote board serves front page, state and version', async ({ page, request }) => {
+  test.skip(!process.env.BOARD_URL, 'remote-only; local preview covered by queue.spec');
   await page.goto('/');
   await expect(page.locator('body')).toContainText('Holdmate');
 

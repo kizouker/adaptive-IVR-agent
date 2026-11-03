@@ -68,7 +68,19 @@ if [ "$MODE" = "status" ]; then
   [ "$STATE" = "running" ] || fail "container state: ${STATE:-missing} (run ./sh/board-stack.sh up)"
   ok "container running"
   PORT="$(cat "$PORT_FILE" 2>/dev/null || echo 8080)"
-  ok "port file: $PORT"
+  if ! curl -sf --max-time 3 "http://127.0.0.1:$PORT/version.json" >/dev/null 2>&1; then
+    warn "remembered port $PORT is silent; scanning 8080-8090"
+    PORT=""
+    for p in 8080 8081 8082 8083 8084 8085 8086 8087 8088 8089 8090; do
+      if curl -sf --max-time 2 "http://127.0.0.1:$p/version.json" >/dev/null 2>&1; then
+        PORT="$p"
+        break
+      fi
+    done
+    [ -n "$PORT" ] || fail "container runs but no board answers on 8080-8090"
+    echo "$PORT" > "$PORT_FILE"
+  fi
+  ok "board on port $PORT"
 
   step "Endpoints"
   what "Front page, state, version and volume API must answer."
