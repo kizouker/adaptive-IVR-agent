@@ -138,6 +138,37 @@ def test_spark_low_confidence_abstains(monkeypatch, tmp_path):
     assert row["keyword"] is None  # gated map still leaves a trace
 
 
+def test_spark_sends_reasoning_effort(monkeypatch, tmp_path):
+    log = tmp_path / "prov.jsonl"
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+    monkeypatch.delenv("SPARK_EFFORT", raising=False)
+    monkeypatch.delenv("MODEL_API_EFFORT", raising=False)
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
+    assert norm.effort == "medium"
+    body = json.dumps(
+        {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 1.0}'}}]}
+    ).encode()
+    seen = {}
+
+    class FakeRes:
+        def __enter__(self):
+            return io.BytesIO(body)
+
+        def __exit__(self, *a):
+            return False
+
+    def capture(req, timeout):
+        seen.update(json.loads(req.data.decode("utf-8")))
+        return FakeRes()
+
+    monkeypatch.setattr(urllib.request, "urlopen", capture)
+    assert norm.map("vab?", VOCAB) == ("vab", 1.0)
+    assert seen["reasoning_effort"] == "medium"
+    assert seen["temperature"] == 0
+    monkeypatch.setenv("SPARK_EFFORT", "high")
+    assert SparkNormalizer(endpoint="https://x.test/v1", api_key="k").effort == "high"
+
+
 def test_openweight_localhost_needs_no_key(monkeypatch):
     monkeypatch.delenv("OPENWEIGHT_URL", raising=False)
     monkeypatch.delenv("OPENWEIGHT_API_KEY", raising=False)
