@@ -18,8 +18,9 @@ command -v gh >/dev/null 2>&1 || fail "gh is missing"
 command -v python3 >/dev/null 2>&1 || fail "python3 is missing"
 ok "tools ok"
 
+export SNAP
 while true; do
-  SNAP="$SNAP" gh project item-list 40 --owner kizouker --format json --limit 150 \
+  gh project item-list 40 --owner kizouker --format json --limit 150 \
     | python3 -c "
 import json, os, sys
 snap_path = os.environ['SNAP']
