@@ -63,13 +63,18 @@ def main() -> int:
             import os
 
             os.environ["SPARK_DEBUG"] = "1"
+        args = sys.argv[1:]
+        if "--effort" in args:
+            import os
+
+            os.environ["SPARK_EFFORT"] = args[args.index("--effort") + 1]
         try:
             normalizer = SparkNormalizer()
         except NotConfiguredError as err:
             print(f"live needs configuration: {err}")
             return 2
-        print(f"live: model={normalizer.model} endpoint={normalizer.endpoint} "
-              f"(max {len(CASES)} calls)")
+        print(f"live: model={normalizer.model} effort={normalizer.effort} "
+              f"endpoint={normalizer.endpoint} (max {len(CASES)} calls)")
     elif "--openweight" in sys.argv[1:]:
         try:
             normalizer = OpenWeightNormalizer()

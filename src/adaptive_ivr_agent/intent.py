@@ -77,6 +77,7 @@ class NotConfiguredError(RuntimeError):
 DEFAULT_SPARK_URL = "https://api.meta.ai/v1/chat/completions"
 DEFAULT_SPARK_MODEL = "muse-spark-1.3"  # Meta quickstart default 2026-11
 DEFAULT_SPARK_TIMEOUT = 30  # live Spark p95 ~20 s; SPARK_TIMEOUT overrides
+DEFAULT_SPARK_EFFORT = "medium"  # SPARK_EFFORT overrides; high for hard cases
 SPARK_MIN_CONFIDENCE = 0.8  # below this, Spark maps abstain to the ladder
 
 
@@ -90,6 +91,7 @@ class SparkNormalizer(Normalizer):
         api_key: str = "",
         model: str = "",
         timeout: int = 0,  # 0 = SPARK_TIMEOUT env or DEFAULT_SPARK_TIMEOUT
+        effort: str = "",
     ) -> None:
         self.endpoint = (
             endpoint
@@ -116,6 +118,12 @@ class SparkNormalizer(Normalizer):
             timeout
             or int(os.environ.get("SPARK_TIMEOUT", "0") or "0")
             or DEFAULT_SPARK_TIMEOUT
+        )
+        self.effort = (
+            effort
+            or os.environ.get("SPARK_EFFORT", "")
+            or os.environ.get("MODEL_API_EFFORT", "")
+            or DEFAULT_SPARK_EFFORT
         )
 
     def _prompt(self, heard: str, vocab: list[str]) -> list[dict]:
@@ -145,6 +153,7 @@ class SparkNormalizer(Normalizer):
             return None, 0.0
         body = json.dumps(
             {"model": self.model, "temperature": 0,
+             "reasoning_effort": self.effort,
              "messages": self._prompt(heard, vocab)}
         ).encode("utf-8")
         req = urllib.request.Request(
