@@ -31,3 +31,4 @@ generated_images/.tbh-generated-images.lock
 *.xcuserdata/
 project.xcworkspace/xcuserdata/
 xcuserdata/
+*.pem

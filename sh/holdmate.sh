@@ -13,14 +13,17 @@ MODE="menu"
 SOUND="speakers"
 SOUND_DIRTY=0
 sync_sound() {
-  # Follow the real current output until Rickard picks sound explicitly.
+  # Follow AirPods when worn (current output OR just connected) until
+  # Rickard picks sound explicitly (#191).
   if [ "$SOUND_DIRTY" = 1 ]; then return 0; fi
-  if command -v SwitchAudioSource >/dev/null 2>&1 \
-     && SwitchAudioSource -c -t output 2>/dev/null | grep -qi 'airpods'; then
-    SOUND="airpods"
-  else
-    SOUND="speakers"
+  if command -v SwitchAudioSource >/dev/null 2>&1; then
+    if SwitchAudioSource -c -t output 2>/dev/null | grep -qi 'airpods' \
+      || SwitchAudioSource -a -t output 2>/dev/null | grep -qi 'airpods'; then
+      SOUND="airpods"
+      return 0
+    fi
   fi
+  SOUND="speakers"
 }
 sound_label() {
   case "$SOUND" in
@@ -448,6 +451,20 @@ case "$MODE" in
   direct-3) info "Teach Agda is disabled for now"; exit 0 ;;
   direct-4) "$HERE/holdmate-call.sh"; exit 0 ;;
 esac
+
+banner() { # glowing HOLDMATE + Diesel the supervisor cat (#189)
+  printf '%s%s%s\n' "$B" "$C" ' _   _  ___  _     ____  __  __    _  _____ _____'
+  printf '%s%s%s\n' "$B" "$C" '| | | |/ _ \| |   |  _ \|  \/  |  / \|_   _| ____|'
+  printf '%s%s%s\n' "$B" "$C" '| |_| | | | | |   | | | | |\/| | / _ \ | | |  _|'
+  printf '%s%s%s\n' "$B" "$C" '|  _  | |_| | |___| |_| | |  | |/ ___ \| | | |___'
+  printf '%s%s%s\n' "$B" "$C" '|_| |_|\___/|_____|____/|_|  |_/_/   \_\_| |_____|'
+  printf '%s%s%s\n' "$D" '' "   waits on hold, so you don't have to"
+  printf '%s%s%s\n' "$Y" '' '   /\_/\  Diesel supervises'
+  printf '%s%s%s\n' "$Y" '' '  ( o.o )'
+  printf '%s%s%s\n' "$Y" '' '   > ^ <'
+  printf '%s' "$X"
+}
+banner
 
 while true; do
   sync_sound

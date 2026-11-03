@@ -116,11 +116,26 @@ function versionApi() {
   };
 }
 
+function httpsOpts() {
+  // Opt-in TLS (#192): HTTPS_KEY/HTTPS_CERT point at mkcert files.
+  // Without them the dev server stays plain http.
+  const keyPath = process.env.HTTPS_KEY || '';
+  const certPath = process.env.HTTPS_CERT || '';
+  if (!keyPath || !certPath) {
+    return undefined;
+  }
+  return {
+    key: fs.readFileSync(path.resolve(here, keyPath)),
+    cert: fs.readFileSync(path.resolve(here, certPath)),
+  };
+}
+
 export default defineConfig({
   plugins: [react(), volumeApi(), dtmfApi(), versionApi()],
   base: './',
   server: {
     // Always on LAN: the iPhone/Watch apps poll over .local.
     host: true,
+    https: httpsOpts(),
   },
 });

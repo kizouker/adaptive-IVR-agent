@@ -2,6 +2,10 @@
 
 One or two sentences: what changes, and which slice (v1…v5) it belongs to.
 
+## Så testar du (Rickard)
+
+Concrete commands + what good looks like. No PR without this section filled.
+
 ## REQ links
 
 - Design ticket(s): `openspec/design/tickets/DESIGN-<REQ-ID>.md`
