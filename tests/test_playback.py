@@ -7,11 +7,16 @@ slices; where ptys are unavailable it skips (CI runs it).
 """
 import os
 import pty
+import shutil
 import subprocess
 import time
 from pathlib import Path
 
 import pytest
+
+pytestmark = pytest.mark.skipif(
+    shutil.which("bash") is None, reason="bash not installed (minimal container)"
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 TALK = ROOT / "sh" / "talk.sh"

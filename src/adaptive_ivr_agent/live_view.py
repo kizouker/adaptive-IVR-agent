@@ -202,6 +202,7 @@ class LiveCall:
         queue_total: int | None = None,
         speaker: str | None = None,
         robot_en: str | None = None,
+        spark: dict | None = None,
     ) -> None:
         """Append one exchange. Media paths are board-relative (audio/...) or None."""
         turn = {
@@ -227,6 +228,8 @@ class LiveCall:
             turn["speaker"] = speaker
         if robot_en is not None:
             turn["robot_en"] = robot_en
+        if spark is not None:
+            turn["spark"] = {"word": spark["word"], "confidence": spark["confidence"]}
         self.turns.append(turn)
 
     @property

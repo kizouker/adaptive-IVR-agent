@@ -7,7 +7,8 @@
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
 #   --quiet (type + read instead of speak + listen), --sound (force sound on),
 #   --floor (level the system volume first; default leaves it untouched),
-#   --busy (delay-notice welcome instead of the plain one).
+#   --busy (delay-notice welcome instead of the plain one),
+#   --spark (rescue word-step misses with one Muse Spark call; keyless runs skip it).
 # The quiet/sound choice is remembered in .talk-quiet; flags override it and save.
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
@@ -34,6 +35,7 @@ QUIET=0
 QUIET_FORCED=""
 FLOOR=0
 BUSY=0
+SPARK=0
 QUEUE_START=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -43,6 +45,7 @@ while [ $# -gt 0 ]; do
     --sound) QUIET=0; QUIET_FORCED=0 ;;
     --floor) FLOOR=1 ;;
     --busy) BUSY=1 ;;
+    --spark) SPARK=1 ;;
     --as)
       PERSONA="${2:-}"
       [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
@@ -58,7 +61,7 @@ while [ $# -gt 0 ]; do
       fi
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor, --busy)" ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor, --busy, --spark)" ;;
   esac
   shift
 done
@@ -276,6 +279,9 @@ if [ "$AGDA_FORGIVING" = "1" ]; then
   warn "bad memory ON: Agda accepts learned aliases (unrealistic practice)"
 else
   info "bad memory off: Agda only knows exact AF words (realistic)"
+fi
+if [ "$SPARK" = "1" ]; then
+  info "Spark fallback ON: one Muse Spark call rescues each word-step miss (skipped when keyless)"
 fi
 case "$QUEUE_TICK" in
   '' | *[!0-9]*) fail "QUEUE_TICK must be whole seconds" ;;
@@ -583,7 +589,7 @@ agda_says() {
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
     TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
-    TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
+    TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_SPARK="$SPARK" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
 import json
 import os
@@ -602,6 +608,7 @@ from adaptive_ivr_agent.live_view import (
     translate_robot,
     write_captions,
 )
+from adaptive_ivr_agent.intent import SparkFallback, maybe_spark_normalizer
 from adaptive_ivr_agent.reactive import ReactiveRobot
 from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines, opening_cache_path
 from adaptive_ivr_agent.talk import AgdaCall, with_aliases
@@ -617,6 +624,19 @@ if forgiving and os.path.exists(learned_path):
     aliases = json.load(open(learned_path, encoding="utf-8"))
 else:
     aliases = {}
+base_respond = with_aliases(ears.respond, aliases)
+spark_fallback = None
+if os.environ.get("TALK_SPARK") == "1":
+    with open(os.path.join(root, "data/role-phrasebooks.json"), encoding="utf-8") as handle:
+        talk_roles = json.load(handle)["roles"]
+    talk_vocab = list(dict.fromkeys(
+        word for role in talk_roles for word in role["vocabulary"]))
+    spark_normalizer = maybe_spark_normalizer(True)
+    if spark_normalizer is None:
+        print("spark: no key, fallback skipped (keyless run)", file=sys.stderr)
+    else:
+        spark_fallback = SparkFallback(base_respond, spark_normalizer, talk_vocab)
+        base_respond = spark_fallback.respond
 forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
 forced = int(forced_start) if forced_start.isdigit() else None
 # Full verbatim L01: the English sentence is spoken by an English voice.
@@ -639,7 +659,7 @@ agda = AgdaCall(
     served_line=SERVED_LINE,
     queue_line=lines["L13"],
     place_template=lines["L29"],
-    respond=with_aliases(ears.respond, aliases),
+    respond=base_respond,
     queue_place=(lambda: forced) if forced else None,
     english_menu=lines["L17"],
 )
@@ -700,7 +720,8 @@ def load_call():
                 call.add_turn(turn["caller"], turn["robot"], turn["matched"], turn["state"],
                               turn.get("caller_audio"), turn.get("robot_audio"),
                               turn.get("caller_captions"), turn.get("robot_captions"),
-                              turn.get("queue_place"), turn.get("queue_total"))
+                              turn.get("queue_place"), turn.get("queue_total"),
+                              spark=turn.get("spark"))
     return call
 
 
@@ -805,17 +826,22 @@ elif sys.argv[1] == "round":
     write_captions(os.path.join(audio_dir, you_vtt), heard, duration_of(wav))
     write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
     call = load_call()
+    spark = spark_fallback.last if spark_fallback is not None else None
     call.add_turn(heard.strip(), answer.reply, answer.matched is not None,
                   state_after(answer.done, answer.misses, answer.identify),
                   robot_en=translate_robot(answer.reply, translations),
                   caller_audio=f"audio/{you_name}", robot_audio=f"audio/{agda_name}",
                   caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{agda_vtt}",
-                  queue_place=answer.queue_place)
+                  queue_place=answer.queue_place, spark=spark)
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
     print(f"YOU:   {heard.strip()}")
     print(f"ROBOT: {answer.reply} (matched: {answer.matched})")
+    if spark is not None:
+        print(f"TALK_SPARK={spark['word']} {spark['confidence']}")
+    else:
+        print("TALK_SPARK=")
     print(f"TALK_DONE={'yes' if answer.done else 'no'}")
     print(f"TALK_MISSES={answer.misses}")
     print(f"TALK_IDENTIFY={'yes' if answer.identify else 'no'}")

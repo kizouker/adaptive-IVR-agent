@@ -3,8 +3,15 @@
 Shell functions are extracted from sh/holdmate.sh at test time with stubbed
 output switching, so the tests run anywhere bash runs (no audio needed).
 """
+import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
+
+pytestmark = pytest.mark.skipif(
+    shutil.which("bash") is None, reason="bash not installed (minimal container)"
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 MENU = ROOT / "sh" / "holdmate.sh"

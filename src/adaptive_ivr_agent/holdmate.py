@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
+from adaptive_ivr_agent.intent import SparkFallback, maybe_spark_normalizer
 from adaptive_ivr_agent.live_view import (
     SPECIAL_PROBES,
     LiveCall,
@@ -122,6 +123,7 @@ class Exchange(NamedTuple):
     matched: bool
     state: str
     queue_place: int | None = None
+    spark: dict | None = None
 
 
 def build_agda(lines: dict[str, str], respond, busy: bool = False) -> AgdaCall:
@@ -149,19 +151,23 @@ def build_agda(lines: dict[str, str], respond, busy: bool = False) -> AgdaCall:
 
 
 def run_call(
-    agda: AgdaCall, word: str, misses: int
+    agda: AgdaCall, word: str, misses: int, spark_fallback=None
 ) -> tuple[SimResult, list[str], list[Exchange]]:
     """Say WORD at MISS_COUNT misses; on transfer run to handover.
 
     Returns the result, the turns said, and board exchanges with states.
+    SPARK_FALLBACK (a SparkFallback, #205) donates its last rescue to the
+    first exchange so the board can badge it; None keeps the sim keyless.
     """
     turns = [f"YOU: {display(word)}"]
     answer = agda.reply_to(word, misses)
     turns.append(f"AGDA: {answer.reply}")
     transferred = answer.identify or answer.done
     first_state = "transfer" if transferred else MISS_STATE.get(answer.misses, "yes_no")
+    spark = spark_fallback.last if spark_fallback is not None else None
     exchanges = [
-        Exchange(display(word), answer.reply, answer.matched is not None, first_state)
+        Exchange(display(word), answer.reply, answer.matched is not None,
+                 first_state, spark=spark)
     ]
     served = False
     if answer.identify:
@@ -197,12 +203,14 @@ class Lesson:
         agda: AgdaCall,
         knowledge: "Knowledge",
         max_misses: int = MAX_MISSES,
+        spark_fallback=None,
     ) -> None:
         self.persona_id = persona_id
         self.candidates = candidates
         self.agda = agda
         self.knowledge = knowledge
         self.max_misses = max_misses
+        self.spark_fallback = spark_fallback
         self.sims: list[SimResult] = []
 
     def run(self, speak: bool = False) -> dict:
@@ -215,7 +223,8 @@ class Lesson:
                 if (misses, word) in visited:
                     continue
                 visited.add((misses, word))
-                result, turns, _ = run_call(self.agda, word, misses)
+                result, turns, _ = run_call(self.agda, word, misses,
+                                            self.spark_fallback)
                 result = result._replace(persona=self.persona_id, path=[*path, word])
                 self.sims.append(result)
                 self.knowledge.observe(result)
@@ -407,7 +416,8 @@ def lesson_call(role: dict, lesson: Lesson, translations: dict) -> LiveCall:
             call.add_turn(exchange.caller, exchange.robot, exchange.matched,
                           exchange.state,
                           robot_en=translate_robot(exchange.robot, translations),
-                          queue_place=exchange.queue_place)
+                          queue_place=exchange.queue_place,
+                          spark=exchange.spark)
     return call
 
 
@@ -436,6 +446,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--speak", action="store_true")
     parser.add_argument("--fresh", action="store_true")
     parser.add_argument("--board-out", default="")
+    parser.add_argument("--spark", action="store_true",
+                        help="rescue word-step misses with one Muse Spark call (#205)")
     args = parser.parse_args(argv)
 
     if args.depth < 0 or args.depth > MAX_MISSES:
@@ -443,8 +455,17 @@ def main(argv: list[str] | None = None) -> int:
     lines = load_indexed_lines(args.lines)
     translations = line_translations(args.lines)
     ears = ReactiveRobot.from_phrasebooks(args.phrasebooks)
-    agda = build_agda(lines, ears.respond)
     all_roles = load_personas(args.phrasebooks)
+    spark_fallback = None
+    if args.spark:
+        vocab = list(dict.fromkeys(
+            word for role in all_roles for word in role["vocabulary"]))
+        normalizer = maybe_spark_normalizer(True)
+        if normalizer is None:
+            print("spark: no key, fallback skipped (keyless run)")
+        else:
+            spark_fallback = SparkFallback(ears.respond, normalizer, vocab)
+    agda = build_agda(lines, spark_fallback.respond if spark_fallback else ears.respond)
     personas = all_roles
     if args.persona:
         personas = [r for r in all_roles if r["id"] == args.persona]
@@ -464,7 +485,7 @@ def main(argv: list[str] | None = None) -> int:
             print(bold(f"lesson {index}/{len(planned)}: {role['id']} ({len(candidates)} words)"))
             wintitle(f"lesson {index}/{len(planned)}: {role['id']}")
             lesson = Lesson(role["id"], candidates, agda, knowledge,
-                            max_misses=args.depth)
+                            max_misses=args.depth, spark_fallback=spark_fallback)
             summary = lesson.run(speak=args.speak)
             for sim in lesson.sims:
                 lesson_log(args.lessons, sim)
