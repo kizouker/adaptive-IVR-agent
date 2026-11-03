@@ -47,7 +47,11 @@ what "Quickstart files exist and the suite passes with no keys set."
 [ -f "$ROOT/.env.example" ] || fail ".env.example missing"
 grep -q "holdmate.sh" "$ROOT/README.md" || fail "README quickstart does not mention holdmate.sh"
 ok "quickstart files present"
-(cd "$ROOT" && PYTHONPATH=src pytest -q 2>&1 | tail -1) || fail "pytest suite failed"
+cd "$ROOT" || fail "cannot cd to $ROOT"
+set -o pipefail
+PYTEST_TAIL="$(PYTHONPATH=src pytest -q 2>&1 | tail -1)" || fail "pytest suite failed"
+set +o pipefail
+echo "    $PYTEST_TAIL"
 ok "suite green (keyless)"
 warn "manual: verify on a clean clone before the freeze"
 
