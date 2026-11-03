@@ -16,6 +16,7 @@ ok()    { printf '    %s%s✔ OK:%s %s\n' "$B" "$G" "$X" "$*"; }
 warn()  { printf '    %s%s⚠ WARN:%s %s\n' "$B" "$Y" "$X" "$*"; }
 fail()  { printf '    %s%s✘ FAIL:%s %s\n' "$B" "$R" "$X" "$*"; exit 1; }
 info()  { printf '    %s%s%s\n' "$D" "$*" "$X"; }
+note()  { printf '    %s%s%s\n' "$D" "$*" "$X"; }
 wintitle() { # terminal window title follows the step (silent without a tty)
   { : >/dev/tty; } 2>/dev/null || return 0
   printf '\033]0;Holdmate: %s\007' "$*" >/dev/tty
