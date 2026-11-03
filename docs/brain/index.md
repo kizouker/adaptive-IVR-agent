@@ -11,3 +11,4 @@ Tags give views: #decision #command #release #submission #partner #idea.
 - [[parking]] — parked ideas (Azure live, 46elks, login)
 - [[checklist]] — what Rickard checks off, live
 - [[glossary]] — ordlista: provenance, NFR, ladder…
+- [[eval]] — domarkriterier vs nuläge
