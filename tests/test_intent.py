@@ -115,6 +115,27 @@ def test_spark_rejects_unknown_keyword_and_errors(monkeypatch):
     assert "handläggare" in norm._prompt("x", VOCAB)[0]["content"]
 
 
+def test_spark_low_confidence_abstains(monkeypatch, tmp_path):
+    log = tmp_path / "prov.jsonl"
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
+    body = json.dumps(
+        {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 0.7}'}}]}
+    ).encode()
+
+    class FakeRes:
+        def __enter__(self):
+            return io.BytesIO(body)
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout: FakeRes())
+    assert norm.map("vabbb?", VOCAB) == (None, 0.0)
+    row = json.loads(log.read_text(encoding="utf-8").strip())
+    assert row["keyword"] is None  # gated map still leaves a trace
+
+
 def test_openweight_localhost_needs_no_key(monkeypatch):
     monkeypatch.delenv("OPENWEIGHT_URL", raising=False)
     monkeypatch.delenv("OPENWEIGHT_API_KEY", raising=False)
@@ -176,7 +197,7 @@ def test_spark_logs_provenance(monkeypatch, tmp_path):
     assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.8)
     row = json.loads(log.read_text(encoding="utf-8").strip())
     assert row["runtime"] == "spark-hosted"
-    assert row["model"] == "muse-spark"
+    assert row["model"] == "muse-spark-1.3"  # Meta quickstart default
     assert row["keyword"] == "vab"
 
 
