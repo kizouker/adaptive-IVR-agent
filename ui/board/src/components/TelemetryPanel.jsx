@@ -53,8 +53,8 @@ function TelemetryPanel({ t }) {
         </tr>
       </thead>
       <tbody>
-        {rows.slice(-MAX_ROWS).reverse().map((row, i) => (
-          <tr key={`${row.heard_sha256 || 'na'}-${i}`}>
+        {rows.slice(-MAX_ROWS).reverse().map((row) => (
+          <tr key={`${row.prompt_sha256}|${row.heard_sha256}`}>
             <td>{shortModel(row.model)}</td>
             <td>{row.runtime}</td>
             <td>{`${row.latency_ms} ms`}</td>
