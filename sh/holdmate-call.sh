@@ -3,7 +3,8 @@
 # Runs on: Rickard's Mac (M4). Modes: run (default) | check.
 # Flags: --as <persona> (one lesson), --all (every persona, default),
 #   --depth 0..2 (miss levels, default 2), --speak (Oskar calls, Alva answers),
-#   --fresh (reset knowledge first). Learning lands in data/holdmate-knowledge.json
+#   --fresh (reset knowledge first), --spark (Muse Spark rescues word-step
+#   misses; keyless runs skip it). Learning lands in data/holdmate-knowledge.json
 # (word table + map evidence) and data/holdmate-lessons.jsonl (sim history).
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -16,6 +17,7 @@ PERSONA=""
 DEPTH="2"
 SPEAK=0
 FRESH=0
+SPARK=0
 while [ $# -gt 0 ]; do
   case "$1" in
     check|--check) MODE="check" ;;
@@ -35,7 +37,8 @@ while [ $# -gt 0 ]; do
       ;;
     --speak) SPEAK=1 ;;
     --fresh) FRESH=1 ;;
-    *) fail "Unknown argument: $1 (use: check, --all, --as <id>, --depth N, --speak, --fresh)" ;;
+    --spark) SPARK=1 ;;
+    *) fail "Unknown argument: $1 (use: check, --all, --as <id>, --depth N, --speak, --fresh, --spark)" ;;
   esac
   shift
 done
@@ -82,10 +85,12 @@ ARGS="--phrasebooks $PHRASEBOOKS --lines $LINES --knowledge $KNOWLEDGE --lessons
 [ -n "$PERSONA" ] && ARGS="$ARGS --as $PERSONA"
 [ "$SPEAK" = 1 ] && ARGS="$ARGS --speak"
 [ "$FRESH" = 1 ] && ARGS="$ARGS --fresh"
+[ "$SPARK" = 1 ] && ARGS="$ARGS --spark"
 DISPLAY="holdmate lessons --depth $DEPTH"
 [ -n "$PERSONA" ] && DISPLAY="$DISPLAY --as $PERSONA"
 [ "$SPEAK" = 1 ] && DISPLAY="$DISPLAY --speak"
 [ "$FRESH" = 1 ] && DISPLAY="$DISPLAY --fresh"
+[ "$SPARK" = 1 ] && DISPLAY="$DISPLAY --spark"
 run "$DISPLAY"
 # shellcheck disable=SC2086
 PYTHONPATH="$ROOT/src" python3 -m adaptive_ivr_agent.holdmate $ARGS \

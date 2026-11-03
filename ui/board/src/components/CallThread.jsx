@@ -52,6 +52,9 @@ function CallThread({ call, lang, t }) {
               {turn.queue_place != null && (
                 <span className="badge">{`${t.queuePlace} ${turn.queue_place}`}</span>
               )}
+              {turn.spark && (
+                <span className="badge spark">{`Muse Spark ▸ ${turn.spark.word} ${turn.spark.confidence}`}</span>
+              )}
               {turn.caller !== '' && (turn.matched
                 ? <span className="kw-ok">{`${turn.caller} → ${t.routed}`}</span>
                 : <span className="kw-miss">{t.missed}</span>)}
@@ -86,6 +89,10 @@ CallThread.propTypes = {
       robot_captions: PropTypes.string,
       queue_place: PropTypes.number,
       speaker: PropTypes.string,
+      spark: PropTypes.shape({
+        word: PropTypes.string.isRequired,
+        confidence: PropTypes.number.isRequired,
+      }),
       state_name: PropTypes.shape({
         sv: PropTypes.string.isRequired,
         en: PropTypes.string.isRequired,
