@@ -5,12 +5,18 @@
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
 #   --quiet (type + read instead of speak + listen), --sound (force sound on),
 #   --floor (level the system volume first; default leaves it untouched),
-#   --busy (delay-notice welcome instead of the plain one).
+#   --busy (delay-notice welcome instead of the plain one),
+#   --lang en|sv (call language; without it a menu asks at call start).
+# Without --lang the call opens with a language menu (0 = English,
+# 1 = Swedish, like the real AF); silence picks DEFAULT_LANG (en in demo
+# weeks, env override). English runs the whole call in English: en lines,
+# en word matching, English TTS voice, yes/no.
 # The quiet/sound choice is remembered in .talk-quiet; flags override it and save.
 # Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
 # Keys during record/playback: any key skips ahead, 0 jumps to the English
-# menu (full call-5 path on DTMF digits), a toggles speakers/AirPods output,
+# menu in Swedish calls (full call-5 path on DTMF digits), a toggles
+# speakers/AirPods output,
 # t toggles quiet mode (hushes in-flight audio at once), + / - adjusts volume
 # (0.1-4.0, 1 = normal; the board slider writes the same .talk-volume file).
 # Each round records ~5s from the MacBook mic, transcribes with whisper.cpp,
@@ -32,6 +38,8 @@ QUIET_FORCED=""
 FLOOR=0
 BUSY=0
 QUEUE_START=""
+LANG_FLAG=""
+DEFAULT_LANG="${DEFAULT_LANG:-en}"   # menu fallback on silence (demo weeks: en)
 while [ $# -gt 0 ]; do
   case "$1" in
     check|--check) MODE="check" ;;
@@ -40,6 +48,14 @@ while [ $# -gt 0 ]; do
     --sound) QUIET=0; QUIET_FORCED=0 ;;
     --floor) FLOOR=1 ;;
     --busy) BUSY=1 ;;
+    --lang)
+      LANG_FLAG="${2:-}"
+      case "$LANG_FLAG" in
+        en | sv) ;;
+        *) fail "--lang needs en or sv" ;;
+      esac
+      shift
+      ;;
     --as)
       PERSONA="${2:-}"
       [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
@@ -55,16 +71,22 @@ while [ $# -gt 0 ]; do
       fi
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor, --busy)" ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor, --busy, --lang en|sv)" ;;
   esac
   shift
 done
+case "$DEFAULT_LANG" in
+  en | sv) ;;
+  *) fail "DEFAULT_LANG must be en or sv (got '$DEFAULT_LANG')" ;;
+esac
+LANG_CHOICE="$DEFAULT_LANG"   # final after the menu (or --lang skips it)
 
 OUTPUT_SPEAKERS="IVR_Agent_Speakers"   # MacBook speakers + BlackHole (default)
 NORMAL_OUTPUT="Högtalare i MacBook Pro" # physical fallback (also the AirPods-off target)
 MIC="MacBook Pro-mikrofon"
 RECORD_SECONDS="${RECORD_SECONDS:-5}"
 MIC_INDEX="${MIC_INDEX:-}"             # empty = auto-detect; set to force an avfoundation index
+VOICE_FROM_ENV="${VOICE:-}"             # kept: English auto-voice must not clobber an explicit VOICE
 VOICE="${VOICE:-Alva}"
 FLOOR_LEVEL=70                        # with --floor, talk mode raises a quieter output to this (merged devices can't be raised later); default leaves it untouched
 FLOOR_CHANGED=0
@@ -254,6 +276,11 @@ if [ -n "$QUEUE_START" ]; then
 else
   info "queue starts at random 2-5, ticks every ${QUEUE_TICK}s (any key hurries)"
 fi
+if [ -n "$LANG_FLAG" ]; then
+  info "language: $LANG_FLAG (from --lang, menu skipped)"
+else
+  info "language: menu asks at call start (0 = English, 1 = Swedish; silence = $DEFAULT_LANG)"
+fi
 
 [ "$MODE" = "check" ] && { title "Check only: nothing changed"; exit 0; }
 
@@ -299,16 +326,20 @@ if [ -n "$PERSONA" ]; then
   step "Role card"
   what "Show who you are calling as, so you can speak from that errand."
   run "read $PERSONA from role-phrasebooks.json"
-  if ! PYTHONPATH="$ROOT/src" python3 - "$PERSONA" "$PHRASEBOOKS" <<'CARD'
+  if ! TALK_LANG="${LANG_FLAG:-$DEFAULT_LANG}" PYTHONPATH="$ROOT/src" python3 - "$PERSONA" "$PHRASEBOOKS" <<'CARD'
 import json
+import os
 import sys
 roles = json.load(open(sys.argv[2], encoding="utf-8"))["roles"]
 persona = next((r for r in roles if r["id"] == sys.argv[1]), None)
 if persona is None:
     sys.exit(1)
+en = os.environ.get("TALK_LANG") == "en"
+errand = persona["errand_en"] if en else persona["errand"]
+vocab = persona["vocabulary_en"] if en else persona["vocabulary"]
 print(f"Role: {persona['label']}")
-print(f"Errand: {persona['errand']}")
-print(f"Try words like: {', '.join(persona['vocabulary'])}")
+print(f"Errand: {errand}")
+print(f"Try words like: {', '.join(vocab)}")
 print("Checklist (guidance, not legal advice):")
 for i, item in enumerate(persona.get("checklist", []), 1):
     print(f"  {i}. Say: {item['say']}")
@@ -546,6 +577,7 @@ agda_says() {
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
     TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
     TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
+    TALK_LANG="$LANG_CHOICE" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
 import json
 import os
@@ -570,9 +602,12 @@ from adaptive_ivr_agent.talk import AgdaCall, with_aliases
 
 root = os.environ["TALK_ROOT"]
 voice = os.environ.get("TALK_VOICE", SAY_VOICE)
-lines = load_indexed_lines(os.path.join(root, "data/doorkeeper-lines.json"))
+talk_lang = os.environ.get("TALK_LANG", "sv")
+lang = talk_lang if talk_lang in ("sv", "en") else "sv"
+lines = load_indexed_lines(os.path.join(root, "data/doorkeeper-lines.json"), lang=lang)
 translations = line_translations(os.path.join(root, "data/doorkeeper-lines.json"))
-ears = ReactiveRobot.from_phrasebooks(os.path.join(root, "data/role-phrasebooks.json"))
+ears = ReactiveRobot.from_phrasebooks(
+    os.path.join(root, "data/role-phrasebooks.json"), lang=lang)
 learned_path = os.environ["TALK_LEARNED_FILE"]
 forgiving = os.environ.get("TALK_FORGIVING") == "1"
 if forgiving and os.path.exists(learned_path):
@@ -586,6 +621,9 @@ forced = int(forced_start) if forced_start.isdigit() else None
 # part 3); press 0 reaches the English menu, other input reprompts as usual.
 busy = os.environ.get("TALK_BUSY") == "1"
 welcome = lines["L44"] if busy else lines["L01"]
+if lang == "en":
+    # Already in English: drop the "press 0" pointer from the welcome.
+    welcome = " ".join(welcome.replace("For English, press 0.", "").split())
 # L30: Rickard's pick 1 Nov (UNVERIFIED memory). Replace with verbatim
 # from Monday's sampling.
 SERVED_LINE = lines["L30"]
@@ -603,7 +641,9 @@ agda = AgdaCall(
     place_template=lines["L29"],
     respond=with_aliases(ears.respond, aliases),
     queue_place=(lambda: forced) if forced else None,
-    english_menu=lines["L17"],
+    # In English the whole call is already English: no 0-escape, yes/no words.
+    english_menu="" if lang == "en" else lines["L17"],
+    yesno_words=("yes", "no") if lang == "en" else ("ja", "nej"),
 )
 
 
@@ -948,6 +988,52 @@ en_turn() {
   play_skippable "$EN_AIFF"
 }
 
+run_language_menu() {
+  # Sets LANG_CHOICE (+ English voice when en). --lang skips the menu;
+  # else 0 = English, 1 = Swedish like the real AF, silence = DEFAULT_LANG.
+  if [ -n "$LANG_FLAG" ]; then
+    LANG_CHOICE="$LANG_FLAG"
+  else
+    title "Language (0 = English, 1 = svenska)"
+    what "Press 0 for English, 1 for Swedish. Silence picks $DEFAULT_LANG."
+    LANG_EN_VOICE="$(pick_english_voice)"
+    MENU_EN="Welcome to Arbetsförmedlingen for job seekers. For English, press 0."
+    MENU_SV="För svenska, tryck 1."
+    MENU_AIFF="$REC_DIR/talk-$CALL_STAMP-lang.aiff"
+    if [ "$QUIET" = 1 ]; then
+      info "(quiet: menu muted — press 0 for English, 1 for Swedish, q quits)"
+    else
+      run "render language menu ($LANG_EN_VOICE + $VOICE)"
+      say -v "$LANG_EN_VOICE" -o "$MENU_AIFF.en" "$MENU_EN" || fail "Could not render the English menu"
+      say -v "$VOICE" -o "$MENU_AIFF.sv" "$MENU_SV" || fail "Could not render the Swedish menu"
+      ffmpeg -hide_banner -loglevel error -y -i "$MENU_AIFF.en" -i "$MENU_AIFF.sv" \
+        -filter_complex "[0:a][1:a]concat=n=2:v=0:a=1" "$MENU_AIFF" \
+        || fail "Could not join the language menu"
+      rm -f "$MENU_AIFF.en" "$MENU_AIFF.sv"
+      [ -s "$MENU_AIFF" ] || fail "Language menu audio missing: $MENU_AIFF"
+      run "menu speaks (0 = English, 1 = svenska, q quits, +/- volume)"
+      play_skippable "$MENU_AIFF"
+    fi
+    run "wait for 0/1 (12 s, silence = $DEFAULT_LANG)"
+    digit_or_wait; MENU_RC=$?
+    if [ "$MENU_RC" = 2 ]; then quit_call; fi
+    if [ "$MENU_RC" = 0 ]; then
+      case "$DIGIT" in
+        0) LANG_CHOICE="en" ;;
+        1) LANG_CHOICE="sv" ;;
+        *) info "digit $DIGIT is no language, using $DEFAULT_LANG"; LANG_CHOICE="$DEFAULT_LANG" ;;
+      esac
+    else
+      LANG_CHOICE="$DEFAULT_LANG"
+    fi
+  fi
+  info "language: $LANG_CHOICE"
+  if [ "$LANG_CHOICE" = "en" ] && [ -z "$VOICE_FROM_ENV" ]; then
+    VOICE="$(pick_english_voice)"
+    info "Agda's voice: $VOICE (English)"
+  fi
+}
+
 run_english() {
   wintitle "English menu"
   title "English menu (pressed 0)"
@@ -1080,6 +1166,7 @@ EOF
 
 title "Agda is calling..."
 rm -f "$DTMF_FILE"
+run_language_menu
 run "render opening ($VOICE + English voice)"
 OPENING_AIFF="$REC_DIR/talk-$CALL_STAMP-robot0.aiff"
 EN_OPEN_VOICE="$(pick_english_voice)"
@@ -1092,7 +1179,7 @@ OPENING_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r0-agda.mp3"
 ok "opening on board: $OPENING_MP3"
 run "Agda speaks (any key skips, q quits, +/- volume)"
 play_skippable "$OPENING_AIFF"
-if [ "${KEY_PRESSED:-}" = "0" ]; then
+if [ "$LANG_CHOICE" = "sv" ] && [ "${KEY_PRESSED:-}" = "0" ]; then
   info "pressed 0: switching to the English menu"
   run_english
 fi
@@ -1175,7 +1262,7 @@ run_identification() {
   if [ "$(printf '%s\n' "$OUT3" | sed -n 's/^TALK_DONE=//p')" != "yes" ]; then
     fail "Queue did not finish"
   fi
-  officer_scene sv
+  officer_scene "$LANG_CHOICE"
   title "Call over — the officer answered. Your audio setup is restored on exit."
   exit 0
 }
@@ -1213,7 +1300,7 @@ while [ "$ROUND" -lt 6 ]; do
     quit_call
   elif [ "$RC" = 0 ]; then
     kill -INT "$FFPID" 2>/dev/null
-    if [ "${KEY_PRESSED:-}" = "0" ]; then
+    if [ "$LANG_CHOICE" = "sv" ] && [ "${KEY_PRESSED:-}" = "0" ]; then
       wait "$FFPID" 2>/dev/null || true
       rm -f "$WAV"
       info "pressed 0: switching to the English menu"
@@ -1233,7 +1320,7 @@ while [ "$ROUND" -lt 6 ]; do
     printf '(silence)\n' > "$TXT"
   else
     run "sh/transcribe-latest.sh $WAV"
-    WHISPER_LANG="${WHISPER_LANG:-sv}" "$HERE/transcribe-latest.sh" "$WAV" >/dev/null \
+    WHISPER_LANG="${WHISPER_LANG:-$LANG_CHOICE}" "$HERE/transcribe-latest.sh" "$WAV" >/dev/null \
       || fail "Transcription failed for $WAV"
     [ -f "$TXT" ] || fail "Transcript missing: $TXT"
     if ! grep -q '[^[:space:]]' "$TXT"; then
@@ -1263,7 +1350,7 @@ while [ "$ROUND" -lt 6 ]; do
   ok "board updated: $BOARD_FILE"
   run "Agda speaks (any key skips, q quits, +/- volume)"
   play_skippable "$ROBOT_AIFF"
-  if [ "${KEY_PRESSED:-}" = "0" ]; then
+  if [ "$LANG_CHOICE" = "sv" ] && [ "${KEY_PRESSED:-}" = "0" ]; then
     info "pressed 0: switching to the English menu"
     run_english
   fi
