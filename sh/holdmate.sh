@@ -449,6 +449,20 @@ case "$MODE" in
   direct-4) "$HERE/holdmate-call.sh"; exit 0 ;;
 esac
 
+banner() { # glowing HOLDMATE + Diesel the supervisor cat (#189)
+  printf '%s%s%s\n' "$B" "$C" ' _   _  ___  _     ____  __  __    _  _____ _____'
+  printf '%s%s%s\n' "$B" "$C" '| | | |/ _ \| |   |  _ \|  \/  |  / \|_   _| ____|'
+  printf '%s%s%s\n' "$B" "$C" '| |_| | | | | |   | | | | |\/| | / _ \ | | |  _|'
+  printf '%s%s%s\n' "$B" "$C" '|  _  | |_| | |___| |_| | |  | |/ ___ \| | | |___'
+  printf '%s%s%s\n' "$B" "$C" '|_| |_|\___/|_____|____/|_|  |_/_/   \_\_| |_____|'
+  printf '%s%s%s\n' "$D" '' "   waits on hold, so you don't have to"
+  printf '%s%s%s\n' "$Y" '' '   /\_/\  Diesel supervises'
+  printf '%s%s%s\n' "$Y" '' '  ( o.o )'
+  printf '%s%s%s\n' "$Y" '' '   > ^ <'
+  printf '%s' "$X"
+}
+banner
+
 while true; do
   sync_sound
   wintitle "menu"
