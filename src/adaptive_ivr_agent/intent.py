@@ -297,6 +297,52 @@ class OpenWeightNormalizer(Normalizer):
         return keyword, conf
 
 
+def maybe_spark_normalizer(enabled: bool = True) -> SparkNormalizer | None:
+    """SparkNormalizer when ENABLED and a key is set, else None.
+
+    Keyless runs get None: the talk loop skips the Spark step and the
+    sim continues. Never raises.
+    """
+    if not enabled:
+        return None
+    try:
+        return SparkNormalizer()
+    except Exception:
+        return None
+
+
+class SparkFallback:
+    """Optional talk-loop fallback: one normalizer call on word-step miss (#205).
+
+    Wraps a RESPOND callable (reply, matched). Exact hits pass through
+    untouched; only a miss triggers one normalizer.map call against VOCAB.
+    Never raises: a failing normalizer just leaves the miss a miss. LAST
+    holds the most recent {"word", "confidence"} for the board badge, or
+    None when the last round was exact or still a miss.
+    """
+
+    def __init__(self, respond, normalizer: Normalizer, vocab: list[str]) -> None:
+        self._respond = respond
+        self._normalizer = normalizer
+        self._vocab = vocab
+        self.last: dict | None = None
+
+    def respond(self, heard: str) -> tuple[str, str | None]:
+        reply, matched = self._respond(heard)
+        if matched is not None:
+            self.last = None
+            return reply, matched
+        try:
+            keyword, conf = self._normalizer.map(heard, self._vocab)
+        except Exception:
+            keyword, conf = None, 0.0
+        if keyword is None:
+            self.last = None
+            return reply, None
+        self.last = {"word": keyword, "confidence": conf}
+        return f"Du sa {keyword}. Tack. Jag kopplar dig vidare.", keyword
+
+
 def resolve_chain(heard: str, respond, normalizers, vocab: list[str]):
     """Chain exact match -> each (name, normalizer) -> abstain.
 

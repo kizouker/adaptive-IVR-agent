@@ -131,7 +131,7 @@ def test_run_call_returns_board_exchanges_with_states():
     agda = build_agda(FAKE_LINES, fake_respond)
     result, turns, exchanges = run_call(agda, "kw", 0)
     assert turns[0] == "YOU: kw"
-    assert exchanges[0] == ("kw", result and exchanges[0].robot, True, "transfer", None)
+    assert exchanges[0] == ("kw", result and exchanges[0].robot, True, "transfer", None, None)
     assert [e.state for e in exchanges[1:]] == ["queue"] * (FIXED_PLACE + 1) + ["survey"]
     assert exchanges[-1].caller == "1"
     assert result.exchanges == tuple(exchanges)
