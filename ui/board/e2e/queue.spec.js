@@ -19,6 +19,7 @@ function seed(patch) {
 }
 
 test('queue ticket goes N/A -> 42 -> 0', async ({ page }) => {
+  test.skip(!!process.env.BOARD_URL, 'needs local dist/ writes; remote uses remote.spec.js');
   seed(null);
   await page.goto('/');
   const ticket = page.locator('.ovqueue .fdigit');
