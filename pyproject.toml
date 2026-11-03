@@ -7,10 +7,7 @@ authors = [
     { name = "Rickard Åberg", email = "19254086+kizouker@users.noreply.github.com" }
 ]
 requires-python = ">=3.12"
-dependencies = [
-    "rich>=15.0.0",
-    "simple-term-menu>=1.6.6",
-]
+dependencies = []
 
 [project.scripts]
 adaptive-ivr-agent = "adaptive_ivr_agent:main"
