@@ -9,7 +9,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 . "$HERE/ui.sh"
 ROOT="$(cd "$HERE/.." && pwd)"
 MODE="${1:-run}"
-cd "$ROOT"
+cd "$ROOT" || fail "cannot cd to $ROOT"
 export PYTHONPATH="src${PYTHONPATH:+:$PYTHONPATH}"
 
 if [ -n "${PY:-}" ]; then
