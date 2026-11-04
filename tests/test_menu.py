@@ -53,9 +53,9 @@ def test_draw_pads_rows_and_marks_selection(tmp_path):
     assert done.returncode == 0, done.stderr
     rows = (tmp_path / "out.txt").read_text(encoding="utf-8").splitlines()
     assert rows == [
-        "<D>  aa  <X>",
-        "<B><C>> bbbb<X>",
-        "<D>  c   <X>",
+        "<D>  [1] aa  <X>",
+        "<B><C>> [2] bbbb<X>",
+        "<D>  [3] c   <X>",
     ]
 
 
@@ -92,7 +92,8 @@ def test_sync_sound_keeps_explicit_pick(tmp_path):
 
 def test_sound_labels_capitalized(tmp_path):
     script = (
-        extract_top(("sound_label",))
+        extract_top(("sound_label", "T"))
+        + '\nMENU_LANG="en"\n'
         + '\nSOUND="airpods"; [ "$(sound_label)" = "AirPods" ] || exit 1\n'
         + 'SOUND="quiet"; [ "$(sound_label)" = "Quiet" ] || exit 2\n'
         + 'SOUND="speakers"; [ "$(sound_label)" = "Speakers" ] || exit 3\n'

@@ -9,6 +9,9 @@ authors = [
 requires-python = ">=3.12"
 dependencies = []
 
+[dependency-groups]
+dev = ["pytest>=8"]
+
 [project.scripts]
 adaptive-ivr-agent = "adaptive_ivr_agent:main"
 

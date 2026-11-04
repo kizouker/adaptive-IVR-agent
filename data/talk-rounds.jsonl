@@ -182,3 +182,109 @@
 {"ts": "2026-11-02T22:57:58", "call": "20261102-225742", "round": 3, "persona": "", "heard": "fds", "matched": null}
 {"ts": "2026-11-02T22:57:59", "call": "20261102-225742", "round": 4, "persona": "", "heard": "df", "matched": null}
 {"ts": "2026-11-02T22:58:00", "call": "20261102-225742", "round": 5, "persona": "", "heard": "df", "matched": null}
+{"ts": "2026-11-03T15:34:06", "call": "20261103-153348", "round": 1, "persona": "", "heard": "sdf", "matched": null}
+{"ts": "2026-11-03T15:34:24", "call": "20261103-153348", "round": 3, "persona": "", "heard": "...och nu är det en del av det här.", "matched": null}
+{"ts": "2026-11-03T15:34:46", "call": "20261103-153434", "round": 1, "persona": "", "heard": "(pressed 0)", "matched": "dtmf:0"}
+{"ts": "2026-11-03T15:57:35", "call": "20261103-155716", "round": 1, "persona": "", "heard": "Pfft, pfft.\nPfft, pfft.", "matched": null}
+{"ts": "2026-11-03T15:57:52", "call": "20261103-155716", "round": 2, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T16:15:35", "call": "20261103-161507", "round": 1, "persona": "", "heard": "Jag ska vilja skriva in mig.", "matched": null}
+{"ts": "2026-11-03T16:16:15", "call": "20261103-161557", "round": 1, "persona": "", "heard": "Tack för att du gick till dig.\nTack för att du gick till dig.", "matched": null}
+{"ts": "2026-11-03T16:16:33", "call": "20261103-161557", "round": 2, "persona": "", "heard": "Sucka, Abel.", "matched": null}
+{"ts": "2026-11-03T16:16:46", "call": "20261103-161557", "round": 3, "persona": "", "heard": "Japp, jag är inskriveln.", "matched": null}
+{"ts": "2026-11-03T16:16:57", "call": "20261103-161557", "round": 4, "persona": "", "heard": "Ja eller nej?", "matched": null}
+{"ts": "2026-11-03T18:48:12", "call": "20261103-184754", "round": 1, "persona": "", "heard": "Bunderhållet och en månbundet.", "matched": null}
+{"ts": "2026-11-03T18:48:30", "call": "20261103-184754", "round": 2, "persona": "", "heard": "Två slägg, klämmgassel, djur och hoskull.", "matched": null}
+{"ts": "2026-11-03T18:49:59", "call": "20261103-184936", "round": 1, "persona": "", "heard": "Jag skulle vara hjälp med aktivitetsdel.", "matched": null}
+{"ts": "2026-11-03T18:50:16", "call": "20261103-184936", "round": 2, "persona": "", "heard": "Jag vill hjälpa sig att jobba.", "matched": null}
+{"ts": "2026-11-03T18:50:28", "call": "20261103-184936", "round": 3, "persona": "", "heard": "Nu kan du ha det för lite för att det ska bli en hel del bra att skapa.", "matched": null}
+{"ts": "2026-11-03T18:50:38", "call": "20261103-184936", "round": 4, "persona": "", "heard": "Eller nej?", "matched": null}
+{"ts": "2026-11-03T19:03:48", "call": "20261103-190331", "round": 1, "persona": "", "heard": "En jul var jag var själv och så såg jag.", "matched": null}
+{"ts": "2026-11-03T19:10:14", "call": "20261103-190953", "round": 1, "persona": "", "heard": "Nej, men det är inte så bra.", "matched": null}
+{"ts": "2026-11-03T19:10:31", "call": "20261103-190953", "round": 2, "persona": "", "heard": "Ja, jag letar fortfarande efter världsbästa nån. Jag kommer aldrig hitta den här liten.", "matched": null}
+{"ts": "2026-11-03T19:10:42", "call": "20261103-190953", "round": 3, "persona": "", "heard": "Ja.", "matched": null}
+{"ts": "2026-11-03T19:10:52", "call": "20261103-190953", "round": 4, "persona": "", "heard": "I november 2018, på nya cirkus, här i Stockholm, då ser vi ifall...", "matched": null}
+{"ts": "2026-11-03T19:13:49", "call": "20261103-191331", "round": 1, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T19:17:04", "call": "20261103-191647", "round": 1, "persona": "", "heard": "Tack för att ni var här igen.\nTack för att ni var här igen.", "matched": null}
+{"ts": "2026-11-03T21:17:59", "call": "20261103-211739", "round": 1, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:18:15", "call": "20261103-211739", "round": 2, "persona": "", "heard": "Tack för att du kom tillbaka.", "matched": null}
+{"ts": "2026-11-03T21:18:26", "call": "20261103-211739", "round": 3, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:18:35", "call": "20261103-211739", "round": 4, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:21:54", "call": "20261103-212131", "round": 1, "persona": "", "heard": "Tack för att du kallade mig.\nTack för att du kallade mig.", "matched": null}
+{"ts": "2026-11-03T21:22:10", "call": "20261103-212131", "round": 2, "persona": "", "heard": "Tack för att du kom tillbaka.", "matched": null}
+{"ts": "2026-11-03T21:22:20", "call": "20261103-212131", "round": 3, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:22:31", "call": "20261103-212131", "round": 4, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:25:01", "call": "20261103-212444", "round": 1, "persona": "", "heard": "Sökerjobb!\nSökerjobb!", "matched": null}
+{"ts": "2026-11-03T21:25:17", "call": "20261103-212444", "round": 2, "persona": "", "heard": "Tack för att du kom tillbaka.", "matched": null}
+{"ts": "2026-11-03T21:25:28", "call": "20261103-212444", "round": 3, "persona": "", "heard": "Hjälp!\nHjälp!", "matched": null}
+{"ts": "2026-11-03T21:25:38", "call": "20261103-212444", "round": 4, "persona": "", "heard": "Eller nej.\nJag är inskriven.", "matched": null}
+{"ts": "2026-11-03T21:26:22", "call": "20261103-212606", "round": 1, "persona": "", "heard": "Tack för att du kallade mig.\nTack för att du kallade mig.\nTack för att du kallade mig.", "matched": null}
+{"ts": "2026-11-03T21:26:39", "call": "20261103-212606", "round": 2, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:26:50", "call": "20261103-212606", "round": 3, "persona": "", "heard": "Ja.", "matched": null}
+{"ts": "2026-11-03T21:26:58", "call": "20261103-212606", "round": 4, "persona": "", "heard": "Ja.", "matched": null}
+{"ts": "2026-11-03T21:29:06", "call": "20261103-212850", "round": 1, "persona": "", "heard": "Välkomna!", "matched": null}
+{"ts": "2026-11-03T21:29:23", "call": "20261103-212850", "round": 2, "persona": "", "heard": "Tack för att du kallade dig.\nTack för att du kallade dig.", "matched": null}
+{"ts": "2026-11-03T21:29:35", "call": "20261103-212850", "round": 3, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:29:45", "call": "20261103-212850", "round": 4, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:31:06", "call": "20261103-213049", "round": 1, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:31:24", "call": "20261103-213049", "round": 2, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:31:36", "call": "20261103-213049", "round": 3, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:32:39", "call": "20261103-213222", "round": 1, "persona": "", "heard": "Men jag tar inte det.", "matched": null}
+{"ts": "2026-11-03T21:32:56", "call": "20261103-213222", "round": 2, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:33:07", "call": "20261103-213222", "round": 3, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:33:16", "call": "20261103-213222", "round": 4, "persona": "", "heard": "Ja, hella nej.", "matched": null}
+{"ts": "2026-11-03T21:39:25", "call": "20261103-213908", "round": 1, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:39:42", "call": "20261103-213908", "round": 2, "persona": "", "heard": "Tack för att du kalltade mig.\nTack för att du kalltade mig.", "matched": null}
+{"ts": "2026-11-03T21:39:52", "call": "20261103-213908", "round": 3, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:40:03", "call": "20261103-213908", "round": 4, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:46:52", "call": "20261103-214635", "round": 1, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-03T21:51:13", "call": "20261103-215057", "round": 1, "persona": "programdeltagare", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T21:56:58", "call": "20261103-215639", "round": 1, "persona": "", "heard": "Kul att du har tittat på den här videon.", "matched": null}
+{"ts": "2026-11-03T21:57:15", "call": "20261103-215639", "round": 2, "persona": "", "heard": "Dess livet och att det är så röra i din nivå.", "matched": null}
+{"ts": "2026-11-03T21:57:24", "call": "20261103-215639", "round": 3, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T21:57:34", "call": "20261103-215639", "round": 4, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T21:59:24", "call": "20261103-215908", "round": 1, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T21:59:39", "call": "20261103-215908", "round": 2, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T21:59:50", "call": "20261103-215908", "round": 3, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T21:59:59", "call": "20261103-215908", "round": 4, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:12:14", "call": "20261103-221204", "round": 1, "persona": "", "heard": "Textning av ämnen www.btistudios.com", "matched": null}
+{"ts": "2026-11-03T22:12:28", "call": "20261103-221204", "round": 2, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:12:37", "call": "20261103-221204", "round": 3, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:12:46", "call": "20261103-221204", "round": 4, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:14:54", "call": "20261103-221440", "round": 1, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:15:09", "call": "20261103-221440", "round": 2, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:15:18", "call": "20261103-221440", "round": 3, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:15:27", "call": "20261103-221440", "round": 4, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:17:03", "call": "20261103-221648", "round": 1, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:17:18", "call": "20261103-221648", "round": 2, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:17:27", "call": "20261103-221648", "round": 3, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:17:36", "call": "20261103-221648", "round": 4, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:22:54", "call": "20261103-222237", "round": 1, "persona": "", "heard": "Det är en del av den här videon.", "matched": null}
+{"ts": "2026-11-03T22:23:10", "call": "20261103-222237", "round": 2, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:23:20", "call": "20261103-222237", "round": 3, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-03T22:23:29", "call": "20261103-222237", "round": 4, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-04T20:55:31", "call": "20261104-205449", "round": 4, "persona": "", "heard": "Tsk, tsk, tsk, tsk.", "matched": null}
+{"ts": "2026-11-04T20:55:41", "call": "20261104-205449", "round": 5, "persona": "", "heard": "Tack för att du kom tillbaka!", "matched": null}
+{"ts": "2026-11-04T20:55:50", "call": "20261104-205449", "round": 6, "persona": "", "heard": "Fyra.", "matched": null}
+{"ts": "2026-11-04T20:59:43", "call": "20261104-205926", "round": 1, "persona": "", "heard": "Ja.", "matched": null}
+{"ts": "2026-11-04T20:59:52", "call": "20261104-205926", "round": 2, "persona": "", "heard": "Efter att det är en liten del av det här videon, så ska vi gå tillbaka till den här videon.", "matched": null}
+{"ts": "2026-11-04T21:00:04", "call": "20261104-205926", "round": 3, "persona": "", "heard": "...", "matched": null}
+{"ts": "2026-11-04T21:00:37", "call": "20261104-210021", "round": 1, "persona": "", "heard": "...", "matched": null}
+{"ts": "2026-11-04T21:00:54", "call": "20261104-210021", "round": 2, "persona": "", "heard": "Efter att det är en del av det här videon, så ska vi gå tillbaka till den här videon.", "matched": null}
+{"ts": "2026-11-04T21:04:09", "call": "20261104-210352", "round": 1, "persona": "", "heard": "Jag vill abonnera till Arbetsförmedlingar.", "matched": null}
+{"ts": "2026-11-04T21:04:25", "call": "20261104-210352", "round": 2, "persona": "", "heard": "Det är en del av vårt hjälp. Vi ska se om det kan vara bra.", "matched": null}
+{"ts": "2026-11-04T21:04:36", "call": "20261104-210352", "round": 3, "persona": "", "heard": "Yes.", "matched": null}
+{"ts": "2026-11-04T21:04:47", "call": "20261104-210352", "round": 4, "persona": "", "heard": "Yes.", "matched": null}
+{"ts": "2026-11-04T21:06:17", "call": "20261104-210608", "round": 1, "persona": "", "heard": "Efter att det är en del av det här videon, så ska vi gå tillbaka till den här videon.", "matched": null}
+{"ts": "2026-11-04T21:08:34", "call": "20261104-210824", "round": 1, "persona": "", "heard": "Pffftt, pfft, pfft, pfft.", "matched": null}
+{"ts": "2026-11-04T21:08:51", "call": "20261104-210824", "round": 2, "persona": "", "heard": "Kompensation hjälper sig att söka jobb.", "matched": null}
+{"ts": "2026-11-04T21:09:04", "call": "20261104-210824", "round": 3, "persona": "", "heard": "Tack för att du kom till.", "matched": null}
+{"ts": "2026-11-04T21:09:15", "call": "20261104-210824", "round": 4, "persona": "", "heard": "Yes.", "matched": null}
+{"ts": "2026-11-04T21:39:10", "call": "20261104-213847", "round": 1, "persona": "", "heard": "(pressed 0)", "matched": "dtmf:0"}
+{"ts": "2026-11-04T21:39:41", "call": "20261104-213847", "round": 1, "persona": "", "heard": "(silence)", "matched": null}
+{"ts": "2026-11-04T21:39:44", "call": "20261104-213847", "round": 1, "persona": "", "heard": "(pressed 4)", "matched": "dtmf:4"}
+{"ts": "2026-11-04T21:39:59", "call": "20261104-213847", "round": 1, "persona": "", "heard": "(pressed 1)", "matched": "dtmf:1"}
+{"ts": "2026-11-04T21:40:10", "call": "20261104-213847", "round": 1, "persona": "", "heard": "(pressed 1)", "matched": "dtmf:1"}
+{"ts": "2026-11-04T21:41:46", "call": "20261104-214130", "round": 1, "persona": "", "heard": "Jag skulle vilja ha en studie.", "matched": null}
+{"ts": "2026-11-04T21:42:03", "call": "20261104-214130", "round": 2, "persona": "", "heard": "TVT-report.", "matched": null}
+{"ts": "2026-11-04T21:42:14", "call": "20261104-214130", "round": 3, "persona": "", "heard": "Det finns en stor upplevelse och en stor önskan av sen folk.", "matched": null}
+{"ts": "2026-11-04T21:42:25", "call": "20261104-214130", "round": 4, "persona": "", "heard": "Så.", "matched": null}

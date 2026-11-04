@@ -1,7 +1,8 @@
 #!/bin/bash
-# Record one video shot with ffmpeg (#132). Screen only, no audio (dub after).
-# Runs on: Rickard's Mac (M4). Modes: run | check (check lists screens).
+# Record one video shot with ffmpeg (#132). Screen + optional mic audio.
+# Runs on: Rickard's Mac (M4). Modes: run | check (check lists devices).
 # Run: ./sh/record-shot.sh 02 start   (saves data/video/shot-02-start.mov, q stops)
+# With mic: AUDIO="MacBook Pro-mikrofon" ./sh/record-shot.sh 02 start
 # Pick another source: SCREEN="FaceTime HD Camera" ./sh/record-shot.sh 02 cam
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -11,6 +12,7 @@ MODE="${1:-run}"
 
 ROOT="$(cd "$HERE/.." && pwd)"
 SCREEN="${SCREEN:-Capture screen 0}"
+AUDIO="${AUDIO:-none}"
 
 title "Record shot ($MODE)"
 
@@ -38,5 +40,9 @@ what "Capture the screen to $OUT. Press q in this window to stop."
 if [ -f "$OUT" ] && [ "${OVERWRITE:-0}" != "1" ]; then
   fail "$OUT exists already (retake with OVERWRITE=1 or pick another number)"
 fi
-ok "recording $SCREEN to $OUT (q stops)"
-ffmpeg -f avfoundation -framerate 30 -i "$SCREEN:none" -c:v libx264 -pix_fmt yuv420p "$OUT"
+ok "recording $SCREEN + audio $AUDIO to $OUT (q stops)"
+if [ "$AUDIO" = "none" ]; then
+  ffmpeg -f avfoundation -framerate 30 -i "$SCREEN:none" -c:v libx264 -pix_fmt yuv420p "$OUT"
+else
+  ffmpeg -f avfoundation -framerate 30 -i "$SCREEN:$AUDIO" -c:v libx264 -pix_fmt yuv420p -c:a aac -af "aresample=48000,aformat=channel_layouts=stereo" "$OUT"
+fi

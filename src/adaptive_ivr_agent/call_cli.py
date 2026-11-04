@@ -5,6 +5,7 @@ Default transport is local (safe loopback); pass --transport blackhole
 for real calls. --to defaults to $CALL_NUMBER.
 """
 import argparse
+import base64
 import json
 import os
 import sys
@@ -32,13 +33,70 @@ def _save(state):
         json.dump(state, handle)
 
 
+def _frame_to_dict(frame):
+    return {"seq": frame.seq, "ts_ms": frame.ts_ms,
+            "pcm": base64.b64encode(frame.pcm).decode("ascii")}
+
+
+def _dict_to_frame(data):
+    return audio.Frame(seq=data["seq"], ts_ms=data["ts_ms"],
+                       pcm=base64.b64decode(data["pcm"]))
+
+
+def _rec_to_dict(rec):
+    out = {"rec_id": rec["rec_id"], "mode": rec["mode"],
+           "started": rec["started"],
+           "in_frames": [base64.b64encode(c).decode("ascii")
+                         for c in rec["in_frames"]],
+           "out_frames": [base64.b64encode(c).decode("ascii")
+                          for c in rec["out_frames"]]}
+    for key in ("path_in", "path_out", "path_mix"):
+        if key in rec:
+            out[key] = rec[key]
+    return out
+
+
+def _dict_to_rec(data):
+    rec = {"rec_id": data["rec_id"], "mode": data["mode"],
+           "started": data["started"],
+           "in_frames": [base64.b64decode(c) for c in data["in_frames"]],
+           "out_frames": [base64.b64decode(c) for c in data["out_frames"]]}
+    for key in ("path_in", "path_out", "path_mix"):
+        if key in data:
+            rec[key] = data[key]
+    return rec
+
+
+def _snapshot(session, call):
+    """Full call state as JSON-safe dict (frames are base64)."""
+    return {"session_id": session.session_id,
+            "transport": session.transport,
+            "call_id": call.call_id, "to": call.to_e164,
+            "call_state": call.state, "reason": call.reason,
+            "seq_out": call.seq_out, "seq_in": call.seq_in,
+            "started": call.started,
+            "inbox": [_frame_to_dict(f) for f in call.inbox],
+            "rec": _rec_to_dict(call.rec) if call.rec else None}
+
+
+def _store(session, call):
+    _save(_snapshot(session, call))
+
+
 def _resume(state):
     """Re-register persisted session/call in this process."""
     session = audio.Session(session_id=state["session_id"],
                             transport=state["transport"])
     audio._SESSIONS[session.session_id] = session
     call = audio._Call(call_id=state["call_id"], to_e164=state["to"],
-                       state=state.get("call_state", "active"))
+                       state=state.get("call_state", "active"),
+                       reason=state.get("reason"),
+                       seq_out=state.get("seq_out", 0),
+                       seq_in=state.get("seq_in", 0),
+                       started=state.get("started", time.time()))
+    call.inbox = [_dict_to_frame(d) for d in state.get("inbox", [])]
+    if state.get("rec"):
+        call.rec = _dict_to_rec(state["rec"])
     session.calls[call.call_id] = call
     return session, call
 
@@ -51,9 +109,7 @@ def cmd_dial(args):
     info = audio.dial(session.session_id, to_number,
                       record=args.record,
                       greeting=getattr(args, "greeting", "") or "")
-    _save({"session_id": session.session_id, "transport": args.transport,
-           "call_id": info["call_id"], "to": to_number,
-           "call_state": info["state"]})
+    _store(session, session.calls[info["call_id"]])
     return f"call {info['call_id']} to {to_number}: {info['state']}"
 
 
@@ -71,6 +127,7 @@ def cmd_say(args):
     session, call = pair
     result = audio.say_text(session.session_id, call.call_id, args.text,
                             voice=args.voice)
+    _store(session, call)
     return (f"said {result['bytes_sent']} bytes "
             f"({result['duration_s']}s)")
 
@@ -85,6 +142,7 @@ def cmd_listen(args):
     seconds = len(frames) * audio.FRAME_MS / 1000
     text = audio.transcribe_inbound(session.session_id,
                                     call.call_id)["text"]
+    _store(session, call)
     return f"heard {len(frames)} frames ({seconds:.1f}s): {text}"
 
 
@@ -94,6 +152,7 @@ def cmd_dtmf(args):
         return err
     session, call = pair
     audio.send_dtmf(session.session_id, call.call_id, args.digits)
+    _store(session, call)
     return f"sent DTMF {args.digits}"
 
 
@@ -104,9 +163,7 @@ def cmd_rec_start(args):
     session, call = pair
     info = audio.rec_start(session.session_id, call.call_id,
                            mode=args.mode)
-    state = _load()
-    state["rec_id"] = info["rec_id"]
-    _save(state)
+    _store(session, call)
     return f"recording {info['rec_id']} -> {info['path']}"
 
 
@@ -117,11 +174,11 @@ def cmd_rec_stop(args):
     void = args
     session, call = pair
     state = _load()
-    if not state.get("rec_id"):
+    rec = state.get("rec")
+    if not rec:
         return "not recording"
-    out = audio.rec_stop(session.session_id, state["rec_id"])
-    state.pop("rec_id", None)
-    _save(state)
+    out = audio.rec_stop(session.session_id, rec["rec_id"])
+    _store(session, call)
     paths = " ".join(out[key] for key in ("path_mix", "path_in", "path_out")
                      if key in out)
     return f"saved ({out['duration_s']}s): {paths}"

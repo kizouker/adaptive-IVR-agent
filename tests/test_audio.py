@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from adaptive_ivr_agent.audio import (
+    BLACKHOLE_DEVICE,
     FRAME_BYTES,
     AudioConfigError,
     DeviceBusyError,
@@ -253,3 +254,7 @@ def test_elks_health_needs_creds_and_from(_elks_env, monkeypatch):
     monkeypatch.delenv("ELKS_FROM")
     assert audio_health(owner.session_id)["transport_ok"] is False
     close_session(owner.session_id)
+
+
+def test_blackhole_device_is_input_record_aggregate():
+    assert BLACKHOLE_DEVICE == "IVR_Input_Record"

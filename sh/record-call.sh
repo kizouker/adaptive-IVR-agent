@@ -11,10 +11,10 @@
 #   (options can be combined, for example --airpods --call)
 set -euo pipefail
 
-OUTPUT_SPEAKERS="IVR_Agent_Speakers"   # MacBook speakers + BlackHole (default)
+OUTPUT_SPEAKERS="IVR_Output_Speakers"   # speakers aggregate (default)
 OUTPUT_AIRPODS="IVR_Agent_Output"      # AirPods + BlackHole (with --airpods)
 NORMAL_OUTPUT="Högtalare i MacBook Pro" # switch back to this if the script started on an IVR_Agent device
-BLACKHOLE="BlackHole 16ch"          # ffmpeg records from this (both outputs above send sound into it)
+BLACKHOLE="${BLACKHOLE:-IVR_Input_Record}" # mic + BlackHole aggregate; ffmpeg records from this
 MIC="MacBook Pro-mikrofon"
 # CALL_NUMBER comes from .env in the repo root (not in git, see .env.example)
 ENV_FILE="$(cd "$(dirname "$0")/.." && pwd)/.env"
@@ -95,11 +95,13 @@ step "3. Switch sound"
 ORIGINAL_OUTPUT="$(SwitchAudioSource -c -t output)"
 # If we start on one of our own IVR_Agent devices, switch back to normal speakers afterwards
 case "$ORIGINAL_OUTPUT" in
-  IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
+  IVR_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
 esac
 ORIGINAL_INPUT="$(SwitchAudioSource -c -t input)"
 
+GUARD_PID=""
 switch_back() {
+  [ -n "$GUARD_PID" ] && kill "$GUARD_PID" 2>/dev/null
   rm -f "$TEST_FILE"
   SwitchAudioSource -s "$ORIGINAL_OUTPUT" -t output >/dev/null
   SwitchAudioSource -s "$ORIGINAL_INPUT" -t input >/dev/null
@@ -168,5 +170,19 @@ echo "  To: $OUT_FILE"
 echo
 echo "${YELLOW}>>> Press q to stop the recording <<<${RESET}"
 echo
+
+# The phone app switches its output to BlackHole when the call starts, and it
+# can't be changed back. So we play BlackHole live to the MacBook speakers
+# ourselves: we hear the call no matter what the phone app picks.
+SPEAKER_INDEX="$(ffmpeg -hide_banner -f lavfi -i anullsrc -t 0.1 -f audiotoolbox -list_devices true - 2>&1 \
+  | sed -n 's/.*\[\([0-9]*\)\].*BuiltInSpeakerDevice.*/\1/p' | head -1)"
+if [ -n "$SPEAKER_INDEX" ]; then
+  ffmpeg -hide_banner -loglevel error -f avfoundation -i ":BlackHole 2ch" \
+    -f audiotoolbox -audio_device_index "$SPEAKER_INDEX" - </dev/null &
+  GUARD_PID=$!
+  ok "You will hear the call in the MacBook speakers"
+else
+  warn "Could not find the MacBook speakers; you won't hear the call"
+fi
 
 ffmpeg -hide_banner -loglevel warning -stats -f avfoundation -i ":$BLACKHOLE" -ac 1 -ar 16000 "$OUT_FILE"

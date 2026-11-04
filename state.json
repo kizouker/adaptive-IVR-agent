@@ -1,1 +1,9 @@
-{"last_done": "v0.3.2 vic20 + v0.3.3 spectravideo shipped to main (#168,#172). Open-weights stage+provenance, submission draft, freeze countdown, Claude scrub, NFR map, LICENSE, README header live.", "last_thought": "Tests 212+2 green. Local main stale - reset before use. #152 fix in stash (do not drop). Morning: local-LLM day (#180), video recording (#132), 46elks (#42/#131), English robot (#173).", "next_micro_step": "Morning: ollama pull + eval --openweight, record metrics. Then video + 46elks.", "priority_1": "Local-LLM verify + benchmarks", "priority_2": "Video recording; 46elks verify; English robot+agent", "updated": "2026-11-03"}
+{
+ "last_done": "2026-11-04 21:30: main has #234/#243/#244/#245, CI green. Handover written, /clear next.",
+ "last_thought": "BlackHole driver was missing from HAL; after reboot verify with SwitchAudioSource -a, then first blackhole transport call or #42 elks path.",
+ "next_micro_step": "Verify /tmp/devnames (lint+pytest), open device-rename PR. Then fresh record-call branch decision.",
+ "priority_1": "Submission from main before 03:00 CET",
+ "priority_2": "#140 Upptaget-nod, then #132 demovideo+submission (deadline Wed 21:00 CET)",
+ "updated": "2026-11-04",
+ "last_update": "v0.4.2 amiga released; #210 video fate, X post, #151 terminology conflict still open"
+}

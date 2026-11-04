@@ -97,7 +97,7 @@ T() { # $1 = key; prints the string for $MENU_LANG (en default, sv optional)
 sect() { printf '%s%s── %s ──%s\n' "$D" '' "$1" "$X"; }
 
 MODE="talk"
-CALL_LANG="" # empty = follow the menu language; --call wins
+CALL_LANG="${TALK_CALL_LANG:-}" # empty = follow the menu language; --call wins
 AUDIO_DEGRADED=0 # check mode: 1 once a missing device downgrades a fail to a warn
 AIRPODS=0
 PERSONA=""
@@ -439,7 +439,7 @@ vstep "Switch audio"
 vwhat "Route audio through $MULTI_OUTPUT (--floor levels the physical output first). Originals are restored on exit."
 ORIGINAL_OUTPUT="$(SwitchAudioSource -c -t output)"
 case "$ORIGINAL_OUTPUT" in
-  Agent_*|_Airpods|IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
+  Agent_*|_Airpods|IVR_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
 esac
 ORIGINAL_INPUT="$(SwitchAudioSource -c -t input)"
 switch_back() {

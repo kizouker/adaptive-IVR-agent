@@ -33,7 +33,7 @@ def extract_one(name):
 def test_find_airpods_picks_physical_device(tmp_path):
     script = (
         "SwitchAudioSource() {\n"
-        '  printf "%s\\n" "Hogtalare i MacBook Pro" "IVR_Agent_Output" "Ricks AirPods"\n'
+        '  printf "%s\\n" "Hogtalare i MacBook Pro" "IVR_Input_Record" "Ricks AirPods"\n'
         "}\n" + extract_one("find_airpods") + 'found="$(find_airpods)"\n'
         '[ "$found" = "Ricks AirPods" ] || { echo "got: $found"; exit 1; }\n'
         "echo AIRPODS-OK\n"
@@ -47,7 +47,7 @@ def test_find_airpods_picks_physical_device(tmp_path):
 def test_find_airpods_empty_when_absent(tmp_path):
     script = (
         "SwitchAudioSource() {\n"
-        '  printf "%s\\n" "Hogtalare i MacBook Pro" "IVR_Agent_Speakers"\n'
+        '  printf "%s\\n" "Hogtalare i MacBook Pro" "IVR_Output_Speakers"\n'
         "}\n" + extract_one("find_airpods") + 'found="$(find_airpods)"\n'
         '[ -z "$found" ] || { echo "got: $found"; exit 1; }\n'
         "echo ABSENT-OK\n"

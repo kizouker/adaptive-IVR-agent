@@ -402,7 +402,7 @@ function TerminalModal({
 
   return (
     <div className="tmodal" role="dialog" aria-modal="true" aria-label={t.terminalTitle}>
-      <div className="tbody" ref={boxRef}>
+      <div className="tbody">
         <div className="thead">
           <strong>{t.terminalTitle}</strong>
           <span className="tsim">{t.terminalSim}</span>
@@ -415,14 +415,16 @@ function TerminalModal({
           </button>
         </div>
         <p className="thint">{t.terminalHint}</p>
-        {turns.map((turn, i) => (
-          // eslint-disable-next-line react/no-array-index-key -- turns only append
-          <p key={`${i}-${turn.who}`} className={turn.who === 'agda' ? 't-agda' : 't-you'}>
-            <strong>{turn.who === 'agda' ? 'AGDA' : 'YOU'}</strong>
-            {' '}
-            {turn.text}
-          </p>
-        ))}
+        <div className="turns" ref={boxRef}>
+          {turns.map((turn, i) => (
+            // eslint-disable-next-line react/no-array-index-key -- turns only append
+            <p key={`${i}-${turn.who}`} className={turn.who === 'agda' ? 't-agda' : 't-you'}>
+              <strong>{turn.who === 'agda' ? 'ROKSOLANA' : 'YOU'}</strong>
+              {' '}
+              {turn.text}
+            </p>
+          ))}
+        </div>
         {renderInput()}
       </div>
     </div>

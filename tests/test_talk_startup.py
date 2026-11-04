@@ -93,6 +93,23 @@ NOOP_STUB = "#!/bin/bash\nexit 0\n"
 
 
 def _run(tmp_path, argv, switch_stub=None, ffmpeg_stub=None, quiet_seed=None):
+    # Hermetic script root (#241): sh/talk.sh derives ROOT from its own
+    # location and reads remembered state there ($ROOT/.talk-output,
+    # .talk-input, .menu-lang, .talk-volume, .talk-quiet). Running the repo
+    # script directly lets a repo-root .talk-output pin the remembered device
+    # and mask the default, so run a copy under tmp_path instead. Only the
+    # phrasebooks existence check matters in check mode, so stage just that
+    # data file (keeps the run from touching repo data/recordings either).
+    fakeroot = tmp_path / "root"
+    (fakeroot / "sh").mkdir(parents=True)
+    shutil.copy(ROOT / "sh" / "talk.sh", fakeroot / "sh" / "talk.sh")
+    shutil.copy(ROOT / "sh" / "ui.sh", fakeroot / "sh" / "ui.sh")
+    (fakeroot / "data").mkdir()
+    shutil.copy(
+        ROOT / "data" / "role-phrasebooks.json",
+        fakeroot / "data" / "role-phrasebooks.json",
+    )
+    script = fakeroot / "sh" / "talk.sh"
     binder = tmp_path / "bin"
     binder.mkdir()
     stubs = {
@@ -118,8 +135,8 @@ def _run(tmp_path, argv, switch_stub=None, ffmpeg_stub=None, quiet_seed=None):
     env = dict(os.environ, TALK_QUIET_FILE=str(quiet_file), HOME=str(home))
     env["PATH"] = f"{binder}{os.pathsep}{env['PATH']}"
     proc = subprocess.run(
-        ["bash", str(TALK), *argv],
-        capture_output=True, text=True, cwd=ROOT, env=env, check=False,
+        ["bash", str(script), *argv],
+        capture_output=True, text=True, cwd=fakeroot, env=env, check=False,
     )
     return proc, quiet_file
 
@@ -165,6 +182,14 @@ def test_check_quiet_flag_saves(tmp_path):
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "quiet mode: type + read" in proc.stdout
     assert quiet_file.read_text(encoding="utf-8") == "1"
+
+
+def test_default_output_is_ivr_speakers_aggregate():
+    line = next(
+        line for line in TALK.read_text(encoding="utf-8").splitlines()
+        if line.startswith("OUTPUT_SPEAKERS=")
+    )
+    assert "IVR_Output_Speakers" in line
 
 
 def test_check_warns_not_fails_without_output_device(tmp_path):

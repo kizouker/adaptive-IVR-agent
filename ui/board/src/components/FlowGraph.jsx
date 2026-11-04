@@ -60,10 +60,14 @@ function FlowGraph({
   const words = edgeWordsOf(calls);
   const outgoing = (id) => edges.filter((e) => e.source === id);
   const taken = (edge, option) => {
-    const clean = option.trim().toLowerCase();
-    if (!clean) return false;
-    return (words.get(`${edge.source}>${edge.target}`) || [])
-      .some((word) => normalize(word).includes(clean));
+    const hit = (opt) => {
+      const clean = opt.trim().toLowerCase();
+      if (!clean) return false;
+      return (words.get(`${edge.source}>${edge.target}`) || [])
+        .some((word) => normalize(word).includes(clean));
+    };
+    if (hit(option)) return true;
+    return edge.label.split('/').some(hit); // speech is Swedish; match originals too
   };
   const pos = indexOf(positionId);
   const height = states.length * ROW_H;
@@ -153,7 +157,7 @@ function FlowGraph({
         <div className="fopts">
           {states.map((state) => (
             <div key={state.id} className="fcell" style={{ height: ROW_H }}>
-              {outgoing(state.id).map((edge) => edge.label.split('/').map((option) => {
+              {outgoing(state.id).map((edge) => (lang === 'en' && edge.label_en ? edge.label_en : edge.label).split('/').map((option) => {
                 const on = taken(edge, option);
                 return (
                   <div key={`${edge.target}-${option}`} className="fopt">
