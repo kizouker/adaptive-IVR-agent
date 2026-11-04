@@ -7,6 +7,7 @@ Never raises into the call path: any failure abstains to the ladder.
 """
 from __future__ import annotations
 
+import datetime
 import difflib
 import hashlib
 import json
@@ -79,6 +80,29 @@ DEFAULT_SPARK_MODEL = "muse-spark-1.3"  # Meta quickstart default 2026-11
 DEFAULT_SPARK_TIMEOUT = 30  # live Spark p95 ~20 s; SPARK_TIMEOUT overrides
 DEFAULT_SPARK_EFFORT = "medium"  # SPARK_EFFORT overrides; high for hard cases
 SPARK_MIN_CONFIDENCE = 0.8  # below this, Spark maps abstain to the ladder
+DEFAULT_SPARK_DAILY_MAX_CALLS = 200
+
+
+def _utc_today() -> str:
+    return datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+
+
+def spark_calls_today(path: str, today: str | None = None) -> int:
+    """Count today's spark-hosted provenance rows. Never raises."""
+    today = today or _utc_today()
+    try:
+        lines = open(path, encoding="utf-8").read().splitlines()
+    except Exception:
+        return 0
+    count = 0
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except Exception:
+            continue
+        if row.get("runtime") == "spark-hosted" and str(row.get("ts", "")).startswith(today):
+            count += 1
+    return count
 
 
 class SparkNormalizer(Normalizer):
@@ -92,7 +116,15 @@ class SparkNormalizer(Normalizer):
         model: str = "",
         timeout: int = 0,  # 0 = SPARK_TIMEOUT env or DEFAULT_SPARK_TIMEOUT
         effort: str = "",
+        daily_max_calls: int | None = None,
     ) -> None:
+        if daily_max_calls is None:
+            raw = os.environ.get("SPARK_DAILY_MAX_CALLS", "")
+            try:
+                daily_max_calls = int(raw) if raw else DEFAULT_SPARK_DAILY_MAX_CALLS
+            except ValueError:
+                daily_max_calls = DEFAULT_SPARK_DAILY_MAX_CALLS
+        self.daily_max_calls = daily_max_calls
         self.endpoint = (
             endpoint
             or os.environ.get("SPARK_API_URL", "")
@@ -136,6 +168,7 @@ class SparkNormalizer(Normalizer):
         prompt = json.dumps(self._prompt(heard, vocab), ensure_ascii=False)
         log_provenance(
             {
+                "ts": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "model": self.model,
                 "runtime": "spark-hosted",
                 "endpoint": self.endpoint,
@@ -147,9 +180,25 @@ class SparkNormalizer(Normalizer):
             }
         )
 
+    def _over_daily_cap(self) -> bool:
+        if self.daily_max_calls < 0:
+            return False
+        path = os.environ.get("OPENWEIGHT_LOG", "data/provenance.jsonl")
+        used = spark_calls_today(path)
+        if used >= self.daily_max_calls:
+            print(
+                f"[spark-cap] daily limit reached: {used}/{self.daily_max_calls} "
+                "spark-hosted calls today; abstaining to ladder",
+                file=sys.stderr,
+            )
+            return True
+        return False
+
     def map(self, heard: str, vocab: list[str]) -> tuple[str | None, float]:
         clean = normalize(heard)
         if not clean or clean == SILENCE:
+            return None, 0.0
+        if self._over_daily_cap():
             return None, 0.0
         body = json.dumps(
             {"model": self.model, "temperature": 0,
