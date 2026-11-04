@@ -58,6 +58,34 @@ def test_find_airpods_empty_when_absent(tmp_path):
     assert "ABSENT-OK" in done.stdout
 
 
+def test_english_voice_prefers_woman_over_daniel(tmp_path):
+    script = (
+        "say() { printf \"%s\\n\" \"Daniel en_US\" \"Samantha en_US\"; }\n"
+        + extract_one("pick_english_voice")
+        + 'VOICE=Alva; got="$(pick_english_voice)"\n'
+        + '[ "$got" = "Samantha" ] || { echo "got: $got"; exit 1; }\n'
+        + "echo VOICE-OK\n"
+    )
+    done = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
+                          stdin=subprocess.DEVNULL, timeout=30)
+    assert done.returncode == 0, done.stderr
+    assert "VOICE-OK" in done.stdout
+
+
+def test_english_voice_falls_back_to_daniel(tmp_path):
+    script = (
+        "say() { printf \"%s\\n\" \"Daniel en_US\"; }\n"
+        + extract_one("pick_english_voice")
+        + 'VOICE=Alva; got="$(pick_english_voice)"\n'
+        + '[ "$got" = "Daniel" ] || { echo "got: $got"; exit 1; }\n'
+        + "echo FALLBACK-OK\n"
+    )
+    done = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
+                          stdin=subprocess.DEVNULL, timeout=30)
+    assert done.returncode == 0, done.stderr
+    assert "FALLBACK-OK" in done.stdout
+
+
 def test_playback_restarts_when_output_device_changes(tmp_path):
     try:
         primary, replica = pty.openpty()
