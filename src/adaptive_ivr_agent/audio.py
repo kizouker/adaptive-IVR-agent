@@ -25,6 +25,7 @@ from pathlib import Path
 
 from .elks import ElksClient, valid_e164
 from .tones import DTMF_FREQS
+from .wavio import write_wav
 
 SAMPLE_RATE = 16000
 FRAME_MS = 20
@@ -441,11 +442,7 @@ def _rec_frame(call: _Call, side: str, pcm: bytes) -> None:
 
 
 def _write_wav(path: str, chunks: list[bytes]) -> None:
-    with wave.open(path, "wb") as handle:
-        handle.setnchannels(1)
-        handle.setsampwidth(2)
-        handle.setframerate(SAMPLE_RATE)
-        handle.writeframes(b"".join(chunks) or b"\x00" * FRAME_BYTES)
+    write_wav(path, b"".join(chunks) or b"\x00" * FRAME_BYTES, SAMPLE_RATE)
 
 
 def rec_stop(session_id: str, rec_id: str) -> dict:
