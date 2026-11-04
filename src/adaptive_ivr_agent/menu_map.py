@@ -17,8 +17,8 @@ CONNECTOR = "|"
 INDENT = "  "
 DOT_COMMAND = "dot"
 
-SWEDISH_TITLE = "AF Agda - svenska kedjan"
-ENGLISH_TITLE = "AF Agda - English branch (press 0)"
+SWEDISH_TITLE = "AF Roksolana - svenska kedjan"
+ENGLISH_TITLE = "AF Roksolana - English branch (press 0)"
 
 # One fill color per level, left to right: blue, amber, purple, teal, green.
 LEVEL_COLORS = ["#BBDEFB", "#FFE0B2", "#E1BEE7", "#B2DFDB", "#C8E6C9"]
@@ -64,11 +64,11 @@ class Edge:
     evidence: Evidence = field(default_factory=Evidence)
 
 
-# AF Agda fallback chain, verified against calls 1, 2, 4, 5: open question,
+# AF Roksolana fallback chain, verified against calls 1, 2, 4, 5: open question,
 # example alternatives, yes/no, transfer, then identification (BankID/Freja)
 # before the queue. Failed ID still lands in the queue. Survey is optional
 # (call 4 has it, call 6 does not): queue -> survey -> officer, or served.
-AF_AGDA_STATES = [
+AF_ROKSOLANA_STATES = [
     State("open_question", "Beskriv vad du vill ha hjälp med?"),
     State("example_words", "Du kan till exempel säga... (alt 1, 2, 3)"),
     State("yes_no", "Har du fått ett rekommenderat brev? (ja/nej)"),
@@ -79,7 +79,7 @@ AF_AGDA_STATES = [
     State("officer", "En handläggare svarar."),
 ]
 
-AF_AGDA_EDGES = [
+AF_ROKSOLANA_EDGES = [
     Edge("open_question", "example_words", "no_match"),
     Edge("example_words", "yes_no", "no_match"),
     Edge("yes_no", "transfer", "ja/nej"),
@@ -126,12 +126,12 @@ class MenuMap:
     last_edge: tuple[str, str] | None = None
 
     @classmethod
-    def af_agda(cls) -> "MenuMap":
-        """The documented AF Agda fallback chain, starting at the open question."""
+    def af_roksolana(cls) -> "MenuMap":
+        """The documented AF Roksolana fallback chain, starting at the open question."""
         return cls(
-            states=copy.deepcopy(AF_AGDA_STATES),
-            edges=copy.deepcopy(AF_AGDA_EDGES),
-            current=AF_AGDA_STATES[0].id,
+            states=copy.deepcopy(AF_ROKSOLANA_STATES),
+            edges=copy.deepcopy(AF_ROKSOLANA_EDGES),
+            current=AF_ROKSOLANA_STATES[0].id,
             title=SWEDISH_TITLE,
         )
 

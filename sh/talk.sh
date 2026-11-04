@@ -16,7 +16,7 @@
 #   .menu-lang memory with holdmate.sh). --call en|sv (default sv): the whole
 #   call runs in that language (en lines, en ears, English TTS voice).
 # The quiet/sound choice is remembered in .talk-quiet; flags override it and save.
-# Env: AGDA_FORGIVING=1 enables Roksolana's bad memory (learned aliases, unrealistic).
+# Env: ROKSOLANA_FORGIVING=1 enables Roksolana's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
 # Keys during record/playback: any key skips ahead, 0 jumps to the English
 # menu (full call-5 path on DTMF digits), a toggles speakers/AirPods output,
@@ -194,7 +194,7 @@ if [ -n "$QUIET_FORCED" ]; then
 elif [ -f "$QUIET_FILE" ] && grep -Eq '^[01]$' "$QUIET_FILE"; then
   QUIET="$(cat "$QUIET_FILE")"            # remembered t-toggle/flag from last run
 fi
-AGDA_FORGIVING="${AGDA_FORGIVING:-0}"     # 1 = Roksolana's bad memory (learned aliases); 0 = exact The Castle words
+ROKSOLANA_FORGIVING="${ROKSOLANA_FORGIVING:-0}"     # 1 = Roksolana's bad memory (learned aliases); 0 = exact The Castle words
 QUEUE_TICK="${QUEUE_TICK:-8}"             # seconds between queue numbers (any key hurries)
 FAKE_PERSONNUMMER="19121212-1212"         # test number for the faked ID step; nothing real ever flows
 MODEL="$HOME/models/whisper/ggml-small.bin"
@@ -403,7 +403,7 @@ vnote "$(T misses_a) $MISS_FILE $(T misses_b)"
 vnote "$(T rounds_a) $ROUNDS_FILE $(T rounds_b)"
 vsect "$(T sect_call)"
 vnote "Roksolana $(T plays_a) $TALK_VOLUME $(T plays_b)"
-if [ "$AGDA_FORGIVING" = "1" ]; then
+if [ "$ROKSOLANA_FORGIVING" = "1" ]; then
   vwarn "$(T mem_on)"
 else
   vinfo "$(T mem_off)"
@@ -722,7 +722,7 @@ play_skippable() { # $1 = file; any key skips, + / - and slider act live
   wait "$APID" 2>/dev/null || true
 }
 
-agda_says() {
+roksolana_says() {
   # $1 = opening|round|identified|queue|english|officer, $2 = transcript (round only),
   # $3 = aiff file, $4 = caller wav (round only), $5 = voice override (or "").
   # Speaks Roksolana's line, saves the audio, publishes the board state,
@@ -731,7 +731,7 @@ agda_says() {
     TALK_CALL="$CALL_STAMP" TALK_ROUND="${ROUND:-0}" \
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
-    TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
+    TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$ROKSOLANA_FORGIVING" \
     TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_SPARK="$SPARK" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
     TALK_CALL_LANG="$CALL_LANG" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
@@ -755,7 +755,7 @@ from adaptive_ivr_agent.live_view import (
 from adaptive_ivr_agent.intent import SparkFallback, maybe_spark_normalizer
 from adaptive_ivr_agent.reactive import ReactiveRobot
 from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines, opening_cache_path
-from adaptive_ivr_agent.talk import AgdaCall, with_aliases
+from adaptive_ivr_agent.talk import RoksolanaCall, with_aliases
 
 root = os.environ["TALK_ROOT"]
 voice = os.environ.get("TALK_VOICE", SAY_VOICE)
@@ -848,7 +848,7 @@ welcome = lines["L44"] if busy else lines["L01"]
 # L30: Rickard's pick 1 Nov (UNVERIFIED memory). Replace with verbatim
 # from Monday's sampling.
 SERVED_LINE = lines["L30"]
-agda = AgdaCall(
+roksolana = RoksolanaCall(
     opening=welcome if busy else f"{welcome} {lines['L02']}",
     examples=lines["L03"],
     yesno=lines["L22"],
@@ -974,11 +974,11 @@ if sys.argv[1] == "opening":
     en_voice = os.environ.get("TALK_EN_VOICE", voice)
     cached = opening_cache_path(
         os.path.join(root, "data/recordings/.opening-cache"),
-        voice, en_voice, agda.opening)
+        voice, en_voice, roksolana.opening)
     if cached.exists() and cached.stat().st_size > 0:
         shutil.copy(cached, out_aiff)
-    elif marker in agda.opening:
-        sv1, _, rest = agda.opening.partition(marker)
+    elif marker in roksolana.opening:
+        sv1, _, rest = roksolana.opening.partition(marker)
         sv1_aiff, en_aiff, sv2_aiff = out_aiff + ".sv1", out_aiff + ".en", out_aiff + ".sv2"
         subprocess.run(["say", "-v", voice, "-o", sv1_aiff, sv1.strip()], check=True)
         subprocess.run(["say", "-v", en_voice, "-o", en_aiff, marker], check=True)
@@ -992,26 +992,26 @@ if sys.argv[1] == "opening":
         os.remove(sv2_aiff)
         shutil.copy(out_aiff, cached)
     else:
-        render_reply(agda.opening)
+        render_reply(roksolana.opening)
         shutil.copy(out_aiff, cached)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r0"
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), agda.opening, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), roksolana.opening, duration_of(aiff))
     call = LiveCall()
-    call.add_turn("", agda.opening, False, "open_question",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
-                  robot_en=translate_robot(agda.opening, translations))
+    call.add_turn("", roksolana.opening, False, "open_question",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
+                  robot_en=translate_robot(roksolana.opening, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
-    show_robot(agda.opening)
+    show_robot(roksolana.opening)
 elif sys.argv[1] == "round":
     heard = open(os.environ["TALK_TXT"], encoding="utf-8").read()
-    answer = agda.reply_to(heard, int(os.environ["TALK_MISSES"]))
+    answer = roksolana.reply_to(heard, int(os.environ["TALK_MISSES"]))
     log_round(heard, answer.matched)
     if answer.matched is None:
         log_miss(heard)
@@ -1019,21 +1019,21 @@ elif sys.argv[1] == "round":
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}"
-    you_name, agda_name = f"{base}-you.wav", f"{base}-agda.mp3"
-    you_vtt, agda_vtt = f"{base}-you.vtt", f"{base}-agda.vtt"
+    you_name, roksolana_name = f"{base}-you.wav", f"{base}-roksolana.mp3"
+    you_vtt, roksolana_vtt = f"{base}-you.vtt", f"{base}-roksolana.vtt"
     wav = os.environ["TALK_WAV"]
     aiff = os.environ["TALK_AIFF"]
     shutil.copy(wav, os.path.join(audio_dir, you_name))
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
     write_captions(os.path.join(audio_dir, you_vtt), heard, duration_of(wav))
-    write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), answer.reply, duration_of(aiff))
     call = load_call()
     spark = spark_fallback.last if spark_fallback is not None else None
     call.add_turn(heard.strip(), answer.reply, answer.matched is not None,
                   state_after(answer.done, answer.misses, answer.identify),
                   robot_en=translate_robot(answer.reply, translations),
-                  caller_audio=f"audio/{you_name}", robot_audio=f"audio/{agda_name}",
-                  caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{agda_vtt}",
+                  caller_audio=f"audio/{you_name}", robot_audio=f"audio/{roksolana_name}",
+                  caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{roksolana_vtt}",
                   queue_place=answer.queue_place, spark=spark)
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
@@ -1049,18 +1049,18 @@ elif sys.argv[1] == "round":
     print(f"TALK_IDENTIFY={'yes' if answer.identify else 'no'}")
 elif sys.argv[1] == "identified":
     ok = os.environ.get("TALK_ID_OK", "1") == "1"
-    answer = agda.after_identified(int(os.environ["TALK_MISSES"]), ok=ok)
+    answer = roksolana.after_identified(int(os.environ["TALK_MISSES"]), ok=ok)
     render_reply(answer.reply)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}id"
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), answer.reply, duration_of(aiff))
     call = load_call()
     call.add_turn("", answer.reply, False, "queue",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   queue_place=answer.queue_place, queue_total=answer.queue_place,
                   robot_en=translate_robot(answer.reply, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
@@ -1076,13 +1076,13 @@ elif sys.argv[1] == "idline":
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}{line_id.lower()}"
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), text, duration_of(aiff))
     call = load_call()
     call.add_turn("", text, False, "identification",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   robot_en=translate_robot(text, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
@@ -1090,18 +1090,18 @@ elif sys.argv[1] == "idline":
     show_robot(text)
     print("TALK_DONE=no")
 elif sys.argv[1] == "queue":
-    answer = agda.queue_tick(int(os.environ["TALK_PLACE"]), int(os.environ["TALK_MISSES"]))
+    answer = roksolana.queue_tick(int(os.environ["TALK_PLACE"]), int(os.environ["TALK_MISSES"]))
     render_reply(answer.reply)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}q{answer.queue_place}"
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), answer.reply, duration_of(aiff))
     call = load_call()
     call.add_turn("", answer.reply, False, "queue",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   queue_place=answer.queue_place,
                   queue_total=int(os.environ["TALK_TOTAL"]),
                   robot_en=translate_robot(answer.reply, translations))
@@ -1126,15 +1126,15 @@ elif sys.argv[1] == "english":
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = os.environ["TALK_EN_BASE"]
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), text, duration_of(aiff))
     call = load_call()
     place = os.environ.get("TALK_EN_PLACE", "")
     total = os.environ.get("TALK_EN_TOTAL", "")
     call.add_turn(heard, text, bool(digit), state,
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   queue_place=int(place) if place else None,
                   queue_total=int(total) if total else None,
                   robot_en=translate_robot(text, translations))
@@ -1152,13 +1152,13 @@ elif sys.argv[1] == "officer":
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = os.environ["TALK_OFF_BASE"]
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), text, duration_of(aiff))
     call = load_call()
     call.add_turn("", text, False, "officer",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   speaker=os.environ.get("TALK_OFF_SPEAKER") or None,
                   robot_en=translate_robot(text, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
@@ -1204,11 +1204,11 @@ en_turn() {
     TALK_EN_CALLER="$1" TALK_EN_IDS="$2" TALK_EN_SUB="$3" TALK_EN_STATE="$4" \
     TALK_EN_BASE="talk-$CALL_STAMP-e$5" TALK_EN_PLACE="$6" TALK_EN_TOTAL="$7" \
     TALK_EN_DONE="$8" TALK_EN_DIGIT="$9" \
-    agda_says english "" "$EN_AIFF" "" "$EN_VOICE")" || fail "Roksolana failed in English ($4)"
+    roksolana_says english "" "$EN_AIFF" "" "$EN_VOICE")" || fail "Roksolana failed in English ($4)"
   printf '%s\n' "$EN_OUT" | grep -v '^TALK_'
   [ -s "$EN_AIFF" ] || fail "English audio missing: $EN_AIFF"
-  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-agda.mp3" ] || fail "English board audio missing: e$5"
-  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-agda.vtt" ] || fail "English board captions missing: e$5"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-roksolana.mp3" ] || fail "English board audio missing: e$5"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-roksolana.vtt" ] || fail "English board captions missing: e$5"
   ok "English turn on board: e$5 ($4)"
   vrun "Roksolana speaks English"
   play_skippable "$EN_AIFF"
@@ -1336,10 +1336,10 @@ EOF
   OFF_OUT="$(TALK_MAP="$OFF_MAP" TALK_OFF_ID="$OFF_ID" \
     TALK_OFF_BASE="talk-$CALL_STAMP-$OFF_BASE" TALK_OFF_SPEAKER="$OFF_SPEAKER" \
     TALK_SPEAKER_NAME="$OFF_SPEAKER" \
-    agda_says officer "" "$OFF_AIFF" "" "$OFF_VOICE")" || fail "Officer failed to answer"
+    roksolana_says officer "" "$OFF_AIFF" "" "$OFF_VOICE")" || fail "Officer failed to answer"
   printf '%s\n' "$OFF_OUT" | grep -v '^TALK_'
   [ -s "$OFF_AIFF" ] || fail "Officer audio missing: $OFF_AIFF"
-  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-$OFF_BASE-agda.mp3" ] || fail "Officer board audio missing"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-$OFF_BASE-roksolana.mp3" ] || fail "Officer board audio missing"
   vok "officer on board: $OFF_BASE"
   vrun "Officer speaks"
   if [ -t 1 ]; then
@@ -1376,10 +1376,10 @@ vrun "render opening ($VOICE + English voice)"
 OPENING_AIFF="$REC_DIR/talk-$CALL_STAMP-robot0.aiff"
 EN_OPEN_VOICE="$(pick_english_voice)"
 vinfo "English voice: $EN_OPEN_VOICE"
-TALK_EN_VOICE="$EN_OPEN_VOICE" agda_says opening "" "$OPENING_AIFF" || fail "Roksolana failed to speak the opening"
+TALK_EN_VOICE="$EN_OPEN_VOICE" roksolana_says opening "" "$OPENING_AIFF" || fail "Roksolana failed to speak the opening"
 [ -s "$OPENING_AIFF" ] || fail "Opening audio missing: $OPENING_AIFF"
 vok "opening saved: $OPENING_AIFF"
-OPENING_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r0-agda.mp3"
+OPENING_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r0-roksolana.mp3"
 [ -s "$OPENING_MP3" ] || fail "Opening board audio missing: $OPENING_MP3"
 vok "opening on board: $OPENING_MP3"
 vrun "Roksolana speaks"
@@ -1391,7 +1391,7 @@ fi
 
 id_say_line() { # $1 = L10|L12: Roksolana speaks it and boards it
   IDLINE_AIFF="$REC_DIR/talk-$CALL_STAMP-$1.aiff"
-  OUTL="$(TALK_ID_LINE="$1" agda_says idline "" "$IDLINE_AIFF")" || fail "Roksolana failed ($1)"
+  OUTL="$(TALK_ID_LINE="$1" roksolana_says idline "" "$IDLINE_AIFF")" || fail "Roksolana failed ($1)"
   printf '%s\n' "$OUTL" | grep -v '^TALK_'
   [ -s "$IDLINE_AIFF" ] || fail "ID line audio missing: $IDLINE_AIFF"
   vrun "Roksolana speaks"
@@ -1433,10 +1433,10 @@ run_identification() {
   fi
   vrun "render confirmation ($VOICE)"
   ID_AIFF="$REC_DIR/talk-$CALL_STAMP-rid.aiff"
-  OUT2="$(TALK_ID_OK="$ID_OK" agda_says identified "" "$ID_AIFF")" || fail "Roksolana failed after identification"
+  OUT2="$(TALK_ID_OK="$ID_OK" roksolana_says identified "" "$ID_AIFF")" || fail "Roksolana failed after identification"
   printf '%s\n' "$OUT2" | grep -v '^TALK_'
   [ -s "$ID_AIFF" ] || fail "Confirmation audio missing: $ID_AIFF"
-  ID_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}id-agda.mp3"
+  ID_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}id-roksolana.mp3"
   [ -s "$ID_MP3" ] || fail "Confirmation board audio missing: $ID_MP3"
   vok "confirmation on board: $ID_MP3"
   vrun "Roksolana speaks"
@@ -1457,14 +1457,14 @@ run_identification() {
     fi
     run "render queue number ($VOICE)"
     Q_AIFF="$REC_DIR/talk-$CALL_STAMP-q$PLACE.aiff"
-    OUT3="$(agda_says queue "" "$Q_AIFF")" || fail "Roksolana failed in the queue"
+    OUT3="$(roksolana_says queue "" "$Q_AIFF")" || fail "Roksolana failed in the queue"
     printf '%s\n' "$OUT3" | grep -v '^TALK_'
     [ -s "$Q_AIFF" ] || fail "Queue audio missing: $Q_AIFF"
     PLACE="$(printf '%s\n' "$OUT3" | sed -n 's/^TALK_PLACE=//p')"
     case "$PLACE" in
       '' | *[!0-9]*) fail "Lost track of the queue place" ;;
     esac
-    Q_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}q${PLACE}-agda.mp3"
+    Q_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}q${PLACE}-roksolana.mp3"
     [ -s "$Q_MP3" ] || fail "Queue board audio missing: $Q_MP3"
     ok "queue number on board: $Q_MP3"
     vrun "Roksolana speaks"
@@ -1547,7 +1547,7 @@ while [ "$ROUND" -lt 6 ]; do
   fi
   fi
   vrun "render reply ($VOICE)"
-  OUT="$(agda_says round "$TXT" "$ROBOT_AIFF" "$WAV")" || fail "Roksolana failed to answer"
+  OUT="$(roksolana_says round "$TXT" "$ROBOT_AIFF" "$WAV")" || fail "Roksolana failed to answer"
   printf '%s\n' "$OUT" | grep -v '^TALK_'
   MISSES="$(printf '%s\n' "$OUT" | sed -n 's/^TALK_MISSES=//p')"
   case "$MISSES" in
@@ -1555,10 +1555,10 @@ while [ "$ROUND" -lt 6 ]; do
   esac
   [ -s "$ROBOT_AIFF" ] || fail "Robot audio missing: $ROBOT_AIFF"
   vok "robot reply saved: $ROBOT_AIFF"
-  MP3="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-agda.mp3"
+  MP3="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-roksolana.mp3"
   [ -s "$MP3" ] || fail "Board audio missing: $MP3"
   vok "board audio: $MP3"
-  VTT="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-agda.vtt"
+  VTT="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-roksolana.vtt"
   [ -s "$VTT" ] || fail "Board captions missing: $VTT"
   vok "board captions: $VTT"
   [ -f "$ROUNDS_FILE" ] || fail "Rounds log missing: $ROUNDS_FILE"

@@ -5,14 +5,14 @@ from pathlib import Path
 from adaptive_ivr_agent.holdmate import (
     Knowledge,
     Lesson,
-    build_agda,
+    build_roksolana,
     lesson_call,
     main,
     run_call,
 )
 from adaptive_ivr_agent.intent import SparkFallback, maybe_spark_normalizer
 from adaptive_ivr_agent.live_view import LiveCall
-from adaptive_ivr_agent.talk import AgdaCall
+from adaptive_ivr_agent.talk import RoksolanaCall
 
 ROOT = Path(__file__).resolve().parent.parent
 PHRASEBOOKS = ROOT / "data" / "role-phrasebooks.json"
@@ -61,7 +61,7 @@ class Scripted:
 
 
 def make_call(respond):
-    return AgdaCall(
+    return RoksolanaCall(
         opening="welcome, what is it?",
         examples="for example say vab",
         yesno="are you enrolled?",
@@ -124,7 +124,7 @@ def test_maybe_spark_normalizer_disabled_returns_none(monkeypatch):
     assert maybe_spark_normalizer(False) is None
 
 
-def test_agda_call_transfers_on_spark_rescue():
+def test_roksolana_call_transfers_on_spark_rescue():
     fallback = SparkFallback(exact_respond, Scripted("vab", 0.92), VOCAB)
     answer = make_call(fallback.respond).reply_to("vabb?", 0)
     assert answer.matched == "vab"
@@ -132,7 +132,7 @@ def test_agda_call_transfers_on_spark_rescue():
     assert fallback.last == {"word": "vab", "confidence": 0.92}
 
 
-def test_agda_call_miss_without_fallback_stays_miss():
+def test_roksolana_call_miss_without_fallback_stays_miss():
     answer = make_call(exact_respond).reply_to("vabb?", 0)
     assert (answer.matched, answer.misses) == (None, 1)
 
@@ -159,24 +159,24 @@ def fake_holdmate_respond(heard):
 
 def test_run_call_attaches_spark_to_exchange():
     fallback = SparkFallback(fake_holdmate_respond, Scripted("kw", 0.88), ["kw"])
-    agda = build_agda(FAKE_LINES, fallback.respond)
-    result, _, exchanges = run_call(agda, "k w?", 0, fallback)
+    roksolana = build_roksolana(FAKE_LINES, fallback.respond)
+    result, _, exchanges = run_call(roksolana, "k w?", 0, fallback)
     assert result.matched == "kw"
     assert result.transferred is True
     assert exchanges[0].spark == {"word": "kw", "confidence": 0.88}
 
 
 def test_run_call_keyless_has_no_spark():
-    agda = build_agda(FAKE_LINES, fake_holdmate_respond)
-    result, _, exchanges = run_call(agda, "eh", 0)
+    roksolana = build_roksolana(FAKE_LINES, fake_holdmate_respond)
+    result, _, exchanges = run_call(roksolana, "eh", 0)
     assert result.matched is None
     assert exchanges[0].spark is None
 
 
 def test_lesson_rescue_lands_on_board_call():
     fallback = SparkFallback(fake_holdmate_respond, Scripted("kw", 0.88), ["kw"])
-    agda = build_agda(FAKE_LINES, fallback.respond)
-    lesson = Lesson("test-persona", ["kw", "eh"], agda, Knowledge(), 0,
+    roksolana = build_roksolana(FAKE_LINES, fallback.respond)
+    lesson = Lesson("test-persona", ["kw", "eh"], roksolana, Knowledge(), 0,
                     spark_fallback=fallback)
     lesson.run()
     assert lesson.sims[1].matched == "kw"  # "eh" rescued at depth 0

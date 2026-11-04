@@ -15,7 +15,7 @@ HTML="/tmp/karta-live.html"
 cat > "$HTML" <<EOF
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta http-equiv="refresh" content="2">
-<title>AF Agda live map</title></head>
+<title>AF Roksolana live map</title></head>
 <body><img src="karta-live.svg" alt="live call map"></body></html>
 EOF
 echo "Open $HTML in a browser."
@@ -24,7 +24,7 @@ COUNT=$(PYTHONPATH="$SRC" python3 -c "
 import sys
 from adaptive_ivr_agent.menu_map import MenuMap
 name = sys.argv[1]
-shown = MenuMap.english_branch() if name == 'english' else MenuMap.af_agda()
+shown = MenuMap.english_branch() if name == 'english' else MenuMap.af_roksolana()
 print(len(shown.states))
 " "$MAP")
 
@@ -34,7 +34,7 @@ while [ "$i" -le "$COUNT" ]; do
 import sys
 from adaptive_ivr_agent.menu_map import MenuMap
 name, at, svg = sys.argv[1], int(sys.argv[2]), sys.argv[3]
-shown = MenuMap.english_branch() if name == 'english' else MenuMap.af_agda()
+shown = MenuMap.english_branch() if name == 'english' else MenuMap.af_roksolana()
 ids = [s.id for s in shown.states]
 shown.move_to(ids[at - 1])
 shown.render_image(svg)
