@@ -28,7 +28,7 @@ SWITCH_STUB = """#!/bin/bash
 # No AirPods, fixed mic, fixed output.
 if [ "$1" = "-a" ]; then
   case "$3" in
-    output) printf 'IVR_Agent_Speakers\\nHgtalare i MacBook Pro\\n' ;;
+    output) printf 'IVR_Output_Speakers\\nHgtalare i MacBook Pro\\n' ;;
     input) printf 'MacBook Pro-mikrofon\\n' ;;
   esac
 elif [ "$1" = "-c" ]; then
@@ -52,7 +52,7 @@ SWITCH_STUB_NO_MIC = """#!/bin/bash
 # Output present, mic name unknown on this machine.
 if [ "$1" = "-a" ]; then
   case "$3" in
-    output) printf 'IVR_Agent_Speakers\\nBuilt-in Output\\n' ;;
+    output) printf 'IVR_Output_Speakers\\nBuilt-in Output\\n' ;;
     input) printf 'Built-in Microphone\\n' ;;
   esac
 elif [ "$1" = "-c" ]; then
@@ -171,7 +171,7 @@ def test_check_warns_not_fails_without_output_device(tmp_path):
     proc, _ = run_check(tmp_path, switch_stub=SWITCH_STUB_NO_OUTPUT)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "WARN" in proc.stdout
-    assert "Output device 'IVR_Agent_Speakers' not found" in proc.stdout
+    assert "Output device 'IVR_Output_Speakers' not found" in proc.stdout
     assert "nothing changed" in proc.stdout
 
 
@@ -187,7 +187,7 @@ def test_check_warns_not_fails_without_mic(tmp_path):
 def test_check_clean_machine_warns_and_exits_zero(tmp_path):
     proc, _ = run_check(tmp_path, switch_stub=SWITCH_STUB_NO_DEVICES)
     assert proc.returncode == 0, proc.stdout + proc.stderr
-    assert "Output device 'IVR_Agent_Speakers' not found" in proc.stdout
+    assert "Output device 'IVR_Output_Speakers' not found" in proc.stdout
     assert "Mic 'MacBook Pro-mikrofon' not found" in proc.stdout
     assert "audio devices missing" in proc.stdout
     assert "FAIL" not in proc.stdout
@@ -216,7 +216,7 @@ def test_check_fails_when_ffmpeg_sees_no_devices(tmp_path):
 def test_talk_mode_still_fails_without_output_device(tmp_path):
     proc, _ = run_talk(tmp_path, switch_stub=SWITCH_STUB_NO_OUTPUT)
     assert proc.returncode != 0
-    assert "Output device 'IVR_Agent_Speakers' not found" in proc.stdout
+    assert "Output device 'IVR_Output_Speakers' not found" in proc.stdout
 
 
 def test_talk_mode_still_fails_without_mic(tmp_path):
