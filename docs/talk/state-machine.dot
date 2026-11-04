@@ -1,0 +1,26 @@
+digraph IVR {
+  graph [rankdir=TB, bgcolor="#000000", pad=0.4, nodesep=0.5, ranksep=1.6, dpi=200];
+  node  [shape=box, style="rounded,filled", fillcolor="#1c2230", color="#00c8d2", fontcolor="#ebeef2", fontname="Helvetica", fontsize=16, penwidth=2];
+  edge  [color="#8c96a5", fontcolor="#8c96a5", fontname="Helvetica", fontsize=13, penwidth=1.6];
+
+  open  [label="Open question\n\"What is your errand?\""];
+  opts  [label="Options\n\"You can say for example…\""];
+  yesno [label="Yes / no\n\"Are you registered?\""];
+  trap  [label="No-op loop\nno way back", fillcolor="#3a1c1c", color="#ffaa3c", fontcolor="#ffaa3c"];
+  xfer  [label="Transfer"];
+  id    [label="Identification\nBankID / Freja"];
+  queue [label="Queue: place N → 1\nHoldmate counts down"];
+  human [label="Officer answers\nyou take over", fillcolor="#123028", color="#3cd28c"];
+
+  { rank=same; open; opts; yesno; trap; }
+  open  -> xfer  [label="keyword"];
+  open  -> opts  [label="miss"];
+  opts  -> xfer  [label="keyword"];
+  opts  -> yesno [label="miss"];
+  yesno -> xfer  [label="ja / nej"];
+  yesno -> trap  [label="anything else"];
+  trap  -> trap;
+  { rank=same; xfer; id; queue; human; }
+  xfer -> id -> queue -> human;
+  queue -> queue;
+}
