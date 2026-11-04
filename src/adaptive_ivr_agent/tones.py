@@ -7,8 +7,9 @@ library into the repo, this module is the seam to swap it in.
 
 import math
 import struct
-import wave
 from pathlib import Path
+
+from adaptive_ivr_agent.wavio import write_wav
 
 SAMPLE_RATE = 44100
 AMPLITUDE = 0.35
@@ -62,10 +63,4 @@ def write_beeps(
         frames.extend(tone)
         frames.extend(gap)
     raw = struct.pack(f"<{len(frames)}h", *[int(s * 32767) for s in frames])
-    target = Path(path)
-    with wave.open(str(target), "wb") as handle:
-        handle.setnchannels(1)
-        handle.setsampwidth(2)
-        handle.setframerate(SAMPLE_RATE)
-        handle.writeframes(raw)
-    return str(target)
+    return write_wav(path, raw, SAMPLE_RATE)

@@ -4,8 +4,9 @@ from __future__ import annotations
 import math
 import struct
 import tempfile
-import wave
 from pathlib import Path
+
+from adaptive_ivr_agent.wavio import write_wav
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -81,14 +82,7 @@ def render_menu_music(path: str | Path = MUSIC_RENDERED) -> str:
     raw = struct.pack(
         f"<{len(data)}h",
         *(int(max(-1.0, min(1.0, v / peak)) * 30000) for v in data))
-    target = Path(path)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    with wave.open(str(target), "wb") as handle:
-        handle.setnchannels(1)
-        handle.setsampwidth(2)
-        handle.setframerate(MUSIC_RATE)
-        handle.writeframes(raw)
-    return str(target)
+    return write_wav(path, raw, MUSIC_RATE)
 
 
 def menu_music_path() -> str:
