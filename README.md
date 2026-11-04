@@ -8,6 +8,7 @@
   - `Muse Spark` (`muse-spark-1.3` on `api.meta.ai`) — live: opt-in intent normalization + eval via `MODEL_API_KEY`; first live run rescue 3/3 ([eval notes](docs/evals/spark-live-2026-11-03.md))
   - Spark fallback in talk loop + board badge — in progress ([#205](https://github.com/kizouker/adaptive-IVR-agent/issues/205))
   - `Muse Spark Open` — planned load-bearing open-weight stage (stretch goal, not wired yet)
+- **Meta Models Used to Build It (Muse Code telemetry, Oct 29 – Nov 4)**: `muse-spark-1.3-contributor` ($11.12), `muse-wonder-1.0` ($6.64), `muse-spark-1.3` ($0.99) — 47 sessions, 1.5 B input tokens (1.4 B cached), 7.5 M output tokens, ≈ $18.78 API-equivalent. Screenshots: [usage overview](data/telemetry/usage-overview.jpeg) · [cost by model](data/telemetry/cost-by-model.jpeg) · [top sessions](data/telemetry/top-sessions.jpeg)
 - **Bonus Prize Categories Targeted**: Best Agentic Use-Case · Best Creative Build
 - **3-Minute Demo Video**: https://youtu.be/orxqS8rnxt0
 - **Quickstart & Keyless Replay**: `./sh/holdmate.sh` runs the full sim keyless; live Meta calls need `MODEL_API_KEY` (see `.env.example`).
