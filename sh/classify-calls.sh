@@ -10,7 +10,7 @@ PYTHONPATH=src python3 -c "
 from adaptive_ivr_agent.classify import CallEvidence, classify
 
 LINES = {
-    'AF Agda (call 4)': CallEvidence(
+    'AF Roksolana (call 4)': CallEvidence(
         states_visited=['welcome', 'open', 'examples1', 'examples2', 'yes_no',
                         'key_menu', 'submenu', 'sms', 'identify', 'queue'],
         surprises=['no_match x2', 'yes/no failed 4 times', 'words change between calls'],

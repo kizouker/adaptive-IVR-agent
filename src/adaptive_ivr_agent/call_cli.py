@@ -9,11 +9,15 @@ import base64
 import json
 import os
 import sys
+import tempfile
 import time
 
 from . import audio
 
-STATE_PATH = os.environ.get("HOLDMATE_CALL_STATE", "/tmp/holdmate-call.json")  # nosec B108: local CLI state default, env-overridable
+STATE_PATH = os.environ.get(
+    "HOLDMATE_CALL_STATE",
+    os.path.join(tempfile.gettempdir(), "holdmate-call.json"),
+)
 
 
 def _load():

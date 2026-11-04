@@ -74,7 +74,8 @@ def test_spark_requires_config(monkeypatch):
         SparkNormalizer(endpoint="http://x.test/v1", api_key="k")
 
 
-def test_spark_parses_and_validates(monkeypatch):
+def test_spark_parses_and_validates(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(tmp_path / "prov.jsonl"))
     norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
     body = json.dumps(
         {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 0.8}'}}]}
@@ -91,7 +92,8 @@ def test_spark_parses_and_validates(monkeypatch):
     assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.8)
 
 
-def test_spark_rejects_unknown_keyword_and_errors(monkeypatch):
+def test_spark_rejects_unknown_keyword_and_errors(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(tmp_path / "prov.jsonl"))
     norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
     body = json.dumps(
         {"choices": [{"message": {"content": '{"keyword": "umlaut", "confidence": 9}'}}]}
@@ -113,6 +115,58 @@ def test_spark_rejects_unknown_keyword_and_errors(monkeypatch):
     monkeypatch.setattr(urllib.request, "urlopen", boom)
     assert norm.map("handläggare sökes", VOCAB) == (None, 0.0)
     assert "handläggare" in norm._prompt("x", VOCAB)[0]["content"]
+
+
+def test_spark_low_confidence_abstains(monkeypatch, tmp_path):
+    log = tmp_path / "prov.jsonl"
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
+    body = json.dumps(
+        {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 0.7}'}}]}
+    ).encode()
+
+    class FakeRes:
+        def __enter__(self):
+            return io.BytesIO(body)
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout: FakeRes())
+    assert norm.map("vabbb?", VOCAB) == (None, 0.0)
+    row = json.loads(log.read_text(encoding="utf-8").strip())
+    assert row["keyword"] is None  # gated map still leaves a trace
+
+
+def test_spark_sends_reasoning_effort(monkeypatch, tmp_path):
+    log = tmp_path / "prov.jsonl"
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+    monkeypatch.delenv("SPARK_EFFORT", raising=False)
+    monkeypatch.delenv("MODEL_API_EFFORT", raising=False)
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
+    assert norm.effort == "medium"
+    body = json.dumps(
+        {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 1.0}'}}]}
+    ).encode()
+    seen = {}
+
+    class FakeRes:
+        def __enter__(self):
+            return io.BytesIO(body)
+
+        def __exit__(self, *a):
+            return False
+
+    def capture(req, timeout):
+        seen.update(json.loads(req.data.decode("utf-8")))
+        return FakeRes()
+
+    monkeypatch.setattr(urllib.request, "urlopen", capture)
+    assert norm.map("vab?", VOCAB) == ("vab", 1.0)
+    assert seen["reasoning_effort"] == "medium"
+    assert seen["temperature"] == 0
+    monkeypatch.setenv("SPARK_EFFORT", "high")
+    assert SparkNormalizer(endpoint="https://x.test/v1", api_key="k").effort == "high"
 
 
 def test_openweight_localhost_needs_no_key(monkeypatch):
@@ -176,8 +230,52 @@ def test_spark_logs_provenance(monkeypatch, tmp_path):
     assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.8)
     row = json.loads(log.read_text(encoding="utf-8").strip())
     assert row["runtime"] == "spark-hosted"
-    assert row["model"] == "muse-spark"
+    assert row["model"] == "muse-spark-1.3"  # Meta quickstart default
     assert row["keyword"] == "vab"
+
+
+def test_spark_daily_cap_abstains_with_warning(monkeypatch, tmp_path, capsys):
+    log = tmp_path / "prov.jsonl"
+    today = __import__("datetime").datetime.now(
+        __import__("datetime").timezone.utc).date().isoformat()
+    rows = [{"ts": today, "runtime": "spark-hosted", "keyword": "vab"}] * 2
+    rows.append({"ts": "2000-01-01", "runtime": "spark-hosted", "keyword": "vab"})
+    rows.append({"ts": today, "runtime": "openweight-local", "keyword": "vab"})
+    log.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+
+    def boom(req, timeout):
+        raise AssertionError("urlopen called over cap")
+
+    monkeypatch.setattr(urllib.request, "urlopen", boom)
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k", daily_max_calls=2)
+    assert norm.map("ont i magen, vab?", VOCAB) == (None, 0.0)
+    assert "[spark-cap]" in capsys.readouterr().err
+
+
+def test_spark_daily_cap_allows_under_limit(monkeypatch, tmp_path):
+    log = tmp_path / "prov.jsonl"
+    log.write_text("", encoding="utf-8")
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+    monkeypatch.setenv("SPARK_DAILY_MAX_CALLS", "5")
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
+    assert norm.daily_max_calls == 5
+    body = json.dumps(
+        {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 0.8}'}}]}
+    ).encode()
+
+    class FakeRes:
+        def __enter__(self):
+            return io.BytesIO(body)
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout: FakeRes())
+    assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.8)
+    row = json.loads(log.read_text(encoding="utf-8").strip())
+    assert row["ts"][:10] == __import__("datetime").datetime.now(
+        __import__("datetime").timezone.utc).date().isoformat()
 
 
 def test_resolve_chain_names_stage():

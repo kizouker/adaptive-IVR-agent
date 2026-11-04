@@ -155,6 +155,26 @@ else
   [ -d "$BOARD_DIR/node_modules" ] || fail "node_modules still missing after install"
   vok "board deps installed"
 fi
+if [ "$MODE" = "check" ]; then
+  step "Python env"
+  what "Create .venv with pytest so the test suite runs keyless."
+  if [ -x "$ROOT/.venv/bin/python" ] \
+    && "$ROOT/.venv/bin/python" -m pytest --version >/dev/null 2>&1; then
+    ok "venv ready: .venv with pytest"
+  else
+    command -v python3 >/dev/null 2>&1 \
+      || fail "python3 is missing (brew install python)"
+    run "python3 -m venv $ROOT/.venv"
+    python3 -m venv "$ROOT/.venv" \
+      || fail "Could not create .venv (macOS: brew install python)"
+    run "$ROOT/.venv/bin/pip install pytest"
+    "$ROOT/.venv/bin/pip" install -q pytest \
+      || fail "Could not install pytest (need network for PyPI)"
+    "$ROOT/.venv/bin/python" -m pytest --version >/dev/null 2>&1 \
+      || fail "pytest still missing after install"
+    ok "venv ready: .venv with pytest"
+  fi
+fi
 if curl -sf -o /dev/null --max-time 2 "$URL"; then
   vok "board server already up: $URL"
 else

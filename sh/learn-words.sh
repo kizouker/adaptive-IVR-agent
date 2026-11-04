@@ -1,5 +1,5 @@
 #!/bin/bash
-# Teach Agda the words it failed to hear.
+# Teach Roksolana the words it failed to hear.
 # Runs on: Rickard's Mac (M4). Modes: apply (default) | check.
 # Reads data/talk-misses.jsonl, asks what each miss meant (keyword, Enter to
 # skip, q to quit), saves to data/learned-words.json. Next call loads them.
@@ -37,7 +37,7 @@ print(f"pending={len(pending)} aliases={sum(1 for v in learned.values() if v)}")
 EOF
 }
 
-title "Teach Agda your words ($MODE)"
+title "Teach Roksolana your words ($MODE)"
 
 step "Preflight"
 what "Check tools and files before asking anything."
@@ -48,7 +48,7 @@ ok "phrasebooks: $PHRASEBOOKS"
 if [ -f "$MISS_FILE" ]; then
   ok "misses: $MISS_FILE"
 else
-  info "no misses yet ($MISS_FILE missing) — talk to Agda first"
+  info "no misses yet ($MISS_FILE missing) — talk to Roksolana first"
 fi
 if [ ! -f "$LEARNED_FILE" ]; then
   if [ "$MODE" = "check" ]; then

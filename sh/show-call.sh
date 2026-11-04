@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Demo call: one persona phones AF Agda, tries 3 keywords, robot answers.
+# Demo call: one persona phones AF Roksolana, tries 3 keywords, robot answers.
 # Prints every turn, the used keywords with why (errand), and the map.
 # Usage: show-call.sh [persona-id] (default ny-arbetslos). Part of T-044 (#46).
 set -euo pipefail
@@ -18,7 +18,7 @@ persona_id = '$PERSONA'
 roles = json.load(open('data/role-phrasebooks.json', encoding='utf-8'))['roles']
 persona = next(r for r in roles if r['id'] == persona_id)
 robot = ReactiveRobot.from_phrasebooks('data/role-phrasebooks.json')
-shown = MenuMap.af_agda()
+shown = MenuMap.af_roksolana()
 walk = ['open_question', 'example_words', 'yes_no']
 
 print(f\"Caller: {persona['label']} -- errand: {persona['errand']}\")

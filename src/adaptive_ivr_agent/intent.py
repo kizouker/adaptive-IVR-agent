@@ -7,6 +7,7 @@ Never raises into the call path: any failure abstains to the ladder.
 """
 from __future__ import annotations
 
+import datetime
 import difflib
 import hashlib
 import json
@@ -63,7 +64,10 @@ SPARK_SYSTEM = (
     "You map one Swedish IVR caller utterance to exactly one keyword "
     "from the list, or null if unclear. Output JSON "
     '{"keyword": str|null, "confidence": 0-1} and nothing else. '
-    "Never invent keywords. Map ja/nej only for exactly that word."
+    "Never invent keywords. Map ja/nej only for exactly that word. "
+    "Return null for garbled or fragmentary utterances even when a "
+    "keyword looks close; only map when the keyword or a clear "
+    "paraphrase is present."
 )
 
 
@@ -72,6 +76,33 @@ class NotConfiguredError(RuntimeError):
 
 
 DEFAULT_SPARK_URL = "https://api.meta.ai/v1/chat/completions"
+DEFAULT_SPARK_MODEL = "muse-spark-1.3"  # Meta quickstart default 2026-11
+DEFAULT_SPARK_TIMEOUT = 30  # live Spark p95 ~20 s; SPARK_TIMEOUT overrides
+DEFAULT_SPARK_EFFORT = "medium"  # SPARK_EFFORT overrides; high for hard cases
+SPARK_MIN_CONFIDENCE = 0.8  # below this, Spark maps abstain to the ladder
+DEFAULT_SPARK_DAILY_MAX_CALLS = 200
+
+
+def _utc_today() -> str:
+    return datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+
+
+def spark_calls_today(path: str, today: str | None = None) -> int:
+    """Count today's spark-hosted provenance rows. Never raises."""
+    today = today or _utc_today()
+    try:
+        lines = open(path, encoding="utf-8").read().splitlines()
+    except Exception:
+        return 0
+    count = 0
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except Exception:
+            continue
+        if row.get("runtime") == "spark-hosted" and str(row.get("ts", "")).startswith(today):
+            count += 1
+    return count
 
 
 class SparkNormalizer(Normalizer):
@@ -83,8 +114,17 @@ class SparkNormalizer(Normalizer):
         endpoint: str = "",
         api_key: str = "",
         model: str = "",
-        timeout: int = 3,
+        timeout: int = 0,  # 0 = SPARK_TIMEOUT env or DEFAULT_SPARK_TIMEOUT
+        effort: str = "",
+        daily_max_calls: int | None = None,
     ) -> None:
+        if daily_max_calls is None:
+            raw = os.environ.get("SPARK_DAILY_MAX_CALLS", "")
+            try:
+                daily_max_calls = int(raw) if raw else DEFAULT_SPARK_DAILY_MAX_CALLS
+            except ValueError:
+                daily_max_calls = DEFAULT_SPARK_DAILY_MAX_CALLS
+        self.daily_max_calls = daily_max_calls
         self.endpoint = (
             endpoint
             or os.environ.get("SPARK_API_URL", "")
@@ -104,9 +144,19 @@ class SparkNormalizer(Normalizer):
             model
             or os.environ.get("SPARK_MODEL", "")
             or os.environ.get("MODEL_API_MODEL", "")
-            or "muse-spark"
+            or DEFAULT_SPARK_MODEL
         )
-        self.timeout = timeout
+        self.timeout = (
+            timeout
+            or int(os.environ.get("SPARK_TIMEOUT", "0") or "0")
+            or DEFAULT_SPARK_TIMEOUT
+        )
+        self.effort = (
+            effort
+            or os.environ.get("SPARK_EFFORT", "")
+            or os.environ.get("MODEL_API_EFFORT", "")
+            or DEFAULT_SPARK_EFFORT
+        )
 
     def _prompt(self, heard: str, vocab: list[str]) -> list[dict]:
         return [
@@ -118,6 +168,7 @@ class SparkNormalizer(Normalizer):
         prompt = json.dumps(self._prompt(heard, vocab), ensure_ascii=False)
         log_provenance(
             {
+                "ts": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "model": self.model,
                 "runtime": "spark-hosted",
                 "endpoint": self.endpoint,
@@ -129,12 +180,30 @@ class SparkNormalizer(Normalizer):
             }
         )
 
+    def _over_daily_cap(self) -> bool:
+        if self.daily_max_calls < 0:
+            return False
+        path = os.environ.get("OPENWEIGHT_LOG", "data/provenance.jsonl")
+        used = spark_calls_today(path)
+        if used >= self.daily_max_calls:
+            print(
+                f"[spark-cap] daily limit reached: {used}/{self.daily_max_calls} "
+                "spark-hosted calls today; abstaining to ladder",
+                file=sys.stderr,
+            )
+            return True
+        return False
+
     def map(self, heard: str, vocab: list[str]) -> tuple[str | None, float]:
         clean = normalize(heard)
         if not clean or clean == SILENCE:
             return None, 0.0
+        if self._over_daily_cap():
+            return None, 0.0
         body = json.dumps(
-            {"model": self.model, "messages": self._prompt(heard, vocab)}
+            {"model": self.model, "temperature": 0,
+             "reasoning_effort": self.effort,
+             "messages": self._prompt(heard, vocab)}
         ).encode("utf-8")
         req = urllib.request.Request(
             self.endpoint,
@@ -168,6 +237,9 @@ class SparkNormalizer(Normalizer):
         except (TypeError, ValueError):
             conf = 0.0
         conf = min(1.0, max(0.0, conf))
+        if conf < SPARK_MIN_CONFIDENCE:
+            self._provenance(heard, vocab, None, conf, ms)
+            return None, 0.0
         self._provenance(heard, vocab, keyword, conf, ms)
         return keyword, conf
 
@@ -289,6 +361,52 @@ class OpenWeightNormalizer(Normalizer):
         conf = min(1.0, max(0.0, conf))
         self._provenance(heard, vocab, keyword, conf, ms)
         return keyword, conf
+
+
+def maybe_spark_normalizer(enabled: bool = True) -> SparkNormalizer | None:
+    """SparkNormalizer when ENABLED and a key is set, else None.
+
+    Keyless runs get None: the talk loop skips the Spark step and the
+    sim continues. Never raises.
+    """
+    if not enabled:
+        return None
+    try:
+        return SparkNormalizer()
+    except Exception:
+        return None
+
+
+class SparkFallback:
+    """Optional talk-loop fallback: one normalizer call on word-step miss (#205).
+
+    Wraps a RESPOND callable (reply, matched). Exact hits pass through
+    untouched; only a miss triggers one normalizer.map call against VOCAB.
+    Never raises: a failing normalizer just leaves the miss a miss. LAST
+    holds the most recent {"word", "confidence"} for the board badge, or
+    None when the last round was exact or still a miss.
+    """
+
+    def __init__(self, respond, normalizer: Normalizer, vocab: list[str]) -> None:
+        self._respond = respond
+        self._normalizer = normalizer
+        self._vocab = vocab
+        self.last: dict | None = None
+
+    def respond(self, heard: str) -> tuple[str, str | None]:
+        reply, matched = self._respond(heard)
+        if matched is not None:
+            self.last = None
+            return reply, matched
+        try:
+            keyword, conf = self._normalizer.map(heard, self._vocab)
+        except Exception:
+            keyword, conf = None, 0.0
+        if keyword is None:
+            self.last = None
+            return reply, None
+        self.last = {"word": keyword, "confidence": conf}
+        return f"Du sa {keyword}. Tack. Jag kopplar dig vidare.", keyword
 
 
 def resolve_chain(heard: str, respond, normalizers, vocab: list[str]):

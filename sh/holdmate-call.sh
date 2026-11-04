@@ -1,9 +1,11 @@
 #!/bin/bash
-# Holdmate calls Agda by itself: BFS lessons per persona, headless and fast.
+# Holdmate calls Roksolana by itself: BFS lessons per persona, headless and fast.
 # Runs on: Rickard's Mac (M4). Modes: run (default) | check.
 # Flags: --as <persona> (one lesson), --all (every persona, default),
-#   --depth 0..2 (miss levels, default 2), --speak (Oskar calls, Alva answers),
-#   --fresh (reset knowledge first). Learning lands in data/holdmate-knowledge.json
+#   --depth 0..2 (miss levels, default 2), --lang sv|en (lesson language,
+#   default sv), --speak (Oskar calls, Alva answers),
+#   --fresh (reset knowledge first), --spark (Muse Spark rescues word-step
+#   misses; keyless runs skip it). Learning lands in data/holdmate-knowledge.json
 # (word table + map evidence) and data/holdmate-lessons.jsonl (sim history).
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -14,8 +16,10 @@ ROOT="$(cd "$HERE/.." && pwd)"
 MODE="run"
 PERSONA=""
 DEPTH="2"
+LANG="sv"
 SPEAK=0
 FRESH=0
+SPARK=0
 while [ $# -gt 0 ]; do
   case "$1" in
     check|--check) MODE="check" ;;
@@ -35,7 +39,16 @@ while [ $# -gt 0 ]; do
       ;;
     --speak) SPEAK=1 ;;
     --fresh) FRESH=1 ;;
-    *) fail "Unknown argument: $1 (use: check, --all, --as <id>, --depth N, --speak, --fresh)" ;;
+    --spark) SPARK=1 ;;
+    --lang)
+      LANG="${2:-}"
+      case "$LANG" in
+        sv|en) ;;
+        *) fail "--lang must be sv or en" ;;
+      esac
+      shift
+      ;;
+    *) fail "Unknown argument: $1 (use: check, --all, --as <id>, --depth N, --lang sv|en, --speak, --fresh, --spark)" ;;
   esac
   shift
 done
@@ -73,19 +86,22 @@ else
   info "personas: all 8 roles"
 fi
 info "depth: $DEPTH miss levels"
+info "language: $LANG"
 
 [ "$MODE" = "check" ] && { title "Check only: nothing changed"; exit 0; }
 
 step "Run lessons"
 what "Breadth-first over every alternative; every sim runs to handover."
-ARGS="--phrasebooks $PHRASEBOOKS --lines $LINES --knowledge $KNOWLEDGE --lessons $LESSONS --depth $DEPTH --board-out $BOARD"
+ARGS="--phrasebooks $PHRASEBOOKS --lines $LINES --knowledge $KNOWLEDGE --lessons $LESSONS --depth $DEPTH --lang $LANG --board-out $BOARD"
 [ -n "$PERSONA" ] && ARGS="$ARGS --as $PERSONA"
 [ "$SPEAK" = 1 ] && ARGS="$ARGS --speak"
 [ "$FRESH" = 1 ] && ARGS="$ARGS --fresh"
-DISPLAY="holdmate lessons --depth $DEPTH"
+[ "$SPARK" = 1 ] && ARGS="$ARGS --spark"
+DISPLAY="holdmate lessons --depth $DEPTH --lang $LANG"
 [ -n "$PERSONA" ] && DISPLAY="$DISPLAY --as $PERSONA"
 [ "$SPEAK" = 1 ] && DISPLAY="$DISPLAY --speak"
 [ "$FRESH" = 1 ] && DISPLAY="$DISPLAY --fresh"
+[ "$SPARK" = 1 ] && DISPLAY="$DISPLAY --spark"
 run "$DISPLAY"
 # shellcheck disable=SC2086
 PYTHONPATH="$ROOT/src" python3 -m adaptive_ivr_agent.holdmate $ARGS \

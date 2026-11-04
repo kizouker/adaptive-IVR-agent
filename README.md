@@ -5,11 +5,13 @@
 - **Track & Problem Statement**: Indie Developer · Build for Your World
 - **Hackathon Provenance (Oct 26 – Nov 4, 2026)**: Repo created Sept 2026 for audio-number experiments; all Holdmate agent, board, queue, iOS/watch work built from scratch during the hackathon window (see git history).
 - **Meta AI Runtime Models**:
-  - `Muse Spark` (`api.meta.ai`) — opt-in live intent normalization + eval (`MODEL_API_KEY`)
-  - `Muse Spark Open` — planned load-bearing open-weight stage (stretch goal)
+  - `Muse Spark` (`muse-spark-1.3` on `api.meta.ai`) — live: opt-in intent normalization + eval via `MODEL_API_KEY`; first live run rescue 3/3 ([eval notes](docs/evals/spark-live-2026-11-03.md))
+  - Spark fallback in talk loop + board badge — in progress ([#205](https://github.com/kizouker/adaptive-IVR-agent/issues/205))
+  - `Muse Spark Open` — planned load-bearing open-weight stage (stretch goal, not wired yet)
 - **Bonus Prize Categories Targeted**: Best Agentic Use-Case · Best Creative Build
 - **3-Minute Demo Video**: https://youtu.be/orxqS8rnxt0
 - **Quickstart & Keyless Replay**: `./sh/holdmate.sh` runs the full sim keyless; live Meta calls need `MODEL_API_KEY` (see `.env.example`).
+- **Real lines**: Holdmate trains against a scripted copy of the line, so the real government line is never spammed. Real calls today: human in the loop on speakerphone. Next: telephony via 46elks, and a free BlackHole path ([#190](https://github.com/kizouker/adaptive-IVR-agent/issues/190)).
 
 Calling a robot operator like Sweden's Public Employment Service means menus, queues, and waiting on hold. Holdmate is an adaptive IVR agent that learns to make those calls for you: it practices safely against AF Agda, a scripted copy of the real line built from recorded calls, so the real line is never touched during training — then it helps on real calls with a live board, queue ticket, and handover prompts up to BankID identification.
 
@@ -86,6 +88,12 @@ Live app: https://kizouker.github.io/adaptive-IVR-agent/ (GitHub Pages, current 
 docker compose up --build # board on http://localhost:8080/
 ```
 
+For live Meta calls, set your own key before running (never commit it):
+
+```bash
+export MODEL_API_KEY="your-meta-api-key"
+```
+
 Talk to Agda with your own voice:
 
 ```bash
@@ -131,6 +139,18 @@ npm run build --prefix ui/board
 
 ## Status and next steps
 
-Status: v0.3.1 on main — iPhone + Watch LAN queue, queue demo, Spark intent wiring, video script draft. Test suite green (194 passed, 2 skipped), board builds, CI + CodeQL + e2e pass.
+Status: v0.3.4 on main — iPhone + Watch LAN queue, queue demo, live Spark intent eval green (rescue 3/3), video script draft. Test suite green (225 passed, 2 skipped), board builds, CI + CodeQL + e2e pass.
 
 Next: 46elks live call to compare against scripted Agda, then the speakerphone loop end to end (iPhone loudspeaker, Holdmate listens first, then answers). Submission video follows [docs/video-script-draft.md](docs/video-script-draft.md): problem, live demo, tech, next steps.
+
+## Prior work (before the hackathon)
+
+The repo existed before the hackathon (Oct 26) with exactly 3 commits, all from 2026-09-28 — an audio-classifier learning lab, not Holdmate:
+
+- `05e25cd` Initial commit: audio numbers lab setup — TODO-only `classifier.py` skeleton (librosa + RandomForest), `src/audio_numbers_lab/` package, Python scaffolding.
+- `793d614` Repo for Adaptive IVR agent — README idea draft: recognizing IVR queue numbers, with architecture options (A) record + OpenAI Whisper + regexp, (B) NLU-based, (C) iOS `AVAudioRecorder`.
+- `8addab6` Add user stories for audio classifier lab — `USER_STORIES.md` with 4 learner stories for the audio lab.
+
+None of it is used: the lab files were removed during the hackathon and have zero references on main, and the Sep-28 README draft was fully rewritten (no draft text survives). Whisper in today's tree is hackathon-era work (`whisper.cpp`/`whisper-cli` transcription pipeline) — the pre-hackathon tree contained no Whisper code, only the one-line mention in the draft.
+
+Verify: `git log --oneline --before 2026-10-26`

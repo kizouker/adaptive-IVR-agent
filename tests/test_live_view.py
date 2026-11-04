@@ -46,9 +46,22 @@ def test_rendered_page_carries_data_and_toggle():
 def test_every_map_state_has_both_languages():
     from adaptive_ivr_agent.menu_map import MenuMap
 
-    for shown in (MenuMap.af_agda(), MenuMap.english_branch()):
+    for shown in (MenuMap.af_roksolana(), MenuMap.english_branch(),
+                  MenuMap.busy_day()):
         for state in shown.states:
             assert set(STATE_NAMES[state.id]) == {"sv", "en"}
+
+
+def test_busy_day_starts_at_delay_notice_and_reaches_officer():
+    from adaptive_ivr_agent.menu_map import BUSY_WELCOME, MenuMap
+
+    shown = MenuMap.busy_day()
+    assert shown.current == BUSY_WELCOME == "busy_welcome"
+    assert shown.states[1].id == "english_menu"
+    assert shown.states[-1].id == "officer"
+    first = shown.edges[0]
+    assert (first.source, first.target, first.label) == (
+        "busy_welcome", "english_menu", "press 0")
 
 
 def test_officer_turn_carries_own_speaker():
@@ -62,11 +75,11 @@ def test_officer_turn_carries_own_speaker():
 
 
 def test_live_call_can_switch_map_and_voice():
-    call = LiveCall(map_name="english", robot_name="AF Agda (Samantha)")
+    call = LiveCall(map_name="english", robot_name="AF Roksolana (Samantha)")
     call.add_turn("(pressed 0)", "Welcome to Arbetsförmedlingen.", True, "english_menu")
     shot = call.snapshot()
     assert shot["map"] == "english"
-    assert shot["robot_name"] == "AF Agda (Samantha)"
+    assert shot["robot_name"] == "AF Roksolana (Samantha)"
     assert shot["position"] == "english_menu"
     board = build_live_board([call])
     assert board["calls"][0]["map"] == "english"
@@ -113,9 +126,11 @@ def test_turns_are_capped_by_walk_and_vocabulary():
 def test_board_timestamp_format_and_both_maps():
     state = build_board([("sjukskriven", 1)], PHRASEBOOKS)
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC", state["generated"])
-    assert set(state["maps"]) == {"swedish", "english"}
+    assert set(state["maps"]) == {"swedish", "english", "busy"}
     assert state["maps"]["english"]["states"][-1]["en"] == "Officer"
-    assert state["maps"]["swedish"]["title"] == "AF Agda - svenska kedjan"
+    assert state["maps"]["busy"]["states"][0]["en"] == "Busy-day welcome"
+    assert state["maps"]["busy"]["states"][-1]["en"] == "Officer"
+    assert state["maps"]["swedish"]["title"] == "AF Roksolana - svenska kedjan"
 
 
 def test_board_supports_many_calls_and_none():
@@ -149,10 +164,10 @@ def test_live_call_accumulates_turns_and_tracks_position():
 def test_live_call_carries_audio_only_when_given():
     call = LiveCall()
     call.add_turn("vab", "reply", True, "transfer",
-                 caller_audio="audio/r1-you.wav", robot_audio="audio/r1-agda.mp3")
+                 caller_audio="audio/r1-you.wav", robot_audio="audio/r1-roksolana.mp3")
     call.add_turn("nej", "reply", False, "yes_no")
     first, second = call.snapshot()["turns"]
-    assert (first["caller_audio"], first["robot_audio"]) == ("audio/r1-you.wav", "audio/r1-agda.mp3")
+    assert (first["caller_audio"], first["robot_audio"]) == ("audio/r1-you.wav", "audio/r1-roksolana.mp3")
     assert "caller_audio" not in second and "robot_audio" not in second
 
 
@@ -182,10 +197,10 @@ def test_captions_file_is_valid_vtt(tmp_path):
 def test_opening_turn_is_robot_only():
     call = LiveCall()
     call.add_turn("", "welcome, what is it?", False, "open_question",
-                 robot_audio="audio/r0-agda.mp3", robot_captions="audio/r0-agda.vtt")
+                 robot_audio="audio/r0-roksolana.mp3", robot_captions="audio/r0-roksolana.vtt")
     turn = call.snapshot()["turns"][0]
     assert turn["caller"] == ""
-    assert turn["robot_audio"] == "audio/r0-agda.mp3"
+    assert turn["robot_audio"] == "audio/r0-roksolana.mp3"
     assert "caller_audio" not in turn
 
 
@@ -259,7 +274,7 @@ def test_add_turn_carries_english_robot_line():
 
 def test_live_call_defaults_english_errand_to_errand():
     call = LiveCall()
-    assert call.snapshot()["errand_en"] == "Talking to Agda right now"
+    assert call.snapshot()["errand_en"] == "Talking to Roksolana right now"
     translated = LiveCall(errand="Skriva in mig", errand_en="Register")
     assert translated.snapshot()["errand_en"] == "Register"
 
@@ -267,12 +282,12 @@ def test_live_call_defaults_english_errand_to_errand():
 def test_live_call_carries_captions_and_speaker_names():
     call = LiveCall()
     call.add_turn("vab", "reply", True, "transfer",
-                 caller_audio="audio/r1-you.wav", robot_audio="audio/r1-agda.mp3",
-                 caller_captions="audio/r1-you.vtt", robot_captions="audio/r1-agda.vtt")
+                 caller_audio="audio/r1-you.wav", robot_audio="audio/r1-roksolana.mp3",
+                 caller_captions="audio/r1-you.vtt", robot_captions="audio/r1-roksolana.vtt")
     snapshot = call.snapshot()
-    assert (snapshot["caller_name"], snapshot["robot_name"]) == ("You", "AF Agda (Alva)")
+    assert (snapshot["caller_name"], snapshot["robot_name"]) == ("You", "AF Roksolana (Alva)")
     turn = snapshot["turns"][0]
-    assert (turn["caller_captions"], turn["robot_captions"]) == ("audio/r1-you.vtt", "audio/r1-agda.vtt")
+    assert (turn["caller_captions"], turn["robot_captions"]) == ("audio/r1-you.vtt", "audio/r1-roksolana.vtt")
 
 
 def test_talk_rewrite_carries_baked_lines(tmp_path):

@@ -17,8 +17,8 @@ CONNECTOR = "|"
 INDENT = "  "
 DOT_COMMAND = "dot"
 
-SWEDISH_TITLE = "AF Agda - svenska kedjan"
-ENGLISH_TITLE = "AF Agda - English branch (press 0)"
+SWEDISH_TITLE = "AF Roksolana - svenska kedjan"
+ENGLISH_TITLE = "AF Roksolana - English branch (press 0)"
 
 # One fill color per level, left to right: blue, amber, purple, teal, green.
 LEVEL_COLORS = ["#BBDEFB", "#FFE0B2", "#E1BEE7", "#B2DFDB", "#C8E6C9"]
@@ -65,11 +65,11 @@ class Edge:
     evidence: Evidence = field(default_factory=Evidence)
 
 
-# AF Agda fallback chain, verified against calls 1, 2, 4, 5: open question,
+# AF Roksolana fallback chain, verified against calls 1, 2, 4, 5: open question,
 # example alternatives, yes/no, transfer, then identification (BankID/Freja)
 # before the queue. Failed ID still lands in the queue. Survey is optional
 # (call 4 has it, call 6 does not): queue -> survey -> officer, or served.
-AF_AGDA_STATES = [
+AF_ROKSOLANA_STATES = [
     State("open_question", "Beskriv vad du vill ha hjälp med?"),
     State("example_words", "Du kan till exempel säga... (alt 1, 2, 3)"),
     State("yes_no", "Har du fått ett rekommenderat brev? (ja/nej)"),
@@ -80,7 +80,7 @@ AF_AGDA_STATES = [
     State("officer", "En handläggare svarar."),
 ]
 
-AF_AGDA_EDGES = [
+AF_ROKSOLANA_EDGES = [
     Edge("open_question", "example_words", "no_match", "no match"),
     Edge("example_words", "yes_no", "no_match", "no match"),
     Edge("yes_no", "transfer", "ja/nej", "yes/no"),
@@ -92,6 +92,11 @@ AF_AGDA_EDGES = [
 ]
 
 NO_INPUT_EDGE_LABEL = "silence"
+
+# Busy day from call 5 parts 1-4: the delay notice (L44) replaces the open
+# question, then press 0 leads into the same English key-menu branch.
+BUSY_TITLE = "Roksolana - busy day (delay notice, press 0)"
+BUSY_WELCOME = "busy_welcome"
 
 # English branch from call 5 part 4: pressing 0 skips all speech, then the
 # key menus, SMS offer, identification and queue follow in order. Pressed
@@ -127,12 +132,12 @@ class MenuMap:
     last_edge: tuple[str, str] | None = None
 
     @classmethod
-    def af_agda(cls) -> "MenuMap":
-        """The documented AF Agda fallback chain, starting at the open question."""
+    def af_roksolana(cls) -> "MenuMap":
+        """The documented AF Roksolana fallback chain, starting at the open question."""
         return cls(
-            states=copy.deepcopy(AF_AGDA_STATES),
-            edges=copy.deepcopy(AF_AGDA_EDGES),
-            current=AF_AGDA_STATES[0].id,
+            states=copy.deepcopy(AF_ROKSOLANA_STATES),
+            edges=copy.deepcopy(AF_ROKSOLANA_EDGES),
+            current=AF_ROKSOLANA_STATES[0].id,
             title=SWEDISH_TITLE,
         )
 
@@ -144,6 +149,20 @@ class MenuMap:
             edges=copy.deepcopy(ENGLISH_EDGES),
             current=ENGLISH_STATES[0].id,
             title=ENGLISH_TITLE,
+        )
+
+    @classmethod
+    def busy_day(cls) -> "MenuMap":
+        """Busy-day path (call 5): delay notice, press 0, English branch."""
+        states = [State(BUSY_WELCOME, "Delay notice (L44), press 0 for English")]
+        states.extend(copy.deepcopy(ENGLISH_STATES))
+        edges = [Edge(BUSY_WELCOME, "english_menu", PRESS_ZERO_LABEL)]
+        edges.extend(copy.deepcopy(ENGLISH_EDGES))
+        return cls(
+            states=states,
+            edges=edges,
+            current=BUSY_WELCOME,
+            title=BUSY_TITLE,
         )
 
     @classmethod

@@ -1,4 +1,4 @@
-"""Teach Agda words it missed. Review is injected so tests stay quiet.
+"""Teach Roksolana words it missed. Review is injected so tests stay quiet.
 
 Flow: talk mode appends misses to data/talk-misses.jsonl, this module picks
 the ones worth asking about, and the review answers are saved to

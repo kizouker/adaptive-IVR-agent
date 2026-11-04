@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
+from adaptive_ivr_agent.intent import SparkFallback, maybe_spark_normalizer
 from adaptive_ivr_agent.live_view import (
     SPECIAL_PROBES,
     LiveCall,
@@ -28,18 +29,18 @@ from adaptive_ivr_agent.live_view import (
     translate_robot,
 )
 from adaptive_ivr_agent.menu_map import (
-    AF_AGDA_STATES,
+    AF_ROKSOLANA_STATES,
     Edge,
     Evidence,
     MenuMap,
 )
 from adaptive_ivr_agent.reactive import ReactiveRobot
 from adaptive_ivr_agent.robot import load_indexed_lines
-from adaptive_ivr_agent.talk import AgdaCall
+from adaptive_ivr_agent.talk import RoksolanaCall
 
 ENCODING = "utf-8"
 CALLER_VOICE = "Oskar"
-AGDA_VOICE = "Alva"
+ROKSOLANA_VOICE = "Alva"
 MAX_MISSES = 2
 FIXED_PLACE = 3
 PROBES = list(SPECIAL_PROBES)
@@ -122,13 +123,46 @@ class Exchange(NamedTuple):
     matched: bool
     state: str
     queue_place: int | None = None
+    spark: dict | None = None
 
 
-def build_agda(lines: dict[str, str], respond, busy: bool = False) -> AgdaCall:
-    """Scripted Agda with the recorded lines; fixed queue place for lessons."""
+#: Recorded English line set for English lessons (#238): welcome menu,
+#: sub-menu, SMS offer, identification, queue, place number and handover.
+ENGLISH_LESSON_LINE_IDS = ("L17", "L18", "L31", "L32", "L35", "L36", "L37")
+
+
+def build_roksolana(lines: dict[str, str], respond, busy: bool = False,
+                    lang: str = "sv") -> RoksolanaCall:
+    """Scripted Roksolana with the recorded lines; fixed queue place for lessons.
+
+    lang="en" speaks the recorded English line set (welcome menu, sub-menu,
+    SMS offer, identification, queue, handover) and takes yes/no answers;
+    Swedish stays the default. There is no recorded English busy-day line,
+    so English lessons open with the English menu either way.
+    """
+    if lang == "en":
+        return RoksolanaCall(
+            opening=lines["L17"],
+            examples=lines["L18"],
+            yesno=lines["L31"],
+            yesno_reprompt=lines["L31"],
+            transfer=lines["L37"],
+            identify_line=lines["L32"],
+            identified_line=lines["L38"],
+            failed_line=lines["L34"],
+            served_line=lines["L37"],
+            queue_line=lines["L35"],
+            place_template=lines["L36"],
+            respond=respond,
+            queue_place=lambda: FIXED_PLACE,
+            survey_line=lines["L15"],
+            survey_done=lines["L16"],
+            english_menu=lines["L17"],
+            yesno_words=("yes", "no"),
+        )
     welcome = lines["L44"] if busy else lines["L01"]
     opening = welcome if busy else f"{welcome} {lines['L02']}"
-    return AgdaCall(
+    return RoksolanaCall(
         opening=opening,
         examples=lines["L03"],
         yesno=lines["L22"],
@@ -149,35 +183,39 @@ def build_agda(lines: dict[str, str], respond, busy: bool = False) -> AgdaCall:
 
 
 def run_call(
-    agda: AgdaCall, word: str, misses: int
+    roksolana: RoksolanaCall, word: str, misses: int, spark_fallback=None
 ) -> tuple[SimResult, list[str], list[Exchange]]:
     """Say WORD at MISS_COUNT misses; on transfer run to handover.
 
     Returns the result, the turns said, and board exchanges with states.
+    SPARK_FALLBACK (a SparkFallback, #205) donates its last rescue to the
+    first exchange so the board can badge it; None keeps the sim keyless.
     """
     turns = [f"YOU: {display(word)}"]
-    answer = agda.reply_to(word, misses)
-    turns.append(f"AGDA: {answer.reply}")
+    answer = roksolana.reply_to(word, misses)
+    turns.append(f"ROKSOLANA: {answer.reply}")
     transferred = answer.identify or answer.done
     first_state = "transfer" if transferred else MISS_STATE.get(answer.misses, "yes_no")
+    spark = spark_fallback.last if spark_fallback is not None else None
     exchanges = [
-        Exchange(display(word), answer.reply, answer.matched is not None, first_state)
+        Exchange(display(word), answer.reply, answer.matched is not None,
+                 first_state, spark=spark)
     ]
     served = False
     if answer.identify:
-        entered = agda.after_identified(answer.misses)
-        turns.append(f"AGDA: {entered.reply}")
+        entered = roksolana.after_identified(answer.misses)
+        turns.append(f"ROKSOLANA: {entered.reply}")
         exchanges.append(Exchange("", entered.reply, False, "queue", entered.queue_place))
         place = entered.queue_place or 0
         while place > 0:
-            tick = agda.queue_tick(place, answer.misses)
-            turns.append(f"AGDA: {tick.reply}")
+            tick = roksolana.queue_tick(place, answer.misses)
+            turns.append(f"ROKSOLANA: {tick.reply}")
             exchanges.append(Exchange("", tick.reply, False, "queue", tick.queue_place))
             served = tick.done
             place = tick.queue_place or 0
         if served:
-            survey = agda.after_served(answer.misses)
-            turns.append(f"AGDA: {survey.reply}")
+            survey = roksolana.after_served(answer.misses)
+            turns.append(f"ROKSOLANA: {survey.reply}")
             exchanges.append(Exchange("1", survey.reply, False, "survey"))
     return (
         SimResult("", misses, word, [], answer.matched, transferred, served,
@@ -194,15 +232,17 @@ class Lesson:
         self,
         persona_id: str,
         candidates: list[str],
-        agda: AgdaCall,
+        roksolana: RoksolanaCall,
         knowledge: "Knowledge",
         max_misses: int = MAX_MISSES,
+        spark_fallback=None,
     ) -> None:
         self.persona_id = persona_id
         self.candidates = candidates
-        self.agda = agda
+        self.roksolana = roksolana
         self.knowledge = knowledge
         self.max_misses = max_misses
+        self.spark_fallback = spark_fallback
         self.sims: list[SimResult] = []
 
     def run(self, speak: bool = False) -> dict:
@@ -215,7 +255,8 @@ class Lesson:
                 if (misses, word) in visited:
                     continue
                 visited.add((misses, word))
-                result, turns, _ = run_call(self.agda, word, misses)
+                result, turns, _ = run_call(self.roksolana, word, misses,
+                                            self.spark_fallback)
                 result = result._replace(persona=self.persona_id, path=[*path, word])
                 self.sims.append(result)
                 self.knowledge.observe(result)
@@ -267,8 +308,8 @@ def speak_turns(turns: list[str]) -> None:
             print(_dialogue(bold("You:"), "You:", said, width))
             voice = CALLER_VOICE
         else:
-            print(_dialogue(dim("Agda:"), "Agda:", said, width))
-            voice = AGDA_VOICE
+            print(_dialogue(dim("Roksolana:"), "Roksolana:", said, width))
+            voice = ROKSOLANA_VOICE
         proc = subprocess.Popen(["say", "-v", voice, said])
         try:
             proc.wait()
@@ -286,7 +327,7 @@ class Knowledge:
     def __init__(self) -> None:
         self.words: dict[str, dict] = {}
         self.lessons: list[dict] = []
-        self.shown = MenuMap.af_agda()
+        self.shown = MenuMap.af_roksolana()
 
     def observe(self, result: SimResult) -> None:
         """Record one sim in the word table and on the map."""
@@ -401,14 +442,15 @@ def lesson_call(role: dict, lesson: Lesson, translations: dict) -> LiveCall:
         label=role["label"],
         errand=role["errand"],
         errand_en=role.get("errand_en"),
-        robot_name="AF Agda (lesson)",
+        robot_name="AF Roksolana (lesson)",
     )
     for sim in lesson.sims:
         for exchange in sim.exchanges:
             call.add_turn(exchange.caller, exchange.robot, exchange.matched,
                           exchange.state,
                           robot_en=translate_robot(exchange.robot, translations),
-                          queue_place=exchange.queue_place)
+                          queue_place=exchange.queue_place,
+                          spark=exchange.spark)
     return call
 
 
@@ -427,25 +469,47 @@ def write_lesson_board(path: str | Path, calls: list[LiveCall],
 
 def main(argv: list[str] | None = None) -> int:
     """Run BFS lessons for one or all personas; save knowledge."""
-    parser = argparse.ArgumentParser(description="Holdmate calls Agda by itself (BFS).")
+    parser = argparse.ArgumentParser(description="Holdmate calls Roksolana by itself (BFS).")
     parser.add_argument("--phrasebooks", required=True)
     parser.add_argument("--lines", required=True)
     parser.add_argument("--knowledge", required=True)
     parser.add_argument("--lessons", required=True)
     parser.add_argument("--as", dest="persona", default="")
     parser.add_argument("--depth", type=int, default=MAX_MISSES)
+    parser.add_argument("--lang", default="sv", choices=("sv", "en"),
+                        help="lesson language: sv (default) or en "
+                             "(recorded English lines + English vocab, #238)")
     parser.add_argument("--speak", action="store_true")
     parser.add_argument("--fresh", action="store_true")
     parser.add_argument("--board-out", default="")
+    parser.add_argument("--spark", action="store_true",
+                        help="rescue word-step misses with one Muse Spark call (#205)")
     args = parser.parse_args(argv)
 
     if args.depth < 0 or args.depth > MAX_MISSES:
         parser.error(f"--depth must be 0..{MAX_MISSES}")
-    lines = load_indexed_lines(args.lines)
+    lines = load_indexed_lines(args.lines, lang=args.lang)
     translations = line_translations(args.lines)
-    ears = ReactiveRobot.from_phrasebooks(args.phrasebooks)
-    agda = build_agda(lines, ears.respond)
+    ears = ReactiveRobot.from_phrasebooks(args.phrasebooks, lang=args.lang)
     all_roles = load_personas(args.phrasebooks)
+
+    def lesson_vocab(role: dict) -> list[str]:
+        """Persona words in the lesson language (English falls back to Swedish)."""
+        if args.lang == "en":
+            return list(role.get("vocabulary_en") or role["vocabulary"])
+        return list(role["vocabulary"])
+
+    spark_fallback = None
+    if args.spark:
+        vocab = list(dict.fromkeys(
+            word for role in all_roles for word in lesson_vocab(role)))
+        normalizer = maybe_spark_normalizer(True)
+        if normalizer is None:
+            print("spark: no key, fallback skipped (keyless run)")
+        else:
+            spark_fallback = SparkFallback(ears.respond, normalizer, vocab)
+    roksolana = build_roksolana(lines, spark_fallback.respond if spark_fallback else ears.respond,
+                                lang=args.lang)
     personas = all_roles
     if args.persona:
         personas = [r for r in all_roles if r["id"] == args.persona]
@@ -454,7 +518,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
     knowledge = Knowledge() if args.fresh else Knowledge.load(args.knowledge)
     planned = [
-        (role, list(dict.fromkeys([*role["vocabulary"], *PROBES])))
+        (role, list(dict.fromkeys([*lesson_vocab(role), *PROBES])))
         for role in personas
     ]
     total = sum(len(candidates) * (args.depth + 1) for _, candidates in planned)
@@ -464,8 +528,8 @@ def main(argv: list[str] | None = None) -> int:
         for index, (role, candidates) in enumerate(planned, 1):
             print(bold(f"lesson {index}/{len(planned)}: {role['id']} ({len(candidates)} words)"))
             wintitle(f"lesson {index}/{len(planned)}: {role['id']}")
-            lesson = Lesson(role["id"], candidates, agda, knowledge,
-                            max_misses=args.depth)
+            lesson = Lesson(role["id"], candidates, roksolana, knowledge,
+                            max_misses=args.depth, spark_fallback=spark_fallback)
             summary = lesson.run(speak=args.speak)
             for sim in lesson.sims:
                 lesson_log(args.lessons, sim)
@@ -478,7 +542,12 @@ def main(argv: list[str] | None = None) -> int:
             )
             if args.board_out:
                 live_calls.append(lesson_call(role, lesson, translations))
-                write_lesson_board(args.board_out, live_calls, knowledge, all_roles)
+                coverage_roles = all_roles
+                if args.lang == "en":
+                    coverage_roles = [
+                        {**r, "vocabulary": lesson_vocab(r)} for r in all_roles
+                    ]
+                write_lesson_board(args.board_out, live_calls, knowledge, coverage_roles)
     except KeyboardInterrupt:
         print("stopped early; saving what was learned so far")
     except BrokenPipeError:

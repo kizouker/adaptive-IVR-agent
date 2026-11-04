@@ -1,5 +1,8 @@
 """Talk startup: volume untouched by default, quiet remembered (#122, #123).
 
+Check warns (exit 0) on a clean machine without audio devices, and still
+fails loudly when a device list is broken (#213).
+
 Runs sh/talk.sh check with stubbed audio tools so it works anywhere
 (including Linux containers, #216): SwitchAudioSource answers device
 queries, ffmpeg answers the mic index query, say/afplay/whisper-cli/ffprobe
@@ -7,7 +10,6 @@ are presence stubs for the tool preflight, and a fake Whisper model stands
 in via HOME. Quiet state goes to a tmp file via TALK_QUIET_FILE.
 """
 import os
-import re
 import shutil
 import stat
 import subprocess
@@ -34,16 +36,63 @@ elif [ "$1" = "-c" ]; then
 fi
 """
 
+SWITCH_STUB_NO_OUTPUT = """#!/bin/bash
+# Clean machine output side: no aggregate, no AirPods. Mic present.
+if [ "$1" = "-a" ]; then
+  case "$3" in
+    output) printf 'Built-in Output\\n' ;;
+    input) printf 'MacBook Pro-mikrofon\\n' ;;
+  esac
+elif [ "$1" = "-c" ]; then
+  printf 'Built-in Output\\n'
+fi
+"""
+
+SWITCH_STUB_NO_MIC = """#!/bin/bash
+# Output present, mic name unknown on this machine.
+if [ "$1" = "-a" ]; then
+  case "$3" in
+    output) printf 'IVR_Output_Speakers\\nBuilt-in Output\\n' ;;
+    input) printf 'Built-in Microphone\\n' ;;
+  esac
+elif [ "$1" = "-c" ]; then
+  printf 'Built-in Output\\n'
+fi
+"""
+
+SWITCH_STUB_NO_DEVICES = """#!/bin/bash
+# Clean machine: no aggregate, no AirPods, unknown mic.
+if [ "$1" = "-a" ]; then
+  case "$3" in
+    output) printf 'Built-in Output\\n' ;;
+    input) printf 'Built-in Microphone\\n' ;;
+  esac
+elif [ "$1" = "-c" ]; then
+  printf 'Built-in Output\\n'
+fi
+"""
+
+SWITCH_STUB_BROKEN = """#!/bin/bash
+# Broken audio setup: every query errors.
+echo "SwitchAudioSource: boom" >&2
+exit 1
+"""
+
 FFMPEG_STUB = """#!/bin/bash
 printf 'audio devices:\\n[0] MacBook Pro-mikrofon\\n'
 """
 
+FFMPEG_STUB_EMPTY = """#!/bin/bash
+# Broken ffmpeg/avfoundation: no audio devices at all.
+printf 'video devices:\\n[0] FaceTime Camera\\n'
+"""
 # Check mode never runs these beyond the `command -v` preflight, so a bare
 # presence stub is enough (and keeps macOS runs hermetic too).
 NOOP_STUB = "#!/bin/bash\nexit 0\n"
 
 
-def run_check(tmp_path, *args, quiet_seed=None):
+
+def _run(tmp_path, argv, switch_stub=None, ffmpeg_stub=None, quiet_seed=None):
     # Hermetic script root (#241): sh/talk.sh derives ROOT from its own
     # location and reads remembered state there ($ROOT/.talk-output,
     # .talk-input, .menu-lang, .talk-volume, .talk-quiet). Running the repo
@@ -64,8 +113,8 @@ def run_check(tmp_path, *args, quiet_seed=None):
     binder = tmp_path / "bin"
     binder.mkdir()
     stubs = {
-        "SwitchAudioSource": SWITCH_STUB,
-        "ffmpeg": FFMPEG_STUB,
+        "SwitchAudioSource": switch_stub or SWITCH_STUB,
+        "ffmpeg": ffmpeg_stub or FFMPEG_STUB,
         "ffprobe": NOOP_STUB,
         "whisper-cli": NOOP_STUB,
         "say": NOOP_STUB,
@@ -86,10 +135,20 @@ def run_check(tmp_path, *args, quiet_seed=None):
     env = dict(os.environ, TALK_QUIET_FILE=str(quiet_file), HOME=str(home))
     env["PATH"] = f"{binder}{os.pathsep}{env['PATH']}"
     proc = subprocess.run(
-        ["bash", str(script), "check", *args],
+        ["bash", str(script), *argv],
         capture_output=True, text=True, cwd=fakeroot, env=env, check=False,
     )
     return proc, quiet_file
+
+
+def run_check(tmp_path, *args, quiet_seed=None,
+              switch_stub=SWITCH_STUB, ffmpeg_stub=FFMPEG_STUB):
+    return _run(tmp_path, ["check", *args], switch_stub, ffmpeg_stub, quiet_seed)
+
+
+def run_talk(tmp_path, *args, switch_stub=SWITCH_STUB, ffmpeg_stub=FFMPEG_STUB):
+    """Talk mode. Only safe for fail-fast preflight paths (no switching)."""
+    return _run(tmp_path, list(args), switch_stub, ffmpeg_stub)
 
 
 def test_check_leaves_volume_untouched_by_default(tmp_path):
@@ -131,3 +190,61 @@ def test_default_output_is_ivr_speakers_aggregate():
         if line.startswith("OUTPUT_SPEAKERS=")
     )
     assert "IVR_Output_Speakers" in line
+
+
+def test_check_warns_not_fails_without_output_device(tmp_path):
+    proc, _ = run_check(tmp_path, switch_stub=SWITCH_STUB_NO_OUTPUT)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "WARN" in proc.stdout
+    assert "Output device 'IVR_Output_Speakers' not found" in proc.stdout
+    assert "nothing changed" in proc.stdout
+
+
+def test_check_warns_not_fails_without_mic(tmp_path):
+    proc, _ = run_check(tmp_path, switch_stub=SWITCH_STUB_NO_MIC)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "WARN" in proc.stdout
+    assert "Mic 'MacBook Pro-mikrofon' not found" in proc.stdout
+    assert "ffmpeg mic index: skipped" in proc.stdout
+    assert "nothing changed" in proc.stdout
+
+
+def test_check_clean_machine_warns_and_exits_zero(tmp_path):
+    proc, _ = run_check(tmp_path, switch_stub=SWITCH_STUB_NO_DEVICES)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "Output device 'IVR_Output_Speakers' not found" in proc.stdout
+    assert "Mic 'MacBook Pro-mikrofon' not found" in proc.stdout
+    assert "audio devices missing" in proc.stdout
+    assert "FAIL" not in proc.stdout
+
+
+def test_check_airpods_flag_warns_without_airpods(tmp_path):
+    proc, _ = run_check(tmp_path, "--airpods")
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "No AirPods found among output devices" in proc.stdout
+    assert "FAIL" not in proc.stdout
+
+
+def test_check_fails_when_output_list_broken(tmp_path):
+    proc, _ = run_check(tmp_path, switch_stub=SWITCH_STUB_BROKEN)
+    assert proc.returncode != 0
+    assert "Could not list output devices" in proc.stdout
+
+
+def test_check_fails_when_ffmpeg_sees_no_devices(tmp_path):
+    # Mic exists per SwitchAudioSource but ffmpeg sees nothing: broken.
+    proc, _ = run_check(tmp_path, ffmpeg_stub=FFMPEG_STUB_EMPTY)
+    assert proc.returncode != 0
+    assert "Could not find 'MacBook Pro-mikrofon'" in proc.stdout
+
+
+def test_talk_mode_still_fails_without_output_device(tmp_path):
+    proc, _ = run_talk(tmp_path, switch_stub=SWITCH_STUB_NO_OUTPUT)
+    assert proc.returncode != 0
+    assert "Output device 'IVR_Output_Speakers' not found" in proc.stdout
+
+
+def test_talk_mode_still_fails_without_mic(tmp_path):
+    proc, _ = run_talk(tmp_path, switch_stub=SWITCH_STUB_NO_MIC)
+    assert proc.returncode != 0
+    assert "Mic 'MacBook Pro-mikrofon' not found" in proc.stdout

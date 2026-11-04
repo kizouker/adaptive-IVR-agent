@@ -38,6 +38,13 @@ def test_lines_load_english_when_lang_en():
     assert len(lines) == 44
 
 
+def test_lines_load_english_rendering_per_id():
+    lines = load_indexed_lines(DATA_DIR / "doorkeeper-lines.json", lang="en")
+    assert lines["L17"].startswith("Welcome to Arbetsförmedlingen")
+    assert lines["L35"] == "You will now be placed in a queue waiting for an employment officer."
+    assert lines["L15"] == "To take part, press 1. Otherwise, stay on the line."
+
+
 def test_opening_cache_path_stable_and_distinct(tmp_path):
     cache = tmp_path / "cache" / "nested"
     first = opening_cache_path(cache, "Alva", "Samantha", "hej")

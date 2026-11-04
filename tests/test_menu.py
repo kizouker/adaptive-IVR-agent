@@ -92,7 +92,8 @@ def test_sync_sound_keeps_explicit_pick(tmp_path):
 
 def test_sound_labels_capitalized(tmp_path):
     script = (
-        extract_top(("sound_label",))
+        extract_top(("sound_label", "T"))
+        + '\nMENU_LANG="en"\n'
         + '\nSOUND="airpods"; [ "$(sound_label)" = "AirPods" ] || exit 1\n'
         + 'SOUND="quiet"; [ "$(sound_label)" = "Quiet" ] || exit 2\n'
         + 'SOUND="speakers"; [ "$(sound_label)" = "Speakers" ] || exit 3\n'

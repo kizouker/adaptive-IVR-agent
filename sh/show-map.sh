@@ -13,7 +13,7 @@ PYTHONPATH=src python3 -c "
 import sys
 from adaptive_ivr_agent.menu_map import MenuMap
 name, at = sys.argv[1], int(sys.argv[2])
-shown = MenuMap.english_branch() if name == 'english' else MenuMap.af_agda()
+shown = MenuMap.english_branch() if name == 'english' else MenuMap.af_roksolana()
 ids = [s.id for s in shown.states]
 if at < 1 or at > len(ids):
     raise SystemExit(f'position must be 1-{len(ids)}')

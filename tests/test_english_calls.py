@@ -8,11 +8,11 @@ from adaptive_ivr_agent.reactive import (
     NOT_UNDERSTOOD_EN,
     ReactiveRobot,
 )
-from adaptive_ivr_agent.talk import AgdaCall
+from adaptive_ivr_agent.talk import RoksolanaCall
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 BOOKS = DATA_DIR / "role-phrasebooks.json"
-EN_WORD = "activity report"
+EN_WORD = "register"
 EN_ERRAND = "Register as a job seeker"
 
 
@@ -63,16 +63,16 @@ def _make_call(**kwargs):
         respond=lambda heard: ("sorry", None),
     )
     args.update(kwargs)
-    return AgdaCall(**args)
+    return RoksolanaCall(**args)
 
 
-def test_agda_call_default_yesno_is_swedish():
+def test_roksolana_call_default_yesno_is_swedish():
     call = _make_call()
     assert call.reply_to("nej", 2).matched == "nej"
     assert call.reply_to("no", 2).misses == 3
 
 
-def test_agda_call_english_yesno_pair_confirms():
+def test_roksolana_call_english_yesno_pair_confirms():
     call = _make_call(yesno_words=("yes", "no"))
     assert call.reply_to("yes", 2).matched == "yes"
     assert call.reply_to("no", 2).matched == "no"

@@ -24,6 +24,7 @@ STATE_NAMES = {
     "identification": {"sv": "Identifiering", "en": "Identification"},
     "queue": {"sv": "Kö", "en": "Queue"},
     "survey": {"sv": "Enkät", "en": "Survey"},
+    "busy_welcome": {"sv": "Upptaget-hälsning", "en": "Busy-day welcome"},
     "english_menu": {"sv": "Engelsk knappmeny", "en": "English key menu"},
     "english_submenu": {"sv": "Engelsk undermeny", "en": "English sub-menu"},
     "sms": {"sv": "SMS-erbjudande", "en": "SMS offer"},
@@ -51,7 +52,7 @@ def build_call(persona_id: str, n_turns: int, phrasebooks: str | Path) -> dict:
     roles = json.loads(path.read_text(encoding=ENCODING))["roles"]
     persona = next(r for r in roles if r["id"] == persona_id)
     robot = ReactiveRobot.from_phrasebooks(path)
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     turns = []
     for word, state_id in zip(persona["vocabulary"][:n_turns], WALK):
         shown.move_to(state_id)
@@ -81,8 +82,9 @@ def build_board(specs: list[tuple[str, int]], phrasebooks: str | Path) -> dict:
     return {
         "generated": utc_stamp(),
         "maps": {
-            "swedish": _map_blob(MenuMap.af_agda()),
+            "swedish": _map_blob(MenuMap.af_roksolana()),
             "english": _map_blob(MenuMap.english_branch()),
+            "busy": _map_blob(MenuMap.busy_day()),
         },
         "calls": [build_call(pid, n, phrasebooks) for pid, n in specs],
     }
@@ -90,9 +92,9 @@ def build_board(specs: list[tuple[str, int]], phrasebooks: str | Path) -> dict:
 
 LIVE_PERSONA = "live-caller"
 LIVE_LABEL = "You (live)"
-LIVE_ERRAND = "Talking to Agda right now"
+LIVE_ERRAND = "Talking to Roksolana right now"
 LIVE_CALLER_NAME = "You"
-LIVE_ROBOT_NAME = "AF Agda (Alva)"
+LIVE_ROBOT_NAME = "AF Roksolana (Alva)"
 LIVE_MAP = "swedish"
 OPEN_STATE = "open_question"
 
@@ -154,7 +156,7 @@ def line_translations(path: str | Path) -> dict[str, str]:
 
 
 def translate_robot(text: str, translations: dict[str, str]) -> str:
-    """English rendering of Agda's known lines; unknown text passes through."""
+    """English rendering of Roksolana's known lines; unknown text passes through."""
     out = text
     for sv, en in sorted(translations.items(), key=lambda kv: -len(kv[0])):
         if sv in out:
@@ -203,6 +205,7 @@ class LiveCall:
         queue_total: int | None = None,
         speaker: str | None = None,
         robot_en: str | None = None,
+        spark: dict | None = None,
     ) -> None:
         """Append one exchange. Media paths are board-relative (audio/...) or None."""
         turn = {
@@ -228,6 +231,8 @@ class LiveCall:
             turn["speaker"] = speaker
         if robot_en is not None:
             turn["robot_en"] = robot_en
+        if spark is not None:
+            turn["spark"] = {"word": spark["word"], "confidence": spark["confidence"]}
         self.turns.append(turn)
 
     @property
@@ -250,7 +255,7 @@ def build_live_board(calls: list[LiveCall]) -> dict:
     return {
         "generated": utc_stamp(),
         "maps": {
-            "swedish": _map_blob(MenuMap.af_agda()),
+            "swedish": _map_blob(MenuMap.af_roksolana()),
             "english": _map_blob(MenuMap.english_branch()),
         },
         "calls": [call.snapshot() for call in calls],
