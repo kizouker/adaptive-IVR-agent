@@ -11,13 +11,13 @@ from adaptive_ivr_agent.menu_map import (
 
 
 def test_marker_starts_on_open_question():
-    assert MenuMap.af_agda().position() == 1
-    first = MenuMap.af_agda().render_ascii().splitlines()[0]
+    assert MenuMap.af_roksolana().position() == 1
+    first = MenuMap.af_roksolana().render_ascii().splitlines()[0]
     assert first.startswith(CURRENT_MARKER)
 
 
 def test_marker_follows_moves():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     shown.move_to("example_words")
     assert shown.position() == 2
     shown.move_to("yes_no")
@@ -29,7 +29,7 @@ def test_marker_follows_moves():
 
 def test_unknown_state_is_rejected():
     with pytest.raises(ValueError):
-        MenuMap.af_agda().move_to("atlantis")
+        MenuMap.af_roksolana().move_to("atlantis")
 
 
 def test_english_branch_walks_to_officer_on_silence():
@@ -56,11 +56,11 @@ def test_english_branch_walks_to_officer_on_silence():
 
 
 def test_dot_has_levels_colors_and_current():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     shown.move_to("example_words")
     dot = shown.render_dot()
     assert "rankdir=LR" in dot
-    assert "AF Agda - svenska kedjan" in dot
+    assert "AF Roksolana - svenska kedjan" in dot
     assert "Nivå 1" in dot and "Nivå 2" in dot
     assert "#FFE0B2" in dot
     assert "example_words" in dot and "color=red" in dot
@@ -75,14 +75,14 @@ def test_dot_english_branch():
 
 
 def test_walked_edge_is_red_in_dot():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     shown.move_to("example_words")
     dot = shown.render_dot()
     assert 'open_question -> example_words [label="no_match" color=red penwidth=2];' in dot
 
 
 def test_observation_tagged_with_evidence():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     shown.observe("open_question", "example_words", "no_match", origin="run-1", success=True)
     edge = [e for e in shown.edges if (e.source, e.target) == ("open_question", "example_words")][0]
     assert edge.evidence.status == "observed"
@@ -91,14 +91,14 @@ def test_observation_tagged_with_evidence():
 
 
 def test_hypothesis_rejected_on_counter_evidence():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     shown.hypothesize("example_words", "queue", "shortcut?")
     shown.observe("example_words", "queue", "shortcut?", origin="run-2", success=False)
     assert all((e.source, e.target) != ("example_words", "queue") for e in shown.edges)
 
 
 def test_observed_revised_on_counter_evidence():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     shown.observe("open_question", "example_words", "no_match", origin="run-1", success=True)
     shown.observe("open_question", "example_words", "no_match", origin="run-2", success=False)
     edge = [e for e in shown.edges if (e.source, e.target) == ("open_question", "example_words")][0]
@@ -108,7 +108,7 @@ def test_observed_revised_on_counter_evidence():
 
 
 def test_evidence_does_not_leak_between_maps():
-    first, second = MenuMap.af_agda(), MenuMap.af_agda()
+    first, second = MenuMap.af_roksolana(), MenuMap.af_roksolana()
     first.observe("open_question", "example_words", "no_match", origin="run-1", success=True)
     edge = [e for e in second.edges if (e.source, e.target) == ("open_question", "example_words")][0]
     assert edge.evidence.status == "untested"
@@ -116,7 +116,7 @@ def test_evidence_does_not_leak_between_maps():
 
 
 def test_mermaid_highlights_current_state():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     shown.move_to("transfer")
     text = shown.render_mermaid()
     assert "flowchart TD" in text
@@ -125,7 +125,7 @@ def test_mermaid_highlights_current_state():
 
 
 def test_full_walk_ends_at_officer_position_eight():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     for state_id in ("example_words", "yes_no", "transfer", "identification", "queue"):
         shown.move_to(state_id)
     assert shown.position() == 6
@@ -138,7 +138,7 @@ def test_full_walk_ends_at_officer_position_eight():
 
 
 def test_jump_without_edge_keeps_last_edge_unset():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     assert shown.last_edge is None
     shown.move_to("transfer")
     assert shown.current == "transfer"
@@ -147,7 +147,7 @@ def test_jump_without_edge_keeps_last_edge_unset():
 
 
 def test_walked_move_records_last_edge():
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     shown.move_to("example_words")
     assert shown.last_edge == ("open_question", "example_words")
     shown.move_to("yes_no")
@@ -155,10 +155,10 @@ def test_walked_move_records_last_edge():
 
 
 def test_ascii_shape_connectors_and_trailing_newline():
-    text = MenuMap.af_agda().render_ascii()
+    text = MenuMap.af_roksolana().render_ascii()
     assert text.endswith("\n") and not text.endswith("\n\n")
     lines = text.splitlines()
-    assert len(lines) == 2 * len(MenuMap.af_agda().states) - 1
+    assert len(lines) == 2 * len(MenuMap.af_roksolana().states) - 1
     assert [line for line in lines if line.strip() == "|"] != []
     assert all(line.startswith("  |") for line in lines[1::2])
     assert text.splitlines()[0] == "* Beskriv vad du vill ha hjälp med?"
@@ -191,7 +191,7 @@ def test_dot_fresh_map_has_no_walked_edge():
 
 def test_move_error_names_the_unknown_state():
     with pytest.raises(ValueError, match="atlantis"):
-        MenuMap.af_agda().move_to("atlantis")
+        MenuMap.af_roksolana().move_to("atlantis")
 
 
 def test_custom_edge_renders_in_all_formats():

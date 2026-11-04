@@ -2,7 +2,7 @@
 # Holdmate launcher: board server + talk from one menu, runnable from anywhere.
 # Runs on: Rickard's Mac (M4). Modes: menu (default) | check. Direct: 1, 2, 3, 4.
 # 1 = start the board server, open the page, and talk. 2 = talk options.
-# 3 = misc menu (Teach Agda parked). 4 = lessons submenu (silent/spoken, one/all).
+# 3 = misc menu (Teach Roksolana parked). 4 = lessons submenu (silent/spoken, one/all).
 # Runs from any folder; paths resolve from this script.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -366,7 +366,7 @@ talk_menu() {
     wintitle "talk options"
     title "Talk options (arrows + Enter, Esc goes back)"
     choice="$(choose \
-      "Talk to Agda" \
+      "Talk to Roksolana" \
       "Talk with AirPods" \
       "Sound check only" \
       "Talk as persona" \
@@ -406,7 +406,7 @@ lessons_stopped() { # $1 = producer rc; an INT stop was already noted
 lessons_menu() {
   while true; do
     wintitle "lessons"
-    title "Holdmate phones Agda alone (arrows + Enter, Esc goes back)"
+    title "Holdmate phones Roksolana alone (arrows + Enter, Esc goes back)"
     choice="$(choose \
       "All personas, silent (space = more, q = stop)" \
       "All personas, spoken (Oskar + Alva, Ctrl+C = stop)" \
@@ -443,10 +443,10 @@ misc_menu() {
     wintitle "misc"
     title "Misc (arrows + Enter, Esc goes back)"
     choice="$(choose \
-      "Teach Agda new words (disabled)" \
+      "Teach Roksolana new words (disabled)" \
       "Back")"
     case "$choice" in
-      1) info "Teach Agda is disabled for now (Agda stays dumb; Holdmate is the learner)" ;;
+      1) info "Teach Roksolana is disabled for now (Roksolana stays dumb; Holdmate is the learner)" ;;
       2|q|Q|b|B) return 0 ;;
       *) warn "pick with arrows + Enter (or type 1-2)" ;;
     esac
@@ -465,7 +465,7 @@ fi
 case "$MODE" in
   direct-1) run_all; exit 0 ;;
   direct-2) "$HERE/talk.sh"; exit 0 ;;
-  direct-3) info "Teach Agda is disabled for now"; exit 0 ;;
+  direct-3) info "Teach Roksolana is disabled for now"; exit 0 ;;
   direct-4) "$HERE/holdmate-call.sh"; exit 0 ;;
 esac
 
@@ -491,7 +491,7 @@ while true; do
     "Board + talk (server, page, call)" \
     "Talk options (server runs already)" \
     "Misc..." \
-    "Holdmate phones Agda alone (BFS)" \
+    "Holdmate phones Roksolana alone (BFS)" \
     "Sound: $(sound_label) (change...)" \
     "GitHub (repo, site, pulls...)" \
     "Quit")"

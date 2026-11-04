@@ -50,7 +50,7 @@ def build_call(persona_id: str, n_turns: int, phrasebooks: str | Path) -> dict:
     roles = json.loads(path.read_text(encoding=ENCODING))["roles"]
     persona = next(r for r in roles if r["id"] == persona_id)
     robot = ReactiveRobot.from_phrasebooks(path)
-    shown = MenuMap.af_agda()
+    shown = MenuMap.af_roksolana()
     turns = []
     for word, state_id in zip(persona["vocabulary"][:n_turns], WALK):
         shown.move_to(state_id)
@@ -80,7 +80,7 @@ def build_board(specs: list[tuple[str, int]], phrasebooks: str | Path) -> dict:
     return {
         "generated": utc_stamp(),
         "maps": {
-            "swedish": _map_blob(MenuMap.af_agda()),
+            "swedish": _map_blob(MenuMap.af_roksolana()),
             "english": _map_blob(MenuMap.english_branch()),
         },
         "calls": [build_call(pid, n, phrasebooks) for pid, n in specs],
@@ -89,9 +89,9 @@ def build_board(specs: list[tuple[str, int]], phrasebooks: str | Path) -> dict:
 
 LIVE_PERSONA = "live-caller"
 LIVE_LABEL = "You (live)"
-LIVE_ERRAND = "Talking to Agda right now"
+LIVE_ERRAND = "Talking to Roksolana right now"
 LIVE_CALLER_NAME = "You"
-LIVE_ROBOT_NAME = "AF Agda (Alva)"
+LIVE_ROBOT_NAME = "AF Roksolana (Alva)"
 LIVE_MAP = "swedish"
 OPEN_STATE = "open_question"
 
@@ -153,7 +153,7 @@ def line_translations(path: str | Path) -> dict[str, str]:
 
 
 def translate_robot(text: str, translations: dict[str, str]) -> str:
-    """English rendering of Agda's known lines; unknown text passes through."""
+    """English rendering of Roksolana's known lines; unknown text passes through."""
     out = text
     for sv, en in sorted(translations.items(), key=lambda kv: -len(kv[0])):
         if sv in out:
@@ -252,7 +252,7 @@ def build_live_board(calls: list[LiveCall]) -> dict:
     return {
         "generated": utc_stamp(),
         "maps": {
-            "swedish": _map_blob(MenuMap.af_agda()),
+            "swedish": _map_blob(MenuMap.af_roksolana()),
             "english": _map_blob(MenuMap.english_branch()),
         },
         "calls": [call.snapshot() for call in calls],

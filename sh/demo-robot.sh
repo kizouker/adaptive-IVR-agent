@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Robot speaks the first 3 documented AF Agda lines (Alva). Live audio, Mac only.
+# Robot speaks the first 3 documented AF Roksolana lines (Alva). Live audio, Mac only.
 # Part of T-042 (#44). Run from anywhere: sh /path/to/sh/demo-robot.sh
 set -euo pipefail
 

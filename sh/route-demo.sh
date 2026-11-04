@@ -9,7 +9,7 @@ PYTHONPATH=src python3 -c "
 from adaptive_ivr_agent.menu_map import MenuMap
 from adaptive_ivr_agent.route import find_route
 
-for name, shown, target in [('swedish', MenuMap.af_agda(), 'queue'),
+for name, shown, target in [('swedish', MenuMap.af_roksolana(), 'queue'),
                             ('english', MenuMap.english_branch(), 'officer')]:
     print(f'{name}:', ' -> '.join(find_route(shown, target)))
 "
