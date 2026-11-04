@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Two-voice demo: AF Agda (Alva) vs the caller (Oskar). Live audio, Mac only.
+# Two-voice demo: AF Roksolana (Alva) vs the caller (Oskar). Live audio, Mac only.
 # Lines come from data/doorkeeper-lines.json (L01, L02, L03); caller line is
 # the ny-arbetslos role opening. Part of T-039 (#41).
 set -euo pipefail
