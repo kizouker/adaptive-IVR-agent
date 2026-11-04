@@ -1,7 +1,7 @@
 # Holdmate — non-functional requirements from the judging workflow
 
 Submission-driven quality requirements for the Meta Global AI Hackathon 2026.
-Source of every number: `Judging Workflow.md` (organizers' 3-stage workflow,
+Source of every number: `docs/judging-workflow.md` (organizers' 3-stage workflow,
 10-point rubric, pre-submission checklist). Belongs to the Holdmate submission.
 
 ## ID line
