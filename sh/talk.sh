@@ -161,7 +161,7 @@ if [ -f "$ROOT/.menu-lang" ] && [ "${LANG_GIVEN:-0}" != 1 ]; then
 fi
 [ -n "$CALL_LANG" ] || CALL_LANG="$MENU_LANG" # English menu -> English call
 
-OUTPUT_SPEAKERS="${OUTPUT_SPEAKERS:-IVR_Agent_Speakers}" # MacBook speakers + BlackHole (default)
+OUTPUT_SPEAKERS="${OUTPUT_SPEAKERS:-IVR_Output_Speakers}" # speakers aggregate (default)
 OUTPUT_AIRPODS="${OUTPUT_AIRPODS:-IVR_Agent_Airpods}" # AirPods + BlackHole aggregate
 NORMAL_OUTPUT="Högtalare i MacBook Pro" # physical fallback (also the AirPods-off target)
 _MIC_ENV="${MIC:-}"
@@ -439,7 +439,7 @@ vstep "Switch audio"
 vwhat "Route audio through $MULTI_OUTPUT (--floor levels the physical output first). Originals are restored on exit."
 ORIGINAL_OUTPUT="$(SwitchAudioSource -c -t output)"
 case "$ORIGINAL_OUTPUT" in
-  Agent_*|_Airpods|IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
+  Agent_*|_Airpods|IVR_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
 esac
 ORIGINAL_INPUT="$(SwitchAudioSource -c -t input)"
 switch_back() {
