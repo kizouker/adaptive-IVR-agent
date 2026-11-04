@@ -8,11 +8,15 @@ import argparse
 import json
 import os
 import sys
+import tempfile
 import time
 
 from . import audio
 
-STATE_PATH = os.environ.get("HOLDMATE_CALL_STATE", "/tmp/holdmate-call.json")
+STATE_PATH = os.environ.get(
+    "HOLDMATE_CALL_STATE",
+    os.path.join(tempfile.gettempdir(), "holdmate-call.json"),
+)
 
 
 def _load():
