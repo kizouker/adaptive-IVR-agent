@@ -11,7 +11,7 @@
 #   --busy (delay-notice welcome instead of the plain one),
 #   --spark (rescue word-step misses with one Muse Spark call; keyless runs skip it).
 # Output pick order: --output > $TALK_OUTPUT > .talk-output (holdmate menu) >
-#   AirPods auto-follow > IVR_Agent_Speakers. Aggregate names overridable:
+#   AirPods auto-follow > IVR_Output_Speakers. Aggregate names overridable:
 #   OUTPUT_SPEAKERS / OUTPUT_AIRPODS env. --lang=en|sv (default en, shared
 #   .menu-lang memory with holdmate.sh). --call en|sv (default sv): the whole
 #   call runs in that language (en lines, en ears, English TTS voice).
@@ -24,7 +24,7 @@
 # (0.1-4.0, 1 = normal; the board slider writes the same .talk-volume file).
 # Each round records ~5s from the MacBook mic, transcribes with whisper.cpp,
 # and the robot answers aloud (Alva). Output goes through the chosen device
-# (default IVR_Agent_Speakers = speakers + BlackHole); everything is switched back on exit.
+# (default IVR_Output_Speakers = speakers + BlackHole); everything is switched back on exit.
 # Transfer asks for identification (faked test number, human in the loop),
 # then the call lands in the simulated queue. Ctrl+C ends the loop.
 set -u
@@ -161,7 +161,7 @@ if [ -f "$ROOT/.menu-lang" ] && [ "${LANG_GIVEN:-0}" != 1 ]; then
 fi
 [ -n "$CALL_LANG" ] || CALL_LANG="$MENU_LANG" # English menu -> English call
 
-OUTPUT_SPEAKERS="${OUTPUT_SPEAKERS:-IVR_Agent_Speakers}" # MacBook speakers + BlackHole (default)
+OUTPUT_SPEAKERS="${OUTPUT_SPEAKERS:-IVR_Output_Speakers}" # speakers aggregate (default)
 OUTPUT_AIRPODS="${OUTPUT_AIRPODS:-IVR_Agent_Airpods}" # AirPods + BlackHole aggregate
 NORMAL_OUTPUT="Högtalare i MacBook Pro" # physical fallback (also the AirPods-off target)
 _MIC_ENV="${MIC:-}"
