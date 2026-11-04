@@ -46,9 +46,22 @@ def test_rendered_page_carries_data_and_toggle():
 def test_every_map_state_has_both_languages():
     from adaptive_ivr_agent.menu_map import MenuMap
 
-    for shown in (MenuMap.af_roksolana(), MenuMap.english_branch()):
+    for shown in (MenuMap.af_roksolana(), MenuMap.english_branch(),
+                  MenuMap.busy_day()):
         for state in shown.states:
             assert set(STATE_NAMES[state.id]) == {"sv", "en"}
+
+
+def test_busy_day_starts_at_delay_notice_and_reaches_officer():
+    from adaptive_ivr_agent.menu_map import BUSY_WELCOME, MenuMap
+
+    shown = MenuMap.busy_day()
+    assert shown.current == BUSY_WELCOME == "busy_welcome"
+    assert shown.states[1].id == "english_menu"
+    assert shown.states[-1].id == "officer"
+    first = shown.edges[0]
+    assert (first.source, first.target, first.label) == (
+        "busy_welcome", "english_menu", "press 0")
 
 
 def test_officer_turn_carries_own_speaker():
@@ -113,8 +126,10 @@ def test_turns_are_capped_by_walk_and_vocabulary():
 def test_board_timestamp_format_and_both_maps():
     state = build_board([("sjukskriven", 1)], PHRASEBOOKS)
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC", state["generated"])
-    assert set(state["maps"]) == {"swedish", "english"}
+    assert set(state["maps"]) == {"swedish", "english", "busy"}
     assert state["maps"]["english"]["states"][-1]["en"] == "Officer"
+    assert state["maps"]["busy"]["states"][0]["en"] == "Busy-day welcome"
+    assert state["maps"]["busy"]["states"][-1]["en"] == "Officer"
     assert state["maps"]["swedish"]["title"] == "AF Roksolana - svenska kedjan"
 
 
