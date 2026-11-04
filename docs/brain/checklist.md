@@ -10,7 +10,7 @@ Updated 2026-11-03. Check, then tell Muse ("done").
 - [ ] Video unlisted? Verify https://youtu.be/6KtzT4xfa5k in incognito
 
 ## Devices
-- [ ] iPhone queue over LAN (menu 1 + demo-queue)
+- [x] iPhone queue over LAN (menu 1 + demo-queue)
 - [ ] Watch queue mirror + YOUR TURN blink
 
 ## Azure (after merge)

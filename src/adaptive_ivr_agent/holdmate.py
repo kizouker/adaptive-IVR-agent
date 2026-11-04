@@ -362,7 +362,8 @@ class Knowledge:
         for saved in raw.get("map", {}).get("edges", []):
             edge = known.shown._edge(saved["source"], saved["target"], saved["label"])
             if edge is None:
-                edge = Edge(saved["source"], saved["target"], saved["label"])
+                edge = Edge(saved["source"], saved["target"], saved["label"],
+                            saved.get("label_en", ""))
                 known.shown.edges.append(edge)
             edge.evidence = Evidence(
                 status=saved.get("status", "untested"),

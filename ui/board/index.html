@@ -46,8 +46,10 @@
         display: flex; align-items: center; justify-content: center;
         padding: 20px; z-index: 50; }
       .tbody { background: #0d1319; border: 1px solid #39424f; border-radius: 10px;
-        width: min(680px, 100%); max-height: 82vh; overflow-y: auto;
+        width: min(680px, 100%); height: min(620px, 82vh);
+        display: flex; flex-direction: column;
         padding: 14px 18px 18px; font-family: ui-monospace, monospace; }
+      .turns { flex: 1; overflow-y: auto; min-height: 0; }
       .thead { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
       .thead strong { font-size: 14px; }
       .thead .spacer { flex: 1; }

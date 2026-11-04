@@ -6,6 +6,7 @@ shared with tests/test_playback.py.
 """
 import os
 import pty
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -13,6 +14,10 @@ from pathlib import Path
 import pytest
 
 from tests.test_playback import ROOT, STUBS, TALK, extract, stub_bin
+
+pytestmark = pytest.mark.skipif(
+    shutil.which("bash") is None, reason="bash not installed (minimal container)"
+)
 
 
 def extract_one(name):
@@ -28,7 +33,7 @@ def extract_one(name):
 def test_find_airpods_picks_physical_device(tmp_path):
     script = (
         "SwitchAudioSource() {\n"
-        '  printf "%s\\n" "Hogtalare i MacBook Pro" "IVR_Agent_Output" "Ricks AirPods"\n'
+        '  printf "%s\\n" "Hogtalare i MacBook Pro" "IVR_Input_Record" "Ricks AirPods"\n'
         "}\n" + extract_one("find_airpods") + 'found="$(find_airpods)"\n'
         '[ "$found" = "Ricks AirPods" ] || { echo "got: $found"; exit 1; }\n'
         "echo AIRPODS-OK\n"
@@ -42,7 +47,7 @@ def test_find_airpods_picks_physical_device(tmp_path):
 def test_find_airpods_empty_when_absent(tmp_path):
     script = (
         "SwitchAudioSource() {\n"
-        '  printf "%s\\n" "Hogtalare i MacBook Pro" "IVR_Agent_Speakers"\n'
+        '  printf "%s\\n" "Hogtalare i MacBook Pro" "IVR_Output_Speakers"\n'
         "}\n" + extract_one("find_airpods") + 'found="$(find_airpods)"\n'
         '[ -z "$found" ] || { echo "got: $found"; exit 1; }\n'
         "echo ABSENT-OK\n"
@@ -51,6 +56,34 @@ def test_find_airpods_empty_when_absent(tmp_path):
                           stdin=subprocess.DEVNULL, timeout=30)
     assert done.returncode == 0, done.stderr
     assert "ABSENT-OK" in done.stdout
+
+
+def test_english_voice_prefers_woman_over_daniel(tmp_path):
+    script = (
+        "say() { printf \"%s\\n\" \"Daniel en_US\" \"Samantha en_US\"; }\n"
+        + extract_one("pick_english_voice")
+        + 'VOICE=Alva; got="$(pick_english_voice)"\n'
+        + '[ "$got" = "Samantha" ] || { echo "got: $got"; exit 1; }\n'
+        + "echo VOICE-OK\n"
+    )
+    done = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
+                          stdin=subprocess.DEVNULL, timeout=30)
+    assert done.returncode == 0, done.stderr
+    assert "VOICE-OK" in done.stdout
+
+
+def test_english_voice_falls_back_to_daniel(tmp_path):
+    script = (
+        "say() { printf \"%s\\n\" \"Daniel en_US\"; }\n"
+        + extract_one("pick_english_voice")
+        + 'VOICE=Alva; got="$(pick_english_voice)"\n'
+        + '[ "$got" = "Daniel" ] || { echo "got: $got"; exit 1; }\n'
+        + "echo FALLBACK-OK\n"
+    )
+    done = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
+                          stdin=subprocess.DEVNULL, timeout=30)
+    assert done.returncode == 0, done.stderr
+    assert "FALLBACK-OK" in done.stdout
 
 
 def test_playback_restarts_when_output_device_changes(tmp_path):

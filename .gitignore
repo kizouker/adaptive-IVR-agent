@@ -32,3 +32,14 @@ generated_images/.tbh-generated-images.lock
 project.xcworkspace/xcuserdata/
 xcuserdata/
 *.pem
+# agentchute-gitignore v3 begin
+.agentchute/loop/agents/*.md
+!.agentchute/loop/agents/*.example.md
+!.agentchute/loop/agents/README.md
+.agentchute/loop/inbox/
+.agentchute/loop/archive/
+.agentchute/loop/malformed/
+.agentchute/loop/state/
+.agentchute/loop/scratch-*
+# agentchute-gitignore v3 end
+data/video/cut/.mic

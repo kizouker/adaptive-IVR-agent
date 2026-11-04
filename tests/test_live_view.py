@@ -207,8 +207,10 @@ def test_queue_turn_carries_start_total_for_progress():
 def test_map_blob_ships_edges_for_option_lists():
     state = build_board([("ny-arbetslos", 1)], PHRASEBOOKS)
     edges = state["maps"]["swedish"]["edges"]
-    assert {"source": "yes_no", "target": "transfer", "label": "ja/nej"} in edges
-    assert all(set(edge) == {"source", "target", "label"} for edge in edges)
+    assert {"source": "yes_no", "target": "transfer", "label": "ja/nej",
+            "label_en": "yes/no"} in edges
+    assert all(set(edge) == {"source", "target", "label", "label_en"}
+               for edge in edges)
 
 
 def test_translate_robot_renders_known_lines_and_passes_unknown():

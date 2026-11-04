@@ -3,8 +3,15 @@
 Shell functions are extracted from sh/holdmate.sh at test time with stubbed
 output switching, so the tests run anywhere bash runs (no audio needed).
 """
+import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
+
+pytestmark = pytest.mark.skipif(
+    shutil.which("bash") is None, reason="bash not installed (minimal container)"
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 MENU = ROOT / "sh" / "holdmate.sh"
@@ -46,9 +53,9 @@ def test_draw_pads_rows_and_marks_selection(tmp_path):
     assert done.returncode == 0, done.stderr
     rows = (tmp_path / "out.txt").read_text(encoding="utf-8").splitlines()
     assert rows == [
-        "<D>  aa  <X>",
-        "<B><C>> bbbb<X>",
-        "<D>  c   <X>",
+        "<D>  [1] aa  <X>",
+        "<B><C>> [2] bbbb<X>",
+        "<D>  [3] c   <X>",
     ]
 
 

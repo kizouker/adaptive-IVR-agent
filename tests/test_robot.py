@@ -30,6 +30,14 @@ def test_lines_load_by_id_for_scripted_calls():
     assert lines["L19"] == "Jag kopplar dig vidare till en handläggare."
 
 
+def test_lines_load_english_when_lang_en():
+    lines = load_indexed_lines(DATA_DIR / "doorkeeper-lines.json", lang="en")
+    assert lines["L01"].startswith("Welcome to Arbetsförmedlingen")
+    assert lines["L19"] == "I will connect you to an officer."
+    assert lines["L41"] == "Please answer yes or no."
+    assert len(lines) == 44
+
+
 def test_opening_cache_path_stable_and_distinct(tmp_path):
     cache = tmp_path / "cache" / "nested"
     first = opening_cache_path(cache, "Alva", "Samantha", "hej")

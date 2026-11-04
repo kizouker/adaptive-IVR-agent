@@ -61,6 +61,7 @@ class Edge:
     source: str
     target: str
     label: str
+    label_en: str = ""
     evidence: Evidence = field(default_factory=Evidence)
 
 
@@ -80,14 +81,14 @@ AF_AGDA_STATES = [
 ]
 
 AF_AGDA_EDGES = [
-    Edge("open_question", "example_words", "no_match"),
-    Edge("example_words", "yes_no", "no_match"),
-    Edge("yes_no", "transfer", "ja/nej"),
-    Edge("transfer", "identification", "kopplar"),
-    Edge("identification", "queue", "legitimerad"),
-    Edge("queue", "officer", "served"),
-    Edge("queue", "survey", "enkät erbjuds"),
-    Edge("survey", "officer", "klar"),
+    Edge("open_question", "example_words", "no_match", "no match"),
+    Edge("example_words", "yes_no", "no_match", "no match"),
+    Edge("yes_no", "transfer", "ja/nej", "yes/no"),
+    Edge("transfer", "identification", "kopplar", "connecting"),
+    Edge("identification", "queue", "legitimerad", "identified"),
+    Edge("queue", "officer", "served", "served"),
+    Edge("queue", "survey", "enkät erbjuds", "survey offered"),
+    Edge("survey", "officer", "klar", "done"),
 ]
 
 NO_INPUT_EDGE_LABEL = "silence"
@@ -105,11 +106,11 @@ ENGLISH_STATES = [
 ]
 
 ENGLISH_EDGES = [
-    Edge("english_menu", "english_submenu", "silence"),
-    Edge("english_submenu", "sms", "1/2/4/silence"),
-    Edge("sms", "identification", "1/silence"),
-    Edge("identification", "queue", "identified"),
-    Edge("queue", "officer", "served"),
+    Edge("english_menu", "english_submenu", "silence", "silence"),
+    Edge("english_submenu", "sms", "1/2/4/silence", "1/2/4/silence"),
+    Edge("sms", "identification", "1/silence", "1/silence"),
+    Edge("identification", "queue", "identified", "identified"),
+    Edge("queue", "officer", "served", "served"),
 ]
 
 PRESS_ZERO_LABEL = "press 0"

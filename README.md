@@ -8,7 +8,7 @@
   - `Muse Spark` (`api.meta.ai`) — opt-in live intent normalization + eval (`MODEL_API_KEY`)
   - `Muse Spark Open` — planned load-bearing open-weight stage (stretch goal)
 - **Bonus Prize Categories Targeted**: Best Agentic Use-Case · Best Creative Build
-- **3-Minute Demo Video**: https://youtu.be/6KtzT4xfa5k (draft v1; final Nov 3)
+- **3-Minute Demo Video**: https://youtu.be/orxqS8rnxt0
 - **Quickstart & Keyless Replay**: `./sh/holdmate.sh` runs the full sim keyless; live Meta calls need `MODEL_API_KEY` (see `.env.example`).
 
 Calling a robot operator like Sweden's Public Employment Service means menus, queues, and waiting on hold. Holdmate is an adaptive IVR agent that learns to make those calls for you: it practices safely against AF Agda, a scripted copy of the real line built from recorded calls, so the real line is never touched during training — then it helps on real calls with a live board, queue ticket, and handover prompts up to BankID identification.

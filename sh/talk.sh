@@ -94,7 +94,7 @@ T() { # $1 = key; prints the string for $MENU_LANG (en default, sv optional)
 sect() { printf '%s%s── %s ──%s\n' "$D" '' "$1" "$X"; }
 
 MODE="talk"
-CALL_LANG="sv"
+CALL_LANG="${TALK_CALL_LANG:-sv}" # holdmate.sh exports its menu language; --call wins
 AIRPODS=0
 PERSONA=""
 QUIET=0
@@ -154,7 +154,7 @@ if [ -f "$ROOT/.menu-lang" ] && [ "${LANG_GIVEN:-0}" != 1 ]; then
   case "$_lang_remembered" in en|sv) MENU_LANG="$_lang_remembered" ;; esac
 fi
 
-OUTPUT_SPEAKERS="${OUTPUT_SPEAKERS:-IVR_Agent_Speakers}" # MacBook speakers + BlackHole (default)
+OUTPUT_SPEAKERS="${OUTPUT_SPEAKERS:-IVR_Output_Speakers}" # speakers aggregate (default)
 OUTPUT_AIRPODS="${OUTPUT_AIRPODS:-IVR_Agent_Airpods}" # AirPods + BlackHole aggregate
 NORMAL_OUTPUT="Högtalare i MacBook Pro" # physical fallback (also the AirPods-off target)
 _MIC_ENV="${MIC:-}"
@@ -204,11 +204,15 @@ find_airpods() {
 }
 
 apply_call_voice() {
-  # English call with no explicit VOICE: switch to an English TTS voice.
+  # English call with no explicit VOICE: switch to a woman's English TTS
+  # voice (Roksolana keeps her identity); Daniel only as last resort.
   if [ "${CALL_LANG:-sv}" != "en" ] || [ -n "${_VOICE_ENV:-}" ]; then
     return 0
   fi
-  _found="$(say -v '?' 2>/dev/null | grep -oE '^(Samantha|Karen|Moira|Daniel|Tessa|Fiona|Serena)' | head -1)"
+  _found=""
+  for _v in Samantha Karen Moira Tessa Fiona Serena Daniel; do
+    if say -v '?' 2>/dev/null | grep -q "^$_v "; then _found="$_v"; break; fi
+  done
   VOICE="${_found:-$VOICE}"
 }
 apply_call_voice
@@ -353,8 +357,14 @@ fi
 if [ "$QUIET" = 1 ]; then
   vinfo "$(T quiet_on)"
 fi
-SwitchAudioSource -a -t input | grep -Fxq "$MIC" \
-  || fail "Mic '$MIC' not found (check System Settings -> Sound -> Input)"
+if SwitchAudioSource -a -t input | grep -Fxq "$MIC"; then
+  :
+elif [ "$MODE" = "check" ]; then
+  # Warn instead of a hard stop under check
+  warn "Mic '$MIC' not found"
+else
+  fail "Mic '$MIC' not found (check System Settings -> Sound -> Input)"
+fi
 vok "$(T mic) $MIC"
 if [ -z "$MIC_INDEX" ]; then
   MIC_INDEX="$(audio_index_for "$MIC")"
@@ -389,7 +399,7 @@ vstep "Switch audio"
 vwhat "Route audio through $MULTI_OUTPUT (--floor levels the physical output first). Originals are restored on exit."
 ORIGINAL_OUTPUT="$(SwitchAudioSource -c -t output)"
 case "$ORIGINAL_OUTPUT" in
-  Agent_*|_Airpods|IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
+  Agent_*|_Airpods|IVR_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
 esac
 ORIGINAL_INPUT="$(SwitchAudioSource -c -t input)"
 switch_back() {
@@ -1104,9 +1114,11 @@ EOF
 }
 
 pick_english_voice() {
-  # First decent installed English voice, else the Swedish default.
-  _found="$(say -v '?' 2>/dev/null | grep -oE '^(Samantha|Karen|Moira|Daniel|Tessa|Fiona|Serena)' | head -1)"
-  printf '%s' "${_found:-$VOICE}"
+  # Roksolana's English voice: first installed woman's voice, else fallback.
+  for _v in Samantha Karen Moira Tessa Fiona Serena Daniel; do
+    if say -v '?' 2>/dev/null | grep -q "^$_v "; then printf '%s' "$_v"; return 0; fi
+  done
+  printf '%s' "$VOICE"
 }
 
 digit_caller() {

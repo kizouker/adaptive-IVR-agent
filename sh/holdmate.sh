@@ -2,7 +2,7 @@
 # Holdmate launcher: board server + talk from one menu, runnable from anywhere.
 # Runs on: Rickard's Mac (M4). Modes: menu (default) | check. Direct: 1, 2, 3, 4.
 # 1 = start the board server, open the page, and talk. 2 = talk options.
-# 3 = misc menu (Teach Agda parked). 4 = lessons submenu (silent/spoken, one/all).
+# 3 = misc menu (Teach Roksolana parked). 4 = lessons submenu (silent/spoken, one/all).
 # Runs from any folder; paths resolve from this script.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -10,7 +10,80 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 . "$HERE/ui.sh"
 ROOT="$(cd "$HERE/.." && pwd)"
 MODE="menu"
+VERBOSE=0
 SOUND="speakers"
+vstep() { [ "$VERBOSE" = 1 ] && step "$1"; }
+vwhat() { [ "$VERBOSE" = 1 ] && what "$1"; }
+vok() { [ "$VERBOSE" = 1 ] && ok "$1"; }
+vinfo() { [ "$VERBOSE" = 1 ] && info "$1"; }
+vrun() { [ "$VERBOSE" = 1 ] && run "$1"; }
+MENU_LANG="en"
+T() { # $1 = key; prints the string for $MENU_LANG (en default, sv optional)
+  case "$1" in
+    tagline) _e="waits on hold, so you don't have to"; _s="väntar i kö, så du slipper" ;;
+    menu_title) _e="Holdmate menu (arrows + Enter, Esc quits)"; _s="Holdmate-meny (pilar + Enter, Esc avslutar)" ;;
+    m_board) _e="Board + talk (server, page, call)"; _s="Tavla + samtal (server, sida, samtal)" ;;
+    m_talk) _e="Talk options (server runs already)"; _s="Samtalsval (servern kör redan)" ;;
+    m_misc) _e="Misc..."; _s="Övrigt..." ;;
+    m_lessons) _e="Holdmate phones Roksolana alone (BFS)"; _s="Holdmate ringer Roksolana själv (BFS)" ;;
+    m_sound) _e="Sound"; _s="Ljud" ;;
+    m_change) _e="(change...)"; _s="(ändra...)" ;;
+    m_github) _e="GitHub (repo, site, pulls...)"; _s="GitHub (repo, sajt, pulls...)" ;;
+    m_lang) _e="Language: English (change)"; _s="Språk: svenska (ändra)" ;;
+    m_quit) _e="Quit"; _s="Avsluta" ;;
+    back) _e="Back"; _s="Tillbaka" ;;
+    bye) _e="Bye"; _s="Hej då" ;;
+    type_num) _e="Type a number: "; _s="Skriv ett nummer: " ;;
+    gh_title) _e="GitHub (arrows + Enter, Esc goes back)"; _s="GitHub (pilar + Enter, Esc tillbaka)" ;;
+    gh_repo) _e="Open repo"; _s="Öppna repo" ;;
+    gh_site) _e="Open live site (Pages)"; _s="Öppna sajten (Pages)" ;;
+    gh_pulls) _e="Open pull requests"; _s="Öppna pull requests" ;;
+    gh_issues) _e="Open issues"; _s="Öppna issues" ;;
+    gh_actions) _e="Open Actions"; _s="Öppna Actions" ;;
+    out_title) _e="Output (now:"; _s="Utdata (nu:" ;;
+    speakers) _e="Speakers"; _s="Högtalare" ;;
+    vol_title) _e="Volume (now:"; _s="Volym (nu:" ;;
+    louder) _e="Louder (+)"; _s="Högre (+)" ;;
+    quieter) _e="Quieter (-)"; _s="Lägre (-)" ;;
+    snd_title) _e="Sound (now:"; _s="Ljud (nu:" ;;
+    snd_output) _e="Output:"; _s="Utdata:" ;;
+    snd_volume) _e="Volume:"; _s="Volym:" ;;
+    snd_quiet) _e="Quiet:"; _s="Tyst:" ;;
+    quiet_word) _e="Quiet"; _s="Tyst" ;;
+    on) _e="on"; _s="på" ;;
+    off) _e="off"; _s="av" ;;
+    talk_title) _e="Talk options (arrows + Enter, Esc goes back)"; _s="Samtalsval (pilar + Enter, Esc tillbaka)" ;;
+    t_talk) _e="Talk to Roksolana"; _s="Prata med Roksolana" ;;
+    t_airpods) _e="Talk with AirPods"; _s="Prata med AirPods" ;;
+    t_check) _e="Sound check only"; _s="Endast ljudkoll" ;;
+    t_persona) _e="Talk as persona"; _s="Prata som persona" ;;
+    t_quiet) _e="Talk quietly (type + read)"; _s="Prata tyst (skriv + läs)" ;;
+    lsn_title) _e="Holdmate phones Roksolana alone (arrows + Enter, Esc goes back)"; _s="Holdmate ringer Roksolana själv (pilar + Enter, Esc tillbaka)" ;;
+    lsn_silent) _e="All personas, silent (space = more, q = stop)"; _s="Alla personas, tyst (mellanslag = mer, q = stopp)" ;;
+    lsn_spoken) _e="All personas, spoken (Oskar + Alva, Ctrl+C = stop)"; _s="Alla personas, tal (Oskar + Alva, Ctrl+C = stopp)" ;;
+    lsn_one) _e="One persona, spoken (pick..., Ctrl+C = stop)"; _s="En persona, tal (välj..., Ctrl+C = stopp)" ;;
+    stopped) _e="stopped early, partial knowledge saved (back to menu)"; _s="stoppade tidigt, delkunskap sparad (tillbaka till menyn)" ;;
+    ended) _e="lessons ended early (see above)"; _s="lektionerna slutade tidigt (se ovan)" ;;
+    misc_title) _e="Misc (arrows + Enter, Esc goes back)"; _s="Övrigt (pilar + Enter, Esc tillbaka)" ;;
+    teach) _e="Teach Roksolana new words (disabled)"; _s="Lär Roksolana nya ord (avstängt)" ;;
+    teach_off) _e="Teach Roksolana is disabled for now (Roksolana stays dumb; Holdmate is the learner)"; _s="Lär Roksolana är avstängt (Roksolana förblir dum; Holdmate är eleven)" ;;
+    step_board) _e="Board + talk"; _s="Tavla + samtal" ;;
+    what_board) _e="Start the server, open the page, then talk. Server stops when this ends."; _s="Starta servern, öppna sidan, prata sedan. Servern stoppas när detta slutar." ;;
+    opened) _e="opened"; _s="öppnade" ;;
+    in_browser) _e="in your browser"; _s="i webbläsaren" ;;
+    open_this) _e="open this"; _s="öppna detta" ;;
+    vol_word) _e="volume"; _s="volym" ;;
+    vol_used) _e="(used by the next talk)"; _s="(används av nästa samtal)" ;;
+    snd_word) _e="sound"; _s="ljud" ;;
+    auto_pick) _e="Auto-follow (AirPods when worn)"; _s="Autofölj (AirPods när de bärs)" ;;
+    auto_on) _e="output: auto-follow on"; _s="utdata: autofölj på" ;;
+  esac
+  if [ "$MENU_LANG" = "sv" ]; then printf '%s' "$_s"; else printf '%s' "$_e"; fi
+}
+pickmsg() { # $1 = "1-N"; invalid-choice hint for $MENU_LANG
+  if [ "$MENU_LANG" = "sv" ]; then warn "välj med pilar + Enter (eller skriv $1)";
+  else warn "pick with arrows + Enter (or type $1)"; fi
+}
 SOUND_DIRTY=0
 sync_sound() {
   # Follow AirPods when worn (current output OR just connected) until
@@ -28,8 +101,8 @@ sync_sound() {
 sound_label() {
   case "$SOUND" in
     airpods) printf 'AirPods' ;;
-    quiet) printf 'Quiet' ;;
-    *) printf 'Speakers' ;;
+    quiet) T quiet_word ;;
+    *) T speakers ;;
   esac
 }
 sync_sound
@@ -38,11 +111,21 @@ if [ -f "$ROOT/.talk-quiet" ] && [ "$(cat "$ROOT/.talk-quiet" 2>/dev/null)" = "1
 fi
 for arg in "$@"; do
   case "$arg" in
-    check|--check) MODE="check" ;;
+    check|--check) MODE="check"; VERBOSE=1 ;;
+    -v|--verbose) VERBOSE=1 ;;
+    --lang=*) MENU_LANG="${arg#--lang=}" ;;
+    --lang) fail "--lang needs a value: --lang=en or --lang=sv" ;;
     1|2|3|4) MODE="direct-$arg" ;;
-    *) fail "Unknown argument: $arg (use: check, 1, 2, 3, 4)" ;;
+    *) fail "Unknown argument: $arg (use: check, -v, --lang=en|sv, 1, 2, 3, 4)" ;;
   esac
 done
+case "$MENU_LANG" in en|sv) ;; *) fail "--lang must be en or sv" ;; esac
+if [ -f "$ROOT/.menu-lang" ] && ! printf '%s' "$*" | grep -q -- "--lang"; then
+  remembered="$(cat "$ROOT/.menu-lang" 2>/dev/null)"
+  case "$remembered" in en|sv) MENU_LANG="$remembered" ;; esac
+fi
+# The call follows the menu language (Holdmate runs fully in English or Swedish).
+export TALK_CALL_LANG="$MENU_LANG"
 
 BOARD_DIR="$ROOT/ui/board"
 BOARD_LOG="/tmp/holdmate-board.log"
@@ -52,30 +135,30 @@ URL="http://localhost:$PORT"
 STARTED_BY_ME=0
 SERVER_PID=""
 
-title "Holdmate ($MODE)"
+[ "$VERBOSE" = 1 ] && title "Holdmate ($MODE)"
 
-step "Preflight"
-what "Check node, board files and whether the server already runs."
+vstep "Preflight"
+vwhat "Check node, board files and whether the server already runs."
 for tool in node npm curl; do
   command -v "$tool" >/dev/null 2>&1 || fail "$tool is missing (brew install $tool)"
 done
-ok "tools: node, npm, curl"
+vok "tools: node, npm, curl"
 [ -f "$BOARD_DIR/package.json" ] || fail "Board not found: $BOARD_DIR"
 if [ -d "$BOARD_DIR/node_modules" ]; then
-  ok "board deps installed"
+  vok "board deps installed"
 else
   if [ "$MODE" = "check" ]; then
     fail "board deps missing (run without check to install them)"
   fi
-  run "npm ci --prefix $BOARD_DIR"
+  vrun "npm ci --prefix $BOARD_DIR"
   npm ci --prefix "$BOARD_DIR" || fail "Could not install board deps"
   [ -d "$BOARD_DIR/node_modules" ] || fail "node_modules still missing after install"
-  ok "board deps installed"
+  vok "board deps installed"
 fi
 if curl -sf -o /dev/null --max-time 2 "$URL"; then
-  ok "board server already up: $URL"
+  vok "board server already up: $URL"
 else
-  info "board server not running (choice 1 starts it)"
+  vinfo "board server not running (choice 1 starts it)"
 fi
 
 server_up() {
@@ -120,18 +203,18 @@ stop_server() {
 open_board() {
   if command -v open >/dev/null 2>&1; then
     open "$URL"
-    ok "opened $URL in your browser"
+    ok "$(T opened) $URL $(T in_browser)"
   else
-    info "open this in your browser: $URL"
+    info "$(T open_this) $(T in_browser): $URL"
   fi
 }
 
 open_link() { # $1 = url
   if command -v open >/dev/null 2>&1; then
     open "$1"
-    ok "opened $1 in your browser"
+    ok "$(T opened) $1 $(T in_browser)"
   else
-    info "open this in your browser: $1"
+    info "$(T open_this) $(T in_browser): $1"
   fi
 }
 
@@ -140,14 +223,14 @@ github_menu() {
   PAGES="https://kizouker.github.io/adaptive-IVR-agent/"
   while true; do
     wintitle "github"
-    title "GitHub (arrows + Enter, Esc goes back)"
+    title "$(T gh_title)"
     choice="$(choose \
-      "Open repo" \
-      "Open live site (Pages)" \
-      "Open pull requests" \
-      "Open issues" \
-      "Open Actions" \
-      "Back")"
+      "$(T gh_repo)" \
+      "$(T gh_site)" \
+      "$(T gh_pulls)" \
+      "$(T gh_issues)" \
+      "$(T gh_actions)" \
+      "$(T back)")"
     case "$choice" in
       1) open_link "$GH" ;;
       2) open_link "$PAGES" ;;
@@ -155,7 +238,7 @@ github_menu() {
       4) open_link "$GH/issues" ;;
       5) open_link "$GH/actions" ;;
       6|q|Q|b|B) return 0 ;;
-      *) warn "pick with arrows + Enter (or type 1-6)" ;;
+      *) pickmsg "1-6" ;;
     esac
   done
 }
@@ -174,8 +257,8 @@ can_fancy() {
 choose() { # options as args; echoes 1-based index, or "q" on Esc/EOF
   if ! can_fancy; then
     i=1
-    for opt in "$@"; do info "$i) $opt" >&2; i=$((i + 1)); done
-    printf 'Type a number: ' >&2
+    for opt in "$@"; do info "[$i] $opt" >&2; i=$((i + 1)); done
+    printf '%s' "$(T type_num)" >&2
     read -r line || line="q"
     printf '%s\n' "$line"
     return 0
@@ -191,9 +274,9 @@ choose() { # options as args; echoes 1-based index, or "q" on Esc/EOF
     for opt in "$@"; do
       printf -v padded "%-${width}s" "$opt"
       if [ "$k" = "$sel" ]; then
-        printf '%s%s> %s%s\n' "$B" "$C" "$padded" "$X" >&2
+        printf '%s%s> [%s] %s%s\n' "$B" "$C" "$k" "$padded" "$X" >&2
       else
-        printf '%s  %s%s\n' "$D" "$padded" "$X" >&2
+        printf '%s  [%s] %s%s\n' "$D" "$k" "$padded" "$X" >&2
       fi
       k=$((k + 1))
     done
@@ -248,37 +331,66 @@ volume_menu_step() { # $1 = +0.2|-0.2 (same clamp as talk.sh)
   _v="$(talk_volume)"
   _v="$(LC_ALL=C awk -v v="$_v" -v d="$1" 'BEGIN { n = v + d; if (n < 0.1) n = 0.1; if (n > 4) n = 4; printf "%.1f", n }')"
   printf '%s' "$_v" > "$VOLUME_FILE"
-  info "volume $_v (used by the next talk)"
+  info "$(T vol_word) $_v $(T vol_used)"
 }
 
 output_menu() {
   while true; do
-    title "Output (now: $(sound_label))"
-    choice="$(choose \
-      "Speakers" \
-      "AirPods" \
-      "Back")"
+    title "$(T out_title) $(sound_label))"
+    DEVS=""
+    if command -v SwitchAudioSource >/dev/null 2>&1; then
+      DEVS="$(SwitchAudioSource -a -t output 2>/dev/null | grep -v '^\s*$')"
+    fi
+    if [ -z "$DEVS" ]; then
+      choice="$(choose "$(T speakers)" "AirPods" "$(T back)")"
+      case "$choice" in
+        1) SOUND="speakers"; SOUND_DIRTY=1; rm -f "$ROOT/.talk-output"; info "$(T snd_word): $(sound_label)"; return 0 ;;
+        2) SOUND="airpods"; SOUND_DIRTY=1; rm -f "$ROOT/.talk-output"; info "$(T snd_word): AirPods"; return 0 ;;
+        *) return 0 ;;
+      esac
+    fi
+    OPTS=()
+    while IFS= read -r dev; do [ -n "$dev" ] && OPTS+=("$dev"); done <<EOF
+$DEVS
+EOF
+    OPTS+=("$(T auto_pick)" "$(T back)")
+    choice="$(choose "${OPTS[@]}")"
     case "$choice" in
-      1) SOUND="speakers"; SOUND_DIRTY=1; info "sound: Speakers"; return 0 ;;
-      2) SOUND="airpods"; SOUND_DIRTY=1; info "sound: AirPods"; return 0 ;;
-      3|q|Q|b|B) return 0 ;;
-      *) warn "pick with arrows + Enter (or type 1-3)" ;;
+      q|Q|b|B) return 0 ;;
+      '' | *[!0-9]*) pickmsg "1-${#OPTS[@]}"; continue ;;
     esac
+    if [ "$choice" -ge 1 ] && [ "$choice" -le "${#OPTS[@]}" ]; then
+      picked="${OPTS[$((choice - 1))]}"
+      if [ "$picked" = "$(T back)" ]; then return 0; fi
+      if [ "$picked" = "$(T auto_pick)" ]; then
+        rm -f "$ROOT/.talk-output"; SOUND_DIRTY=0
+        info "$(T auto_on)"
+      else
+        printf '%s' "$picked" > "$ROOT/.talk-output"; SOUND_DIRTY=1
+        case "$picked" in
+          *[Aa]ir[Pp]ods*) SOUND="airpods" ;;
+          *) SOUND="speakers" ;;
+        esac
+        info "$(T snd_word): $picked"
+      fi
+      return 0
+    fi
+    pickmsg "1-${#OPTS[@]}"
   done
 }
 
 volume_menu() {
   while true; do
-    title "Volume (now: $(talk_volume), 0.1-4.0)"
+    title "$(T vol_title) $(talk_volume), 0.1-4.0)"
     choice="$(choose \
-      "Louder (+)" \
-      "Quieter (-)" \
-      "Back")"
+      "$(T louder)" \
+      "$(T quieter)" \
+      "$(T back)")"
     case "$choice" in
       1) volume_menu_step +0.2 ;;
       2) volume_menu_step -0.2 ;;
       3|q|Q|b|B) return 0 ;;
-      *) warn "pick with arrows + Enter (or type 1-3)" ;;
+      *) pickmsg "1-3" ;;
     esac
   done
 }
@@ -286,28 +398,28 @@ volume_menu() {
 sound_menu() {
   while true; do
     wintitle "sound"
-    if [ "$SOUND" = "quiet" ]; then QUIET_STATE="on"; else QUIET_STATE="off"; fi
-    title "Sound (now: $(sound_label), volume $(talk_volume))"
+    if [ "$SOUND" = "quiet" ]; then QUIET_STATE="$(T on)"; else QUIET_STATE="$(T off)"; fi
+    title "$(T snd_title) $(sound_label), $(T vol_word) $(talk_volume))"
     choice="$(choose \
-      "Output: $(sound_label) (change...)" \
-      "Volume: $(talk_volume) (change...)" \
-      "Quiet: $QUIET_STATE (toggle)" \
-      "Back")"
+      "$(T snd_output) $(sound_label) $(T m_change)" \
+      "$(T snd_volume) $(talk_volume) $(T m_change)" \
+      "$(T snd_quiet) $QUIET_STATE $(T m_change)" \
+      "$(T back)")"
     case "$choice" in
       1) output_menu ;;
       2) volume_menu ;;
       3) if [ "$SOUND" = "quiet" ]; then SOUND="speakers"; else SOUND="quiet"; fi
-        SOUND_DIRTY=1; info "sound: $(sound_label)" ;;
+        SOUND_DIRTY=1; info "$(T snd_word): $(sound_label)" ;;
       4|q|Q|b|B) return 0 ;;
-      *) warn "pick with arrows + Enter (or type 1-4)" ;;
+      *) pickmsg "1-4" ;;
     esac
   done
 }
 
 run_all() {
-  step "Board + talk"
+  step "$(T step_board)"
   wintitle "board + talk"
-  what "Start the server, open the page, then talk. Server stops when this ends."
+  what "$(T what_board)"
   start_server
   open_board
   talk_sound
@@ -329,7 +441,7 @@ for r in raw['roles']:
   done <<EOF
 $MAP
 EOF
-  OPTS+=("back")
+  OPTS+=("$(T back)")
   sel="$(choose "${OPTS[@]}")"
   case "$sel" in
     q|Q) printf 'q\n'; return 0 ;;
@@ -347,14 +459,14 @@ EOF
 talk_menu() {
   while true; do
     wintitle "talk options"
-    title "Talk options (arrows + Enter, Esc goes back)"
+    title "$(T talk_title)"
     choice="$(choose \
-      "Talk to Agda" \
-      "Talk with AirPods" \
-      "Sound check only" \
-      "Talk as persona" \
-      "Talk quietly (type + read)" \
-      "Back")"
+      "$(T t_talk)" \
+      "$(T t_airpods)" \
+      "$(T t_check)" \
+      "$(T t_persona)" \
+      "$(T t_quiet)" \
+      "$(T back)")"
     case "$choice" in
       1) talk_sound; return 0 ;;
       2) "$HERE/talk.sh" --airpods; return 0 ;;
@@ -367,7 +479,7 @@ talk_menu() {
         ;;
       5) "$HERE/talk.sh" --quiet; return 0 ;;
       6|q|Q|b|B) return 0 ;;
-      *) warn "pick with arrows + Enter (or type 1-6)" ;;
+      *) pickmsg "1-6" ;;
     esac
   done
 }
@@ -379,9 +491,9 @@ page() { # stdin pager: one screen, space = more, q quits (stays put)
 lessons_stopped() { # $1 = producer rc; an INT stop was already noted
   trap - INT
   if [ "${LESSON_STOP:-0}" = 1 ]; then
-    info "stopped early, partial knowledge saved (back to menu)"
+    info "$(T stopped)"
   elif [ "${1:-0}" != 0 ]; then
-    warn "lessons ended early (see above)"
+    warn "$(T ended)"
   fi
   return 0
 }
@@ -389,12 +501,12 @@ lessons_stopped() { # $1 = producer rc; an INT stop was already noted
 lessons_menu() {
   while true; do
     wintitle "lessons"
-    title "Holdmate phones Agda alone (arrows + Enter, Esc goes back)"
+    title "$(T lsn_title)"
     choice="$(choose \
-      "All personas, silent (space = more, q = stop)" \
-      "All personas, spoken (Oskar + Alva, Ctrl+C = stop)" \
-      "One persona, spoken (pick..., Ctrl+C = stop)" \
-      "Back")"
+      "$(T lsn_silent)" \
+      "$(T lsn_spoken)" \
+      "$(T lsn_one)" \
+      "$(T back)")"
     case "$choice" in
       1) trap 'LESSON_STOP=1' INT; LESSON_STOP=0
         HOLDEMATE_COLOR=1 "$HERE/holdmate-call.sh" --all 2>&1 | page
@@ -416,7 +528,7 @@ lessons_menu() {
         fi
         ;;
       4|q|Q|b|B) return 0 ;;
-      *) warn "pick with arrows + Enter (or type 1-4)" ;;
+      *) pickmsg "1-4" ;;
     esac
   done
 }
@@ -424,14 +536,14 @@ lessons_menu() {
 misc_menu() {
   while true; do
     wintitle "misc"
-    title "Misc (arrows + Enter, Esc goes back)"
+    title "$(T misc_title)"
     choice="$(choose \
-      "Teach Agda new words (disabled)" \
-      "Back")"
+      "$(T teach)" \
+      "$(T back)")"
     case "$choice" in
-      1) info "Teach Agda is disabled for now (Agda stays dumb; Holdmate is the learner)" ;;
+      1) info "$(T teach_off)" ;;
       2|q|Q|b|B) return 0 ;;
-      *) warn "pick with arrows + Enter (or type 1-2)" ;;
+      *) pickmsg "1-2" ;;
     esac
   done
 }
@@ -448,7 +560,7 @@ fi
 case "$MODE" in
   direct-1) run_all; exit 0 ;;
   direct-2) "$HERE/talk.sh"; exit 0 ;;
-  direct-3) info "Teach Agda is disabled for now"; exit 0 ;;
+  direct-3) info "$(T teach_off)"; exit 0 ;;
   direct-4) "$HERE/holdmate-call.sh"; exit 0 ;;
 esac
 
@@ -458,26 +570,28 @@ banner() { # glowing HOLDMATE + Diesel the supervisor cat (#189)
   printf '%s%s%s\n' "$B" "$C" '| |_| | | | | |   | | | | |\/| | / _ \ | | |  _|'
   printf '%s%s%s\n' "$B" "$C" '|  _  | |_| | |___| |_| | |  | |/ ___ \| | | |___'
   printf '%s%s%s\n' "$B" "$C" '|_| |_|\___/|_____|____/|_|  |_/_/   \_\_| |_____|'
-  printf '%s%s%s\n' "$D" '' "   waits on hold, so you don't have to"
+  printf '%s%s%s\n' "$D" '' "   $(T tagline)"
+  printf '%s%s%s\n' "$D" '' "   board: $URL"
   printf '%s%s%s\n' "$Y" '' '   /\_/\  Diesel supervises'
   printf '%s%s%s\n' "$Y" '' '  ( o.o )'
   printf '%s%s%s\n' "$Y" '' '   > ^ <'
   printf '%s' "$X"
 }
-banner
-
 while true; do
+  clear
+  banner
   sync_sound
   wintitle "menu"
-  title "Holdmate menu (arrows + Enter, Esc quits)"
+  title "$(T menu_title)"
   choice="$(choose \
-    "Board + talk (server, page, call)" \
-    "Talk options (server runs already)" \
-    "Misc..." \
-    "Holdmate phones Agda alone (BFS)" \
-    "Sound: $(sound_label) (change...)" \
-    "GitHub (repo, site, pulls...)" \
-    "Quit")"
+    "$(T m_board)" \
+    "$(T m_talk)" \
+    "$(T m_misc)" \
+    "$(T m_lessons)" \
+    "$(T m_sound): $(sound_label) $(T m_change)" \
+    "$(T m_github)" \
+    "$(T m_lang)" \
+    "$(T m_quit)")"
   case "$choice" in
     1) run_all ;;
     2) talk_menu ;;
@@ -485,7 +599,10 @@ while true; do
     4) lessons_menu ;;
     5) sound_menu ;;
     6) github_menu ;;
-    7|q|Q) title "Bye"; exit 0 ;;
-    *) warn "pick with arrows + Enter (or type 1-7)" ;;
+    7) if [ "$MENU_LANG" = "sv" ]; then MENU_LANG="en"; else MENU_LANG="sv"; fi
+       export TALK_CALL_LANG="$MENU_LANG"
+       printf '%s' "$MENU_LANG" > "$ROOT/.menu-lang" ;;
+    8|q|Q) title "$(T bye)"; exit 0 ;;
+    *) pickmsg "1-8" ;;
   esac
 done
