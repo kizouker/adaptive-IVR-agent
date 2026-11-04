@@ -1,8 +1,8 @@
 {
- "last_done": "2026-11-04 ~21:00: PR #234 merged (Upptaget-nod), PR #243 merged (English lessons #238), PR #236 draft green (record-call IVR), female EN voice verified by ear (Samantha), call chain records with sound (-31.6dB). Rickard exhausted, verification worker running.",
+ "last_done": "2026-11-04 21:30: main has #234/#243/#244/#245, CI green. Handover written, /clear next.",
  "last_thought": "BlackHole driver was missing from HAL; after reboot verify with SwitchAudioSource -a, then first blackhole transport call or #42 elks path.",
- "next_micro_step": "Read worker verdict: main suite + trial merge main->t2 conflicts. Then #239 decision (merge vs backport), #236 draft waits for #237.",
- "priority_1": "Submission by 03:00 CET: verify main green, decide t2 fate",
+ "next_micro_step": "Verify /tmp/devnames (lint+pytest), open device-rename PR. Then fresh record-call branch decision.",
+ "priority_1": "Submission from main before 03:00 CET",
  "priority_2": "#140 Upptaget-nod, then #132 demovideo+submission (deadline Wed 21:00 CET)",
  "updated": "2026-11-04",
  "last_update": "v0.4.2 amiga released; #210 video fate, X post, #151 terminology conflict still open"
