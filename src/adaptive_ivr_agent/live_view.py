@@ -24,6 +24,7 @@ STATE_NAMES = {
     "identification": {"sv": "Identifiering", "en": "Identification"},
     "queue": {"sv": "Kö", "en": "Queue"},
     "survey": {"sv": "Enkät", "en": "Survey"},
+    "busy_welcome": {"sv": "Upptaget-hälsning", "en": "Busy-day welcome"},
     "english_menu": {"sv": "Engelsk knappmeny", "en": "English key menu"},
     "english_submenu": {"sv": "Engelsk undermeny", "en": "English sub-menu"},
     "sms": {"sv": "SMS-erbjudande", "en": "SMS offer"},
@@ -82,6 +83,7 @@ def build_board(specs: list[tuple[str, int]], phrasebooks: str | Path) -> dict:
         "maps": {
             "swedish": _map_blob(MenuMap.af_roksolana()),
             "english": _map_blob(MenuMap.english_branch()),
+            "busy": _map_blob(MenuMap.busy_day()),
         },
         "calls": [build_call(pid, n, phrasebooks) for pid, n in specs],
     }
