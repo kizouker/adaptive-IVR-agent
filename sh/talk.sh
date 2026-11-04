@@ -3,22 +3,28 @@
 # Runs on: Rickard's Mac (M4). Modes: talk (default) | check.
 # check mode warns (exit 0) when audio devices are absent — a missing device on a
 # clean machine is not an error; talk mode still fails loudly without them.
-# Flags: --airpods (physical AirPods; must be connected), --as <persona> (role-play + tag rounds for Holdmate training),
+# Flags: --airpods (physical AirPods; must be connected), --output NAME (exact output
+#   device; wins over everything), --as <persona> (role-play + tag rounds for Holdmate training),
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
 #   --quiet (type + read instead of speak + listen), --sound (force sound on),
 #   --floor (level the system volume first; default leaves it untouched),
 #   --busy (delay-notice welcome instead of the plain one),
 #   --spark (rescue word-step misses with one Muse Spark call; keyless runs skip it).
+# Output pick order: --output > $TALK_OUTPUT > .talk-output (holdmate menu) >
+#   AirPods auto-follow > IVR_Agent_Speakers. Aggregate names overridable:
+#   OUTPUT_SPEAKERS / OUTPUT_AIRPODS env. --lang=en|sv (default en, shared
+#   .menu-lang memory with holdmate.sh). --call en|sv (default sv): the whole
+#   call runs in that language (en lines, en ears, English TTS voice).
 # The quiet/sound choice is remembered in .talk-quiet; flags override it and save.
-# Env: AGDA_FORGIVING=1 enables Agda's bad memory (learned aliases, unrealistic).
+# Env: ROKSOLANA_FORGIVING=1 enables Roksolana's bad memory (learned aliases, unrealistic).
 #   QUEUE_TICK seconds between queue numbers (default 8).
 # Keys during record/playback: any key skips ahead, 0 jumps to the English
 # menu (full call-5 path on DTMF digits), a toggles speakers/AirPods output,
 # t toggles quiet mode (hushes in-flight audio at once), + / - adjusts volume
 # (0.1-4.0, 1 = normal; the board slider writes the same .talk-volume file).
 # Each round records ~5s from the MacBook mic, transcribes with whisper.cpp,
-# and the robot answers aloud (Alva). Output goes through the IVR_Agent device
-# (speakers + BlackHole) and everything is switched back on exit.
+# and the robot answers aloud (Alva). Output goes through the chosen device
+# (default IVR_Agent_Speakers = speakers + BlackHole); everything is switched back on exit.
 # Transfer asks for identification (faked test number, human in the loop),
 # then the call lands in the simulated queue. Ctrl+C ends the loop.
 set -u
@@ -26,8 +32,72 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=ui.sh
 . "$HERE/ui.sh"
 ROOT="$(cd "$HERE/.." && pwd)"
+MENU_LANG="en"
+VERBOSE=0
+vrun() { [ "$VERBOSE" = 1 ] && run "$1"; }
+vok() { [ "$VERBOSE" = 1 ] && ok "$1"; }
+vinfo() { [ "$VERBOSE" = 1 ] && info "$1"; }
+vstep() { [ "$VERBOSE" = 1 ] && step "$1"; }
+vwhat() { [ "$VERBOSE" = 1 ] && what "$1"; }
+vwarn() { [ "$VERBOSE" = 1 ] && warn "$1"; }
+vsect() { [ "$VERBOSE" = 1 ] && sect "$1"; }
+vnote() { [ "$VERBOSE" = 1 ] && note "$1"; }
+T() { # $1 = key; prints the string for $MENU_LANG (en default, sv optional)
+  case "$1" in
+    sect_tools) _e="Tools"; _s="Verktyg" ;;
+    sect_audio) _e="Audio"; _s="Ljud" ;;
+    sect_data) _e="Data"; _s="Data" ;;
+    sect_call) _e="Call"; _s="Samtal" ;;
+    model) _e="Whisper model:"; _s="Whisper-modell:" ;;
+    phrase) _e="phrasebooks:"; _s="frasböcker:" ;;
+    out_dev) _e="output device:"; _s="utdata:" ;;
+    out_chosen) _e="(chosen, auto-follow off)"; _s="(vald, autofölj av)" ;;
+    auto_spk) _e="auto output: speakers (no AirPods connected)"; _s="auto: högtalare (inga AirPods anslutna)" ;;
+    auto_pods) _e="auto output: AirPods connected, using them"; _s="auto: AirPods anslutna, använder dem" ;;
+    toggle) _e="toggle target:"; _s="växlingsmål:" ;;
+    press_a) _e="(press a during the call)"; _s="(tryck a under samtalet)" ;;
+    no_pods) _e="no AirPods connected (mid-call a-key stays put)"; _s="inga AirPods anslutna (a-tangenten gör inget)" ;;
+    not_found) _e="not found"; _s="hittades inte" ;;
+    akey_put) _e="(mid-call a-key stays put)"; _s="(a-tangenten gör inget under samtalet)" ;;
+    muted) _e="macOS output is MUTED (unmute to hear Roksolana)"; _s="macOS-ljudet är TYST (slå på för att höra Roksolana)" ;;
+    lowvol_a) _e="macOS system volume is"; _s="macOS-volymen är" ;;
+    lowvol_b) _e="(raise it to hear Roksolana well)"; _s="(höj för att höra Roksolana bra)" ;;
+    floor_would) _e="check: talk mode would unmute + raise below"; _s="koll: samtalsläget skulle slå på ljudet + höja under" ;;
+    floor_to) _e="to"; _s="till" ;;
+    now_is) _e="now"; _s="nu" ;;
+    floor_off) _e="check: talk mode leaves the system volume untouched (use --floor to level it first)"; _s="koll: samtalsläget lämnar volymen (använd --floor för att nivellera först)" ;;
+    quiet_on) _e="quiet mode: type + read, t toggles sound back on"; _s="tyst läge: skriv + läs, t sätter på ljudet" ;;
+    mic) _e="mic:"; _s="mic:" ;;
+    mic_idx) _e="ffmpeg mic index:"; _s="ffmpeg-micindex:" ;;
+    rec_to) _e="Recordings go to:"; _s="Inspelningar hamnar i:" ;;
+    plays_a) _e="plays at volume"; _s="spelar på volym" ;;
+    plays_b) _e="(1 = normal, up to 4 = boost; + / - during the call or the board slider)"; _s="(1 = normalt, upp till 4 = boost; + / - under samtalet eller boardreglaget)" ;;
+    misses_a) _e="Misses are logged to"; _s="Missar loggas till" ;;
+    misses_b) _e="(teach them with sh/learn-words.sh)"; _s="(lär ut dem med sh/learn-words.sh)" ;;
+    rounds_a) _e="Every round is logged to"; _s="Varje runda loggas till" ;;
+    rounds_b) _e="(Holdmate's training data)"; _s="(Holdmates träningsdata)" ;;
+    mem_on) _e="bad memory ON: Roksolana accepts learned aliases (unrealistic practice)"; _s="dåligt minne PÅ: Roksolana accepterar inlärda alias (orealistisk träning)" ;;
+    mem_off) _e="bad memory off: Roksolana only knows exact The Castle words (realistic)"; _s="dåligt minne av: Roksolana kan bara exakta The Castle-ord (realistiskt)" ;;
+    q_at) _e="queue starts at"; _s="kön börjar på" ;;
+    q_every) _e="ticks every"; _s="tickar var" ;;
+    q_hurry) _e="(any key hurries)"; _s="(valfri tangent påskyndar)" ;;
+    q_rand) _e="queue starts at random 2-5,"; _s="kön börjar på slumpmässiga 2-5," ;;
+    title_talk) _e="Talk to the robot"; _s="Prata med roboten" ;;
+    step_pre) _e="Preflight"; _s="Förkoll" ;;
+    what_pre) _e="Check tools, model, phrasebooks and audio devices before touching anything."; _s="Kolla verktyg, modell, frasböcker och ljudenheter innan något ändras." ;;
+    check_only) _e="Check only: nothing changed"; _s="Endast koll: inget ändrades" ;;
+    keys_hint) _e="Keys: any key skips, q quits, +/- volume"; _s="Tangenter: valfri tangent hoppar över, q avslutar, +/- volym" ;;
+    calling) _e="Calling Roksolana..."; _s="Ringer Roksolana..." ;;
+    call_lang) _e="call language:"; _s="samtalspråk:" ;;
+    you_live) _e="YOU (live):"; _s="DU (live):" ;;
+    id_bad) _e="press 1 for BankID or 2 for Freja — other digits don't count"; _s="tryck 1 för BankID eller 2 för Freja — andra siffror räknas inte" ;;
+  esac
+  if [ "$MENU_LANG" = "sv" ]; then printf '%s' "$_s"; else printf '%s' "$_e"; fi
+}
+sect() { printf '%s%s── %s ──%s\n' "$D" '' "$1" "$X"; }
 
 MODE="talk"
+CALL_LANG="sv"
 AUDIO_DEGRADED=0 # check mode: 1 once a missing device downgrades a fail to a warn
 AIRPODS=0
 PERSONA=""
@@ -39,8 +109,27 @@ SPARK=0
 QUEUE_START=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    check|--check) MODE="check" ;;
+    check|--check) MODE="check"; VERBOSE=1 ;;
     --airpods) AIRPODS=1 ;;
+    --output)
+      TALK_OUTPUT="${2:-}"
+      [ -n "$TALK_OUTPUT" ] || fail "--output needs a device name (see SwitchAudioSource -a)"
+      shift
+      ;;
+    --mic)
+      MIC_FLAG="${2:-}"
+      [ -n "$MIC_FLAG" ] || fail "--mic needs a device name (see SwitchAudioSource -a -t input)"
+      MIC_GIVEN=1
+      shift
+      ;;
+    --call)
+      CALL_LANG="${2:-}"
+      case "$CALL_LANG" in en|sv) ;; *) fail "--call needs en or sv" ;; esac
+      shift
+      ;;
+    --lang=*) MENU_LANG="${1#--lang=}"; LANG_GIVEN=1 ;;
+    --lang) fail "--lang needs a value: --lang=en or --lang=sv" ;;
+    -v|--verbose) VERBOSE=1 ;;
     --quiet) QUIET=1; QUIET_FORCED=1 ;;
     --sound) QUIET=0; QUIET_FORCED=0 ;;
     --floor) FLOOR=1 ;;
@@ -61,16 +150,30 @@ while [ $# -gt 0 ]; do
       fi
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --as <persona>, --queue N, --quiet, --sound, --floor, --busy, --spark)" ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --output NAME, --mic NAME, --lang=en|sv, --call en|sv, -v, --as <persona>, --queue N, --quiet, --sound, --floor, --busy, --spark)" ;;
   esac
   shift
 done
+case "$MENU_LANG" in en|sv) ;; *) fail "--lang must be en or sv" ;; esac
+if [ -f "$ROOT/.menu-lang" ] && [ "${LANG_GIVEN:-0}" != 1 ]; then
+  _lang_remembered="$(cat "$ROOT/.menu-lang" 2>/dev/null)"
+  case "$_lang_remembered" in en|sv) MENU_LANG="$_lang_remembered" ;; esac
+fi
 
-OUTPUT_SPEAKERS="IVR_Agent_Speakers"   # MacBook speakers + BlackHole (default)
+OUTPUT_SPEAKERS="${OUTPUT_SPEAKERS:-IVR_Agent_Speakers}" # MacBook speakers + BlackHole (default)
+OUTPUT_AIRPODS="${OUTPUT_AIRPODS:-IVR_Agent_Airpods}" # AirPods + BlackHole aggregate
 NORMAL_OUTPUT="Högtalare i MacBook Pro" # physical fallback (also the AirPods-off target)
+_MIC_ENV="${MIC:-}"
 MIC="MacBook Pro-mikrofon"
+if [ -f "$ROOT/.talk-input" ]; then
+  _mic_remembered="$(cat "$ROOT/.talk-input" 2>/dev/null)"
+  [ -n "$_mic_remembered" ] && MIC="$_mic_remembered" # menu pick wins over default
+fi
+[ -n "$_MIC_ENV" ] && MIC="$_MIC_ENV" # $MIC env wins over the menu pick
+[ "${MIC_GIVEN:-0}" = 1 ] && MIC="$MIC_FLAG" # --mic wins over everything
 RECORD_SECONDS="${RECORD_SECONDS:-5}"
 MIC_INDEX="${MIC_INDEX:-}"             # empty = auto-detect; set to force an avfoundation index
+_VOICE_ENV="${VOICE:-}"
 VOICE="${VOICE:-Alva}"
 FLOOR_LEVEL=70                        # with --floor, talk mode raises a quieter output to this (merged devices can't be raised later); default leaves it untouched
 FLOOR_CHANGED=0
@@ -91,7 +194,7 @@ if [ -n "$QUIET_FORCED" ]; then
 elif [ -f "$QUIET_FILE" ] && grep -Eq '^[01]$' "$QUIET_FILE"; then
   QUIET="$(cat "$QUIET_FILE")"            # remembered t-toggle/flag from last run
 fi
-AGDA_FORGIVING="${AGDA_FORGIVING:-0}"     # 1 = Agda's bad memory (learned aliases); 0 = exact AF words
+ROKSOLANA_FORGIVING="${ROKSOLANA_FORGIVING:-0}"     # 1 = Roksolana's bad memory (learned aliases); 0 = exact The Castle words
 QUEUE_TICK="${QUEUE_TICK:-8}"             # seconds between queue numbers (any key hurries)
 FAKE_PERSONNUMMER="19121212-1212"         # test number for the faked ID step; nothing real ever flows
 MODEL="$HOME/models/whisper/ggml-small.bin"
@@ -106,19 +209,37 @@ find_airpods() {
   SwitchAudioSource -a -t output 2>/dev/null | grep -i -m1 'airpods' || true
 }
 
+apply_call_voice() {
+  # English call with no explicit VOICE: switch to an English TTS voice.
+  if [ "${CALL_LANG:-sv}" != "en" ] || [ -n "${_VOICE_ENV:-}" ]; then
+    return 0
+  fi
+  _found="$(say -v '?' 2>/dev/null | grep -oE '^(Samantha|Karen|Moira|Daniel|Tessa|Fiona|Serena)' | head -1)"
+  VOICE="${_found:-$VOICE}"
+}
+apply_call_voice
+
 MULTI_OUTPUT="$OUTPUT_SPEAKERS"
 AUTO_PODS="$(find_airpods)"
-if [ "$AIRPODS" = 1 ]; then
-  if [ -n "$AUTO_PODS" ]; then
+if [ -n "${TALK_OUTPUT:-}" ]; then
+  MULTI_OUTPUT="$TALK_OUTPUT" # explicit --output/env wins over auto-follow
+else
+  _remembered=""
+  [ -f "$ROOT/.talk-output" ] && _remembered="$(cat "$ROOT/.talk-output" 2>/dev/null)"
+  if [ -n "$_remembered" ] && SwitchAudioSource -a -t output 2>/dev/null | grep -Fxq "$_remembered"; then
+    MULTI_OUTPUT="$_remembered" # menu choice from holdmate.sh
+  elif [ "$AIRPODS" = 1 ]; then
+    if [ -n "$AUTO_PODS" ]; then
+      MULTI_OUTPUT="$AUTO_PODS"
+    elif [ "$MODE" = "check" ]; then
+      AUDIO_DEGRADED=1
+      warn "No AirPods found among output devices (check continues on $OUTPUT_SPEAKERS)"
+    else
+      fail "No AirPods found among output devices (connect them first, then retry)"
+    fi
+  elif [ -n "$AUTO_PODS" ]; then
     MULTI_OUTPUT="$AUTO_PODS"
-  elif [ "$MODE" = "check" ]; then
-    AUDIO_DEGRADED=1
-    warn "No AirPods found among output devices (check continues on $OUTPUT_SPEAKERS)"
-  else
-    fail "No AirPods found among output devices (connect them first, then retry)"
   fi
-elif [ -n "$AUTO_PODS" ]; then
-  MULTI_OUTPUT="$AUTO_PODS"
 fi
 
 audio_index_for() {
@@ -140,25 +261,25 @@ floor_system_volume() {
   FLOOR_CHANGED=0
   ORIG_SYS_VOL=""
   ORIG_SYS_MUTED=""
-  command -v osascript >/dev/null 2>&1 || { warn "osascript missing, skipping volume floor"; return 0; }
+  command -v osascript >/dev/null 2>&1 || { vwarn "osascript missing, skipping volume floor"; return 0; }
   _vol="$(osascript -e 'output volume of (get volume settings)' 2>/dev/null || true)"
   _muted="$(osascript -e 'output muted of (get volume settings)' 2>/dev/null || true)"
   case "$_vol" in
-    '' | *[!0-9]*) warn "could not read system volume, skipping floor"; return 0 ;;
+    '' | *[!0-9]*) vwarn "could not read system volume, skipping floor"; return 0 ;;
   esac
   ORIG_SYS_VOL="$_vol"
   ORIG_SYS_MUTED="$_muted"
   if [ "$_muted" = "true" ]; then
     osascript -e 'set volume output muted false' 2>/dev/null || true
     FLOOR_CHANGED=1
-    info "unmuted $1 (was muted)"
+    vinfo "unmuted $1 (was muted)"
   fi
   if [ "$_vol" -lt "$FLOOR_LEVEL" ]; then
     osascript -e "set volume output volume $FLOOR_LEVEL" 2>/dev/null || true
     FLOOR_CHANGED=1
-    info "raised $1 system volume $_vol -> $FLOOR_LEVEL (merged device can't be raised later)"
+    vinfo "raised $1 system volume $_vol -> $FLOOR_LEVEL (merged device can't be raised later)"
   else
-    ok "system volume $1: $_vol (floor $FLOOR_LEVEL)"
+    vok "system volume $1: $_vol (floor $FLOOR_LEVEL)"
   fi
 }
 
@@ -181,27 +302,32 @@ restore_system_volume() {
   if [ "$(SwitchAudioSource -c -t output 2>/dev/null)" != "$ORIGINAL_OUTPUT" ]; then
     SwitchAudioSource -s "$ORIGINAL_OUTPUT" -t output >/dev/null 2>/dev/null || true
   fi
-  info "system volume restored: $FLOOR_TARGET -> $ORIG_SYS_VOL"
+  vinfo "system volume restored: $FLOOR_TARGET -> $ORIG_SYS_VOL"
 }
 
-wintitle "talk to Agda"
-title "Talk to the robot ($MODE)"
+wintitle "talk to Roksolana"
+[ "$VERBOSE" = 1 ] && title "$(T title_talk) ($MODE)"
 
-step "Preflight"
-what "Check tools, model, phrasebooks and audio devices before touching anything."
+vstep "$(T step_pre)"
+vwhat "$(T what_pre)"
+vsect "$(T sect_tools)"
 for tool in ffmpeg ffprobe whisper-cli say afplay SwitchAudioSource python3; do
   command -v "$tool" >/dev/null 2>&1 || fail "$tool is missing (brew install $tool)"
 done
 ok "tools: ffmpeg, ffprobe, whisper-cli, say, afplay, SwitchAudioSource, python3"
 [ -f "$MODEL" ] || fail "Whisper model not found: $MODEL (see docs/recording-setup.md, step 7)"
-ok "Whisper model: $MODEL"
+vok "$(T model) $MODEL"
 [ -f "$PHRASEBOOKS" ] || fail "Phrasebooks not found: $PHRASEBOOKS"
-ok "phrasebooks: $PHRASEBOOKS"
+vok "$(T phrase) $PHRASEBOOKS"
+vsect "$(T sect_audio)"
 OUTPUT_LIST="$(SwitchAudioSource -a -t output 2>/dev/null)" \
   || fail "Could not list output devices (SwitchAudioSource errored — broken audio setup?)"
 OUTPUT_OK=1
 if printf '%s\n' "$OUTPUT_LIST" | grep -Fxq "$MULTI_OUTPUT"; then
-  ok "output device: $MULTI_OUTPUT"
+  vok "$(T out_dev) $MULTI_OUTPUT"
+  if [ -n "${TALK_OUTPUT:-}" ] || [ -n "${_remembered:-}" ]; then
+    vinfo "$(T out_dev) $MULTI_OUTPUT $(T out_chosen)"
+  fi
 elif [ "$MODE" = "check" ]; then
   OUTPUT_OK=0
   AUDIO_DEGRADED=1
@@ -211,49 +337,49 @@ else
 fi
 if [ "$AIRPODS" = 0 ] && [ "$OUTPUT_OK" = 1 ]; then
   if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then
-    info "auto output: speakers (no AirPods connected)"
+    vinfo "$(T auto_spk)"
   else
-    info "auto output: AirPods connected, using them"
+    vinfo "$(T auto_pods)"
   fi
 fi
 if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then
   ALT_CHECK="$(find_airpods)"
   if [ -n "$ALT_CHECK" ]; then
-    ok "toggle target: $ALT_CHECK (press a during the call)"
+    vok "$(T toggle) $ALT_CHECK $(T press_a)"
   else
-    warn "no AirPods connected (mid-call a-key stays put)"
+    vwarn "$(T no_pods)"
   fi
 elif SwitchAudioSource -a -t output | grep -Fxq "$OUTPUT_SPEAKERS"; then
-  ok "toggle target: $OUTPUT_SPEAKERS (press a during the call)"
+  vok "$(T toggle) $OUTPUT_SPEAKERS $(T press_a)"
 else
-  warn "toggle target '$OUTPUT_SPEAKERS' not found (mid-call a-key stays put)"
+  vwarn "$(T toggle) '$OUTPUT_SPEAKERS' $(T not_found) $(T akey_put)"
 fi
 if command -v osascript >/dev/null 2>&1; then
   SYS_VOL="$(osascript -e "get volume settings" 2>/dev/null || true)"
   case "$SYS_VOL" in
-    *"output muted:true"*) warn "macOS output is MUTED (unmute to hear Agda)" ;;
+    *"output muted:true"*) vwarn "$(T muted)" ;;
   esac
   SYS_LEVEL="$(printf '%s' "$SYS_VOL" | sed -n 's/.*output volume:\([0-9][0-9]*\).*/\1/p')"
   case "$SYS_LEVEL" in
     '' | *[!0-9]*) ;;
-    *) if [ "$SYS_LEVEL" -lt 40 ]; then warn "macOS system volume is $SYS_LEVEL (raise it to hear Agda well)"; fi ;;
+    *) if [ "$SYS_LEVEL" -lt 40 ]; then vwarn "$(T lowvol_a) $SYS_LEVEL $(T lowvol_b)"; fi ;;
   esac
 fi
 if [ "$MODE" = "check" ]; then
   if [ "$FLOOR" = 1 ]; then
-    info "check: talk mode would unmute + raise below $FLOOR_LEVEL to $FLOOR_LEVEL (now: ${SYS_LEVEL:-unknown})"
+    vnote "$(T floor_would) $FLOOR_LEVEL $(T floor_to) $FLOOR_LEVEL ($(T now_is): ${SYS_LEVEL:-unknown})"
   else
-    info "check: talk mode leaves the system volume untouched (use --floor to level it first)"
+    vnote "$(T floor_off)"
   fi
 fi
 if [ "$QUIET" = 1 ]; then
-  info "quiet mode: type + read, t toggles sound back on"
+  vinfo "$(T quiet_on)"
 fi
 INPUT_LIST="$(SwitchAudioSource -a -t input 2>/dev/null)" \
   || fail "Could not list input devices (SwitchAudioSource errored — broken audio setup?)"
 MIC_OK=1
 if printf '%s\n' "$INPUT_LIST" | grep -Fxq "$MIC"; then
-  ok "mic: $MIC"
+  vok "$(T mic) $MIC"
 elif [ "$MODE" = "check" ]; then
   MIC_OK=0
   AUDIO_DEGRADED=1
@@ -266,20 +392,23 @@ if [ -z "$MIC_INDEX" ] && [ "$MIC_OK" = 1 ]; then
   [ -n "$MIC_INDEX" ] || fail "Could not find '$MIC' in the ffmpeg device list (first run may need mic permission: allow Terminal, then re-run)"
 fi
 if [ "$MIC_OK" = 1 ]; then
-  ok "ffmpeg mic index: $MIC_INDEX"
+  vok "$(T mic_idx) $MIC_INDEX"
 else
   warn "ffmpeg mic index: skipped (no mic '$MIC' to match)"
 fi
+vsect "$(T sect_data)"
 mkdir -p "$REC_DIR"
-info "Recordings go to: $REC_DIR"
-info "Agda plays at volume $TALK_VOLUME (1 = normal, up to 4 = boost; + / - during the call or the board slider)"
-info "Misses are logged to $MISS_FILE (teach them with sh/learn-words.sh)"
-info "Every round is logged to $ROUNDS_FILE (Holdmate's training data)"
-if [ "$AGDA_FORGIVING" = "1" ]; then
-  warn "bad memory ON: Agda accepts learned aliases (unrealistic practice)"
+vnote "$(T rec_to) $REC_DIR"
+vnote "$(T misses_a) $MISS_FILE $(T misses_b)"
+vnote "$(T rounds_a) $ROUNDS_FILE $(T rounds_b)"
+vsect "$(T sect_call)"
+vnote "Roksolana $(T plays_a) $TALK_VOLUME $(T plays_b)"
+if [ "$ROKSOLANA_FORGIVING" = "1" ]; then
+  vwarn "$(T mem_on)"
 else
-  info "bad memory off: Agda only knows exact AF words (realistic)"
+  vinfo "$(T mem_off)"
 fi
+vinfo "$(T call_lang) $CALL_LANG (voice: $VOICE)"
 if [ "$SPARK" = "1" ]; then
   info "Spark fallback ON: one Muse Spark call rescues each word-step miss (skipped when keyless)"
 fi
@@ -287,25 +416,25 @@ case "$QUEUE_TICK" in
   '' | *[!0-9]*) fail "QUEUE_TICK must be whole seconds" ;;
 esac
 if [ -n "$QUEUE_START" ]; then
-  info "queue starts at $QUEUE_START, ticks every ${QUEUE_TICK}s (any key hurries)"
+  vinfo "$(T q_at) $QUEUE_START, $(T q_every) ${QUEUE_TICK}s $(T q_hurry)"
 else
-  info "queue starts at random 2-5, ticks every ${QUEUE_TICK}s (any key hurries)"
+  vinfo "$(T q_rand) $(T q_every) ${QUEUE_TICK}s $(T q_hurry)"
 fi
 
 if [ "$MODE" = "check" ]; then
   if [ "$AUDIO_DEGRADED" = 1 ]; then
     title "Check only: nothing changed (audio devices missing — see warnings; talk mode needs them)"
   else
-    title "Check only: nothing changed"
+    title "$(T check_only)"
   fi
   exit 0
 fi
 
-step "Switch audio"
-what "Route audio through $MULTI_OUTPUT (--floor levels the physical output first). Originals are restored on exit."
+vstep "Switch audio"
+vwhat "Route audio through $MULTI_OUTPUT (--floor levels the physical output first). Originals are restored on exit."
 ORIGINAL_OUTPUT="$(SwitchAudioSource -c -t output)"
 case "$ORIGINAL_OUTPUT" in
-  IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
+  Agent_*|_Airpods|IVR_Agent_*) ORIGINAL_OUTPUT="$NORMAL_OUTPUT" ;;
 esac
 ORIGINAL_INPUT="$(SwitchAudioSource -c -t input)"
 switch_back() {
@@ -314,56 +443,65 @@ switch_back() {
   SwitchAudioSource -s "$ORIGINAL_INPUT" -t input >/dev/null
   wintitle "done"
   rm -f "$DTMF_FILE"
-  info "Audio restored: output='$ORIGINAL_OUTPUT' input='$ORIGINAL_INPUT'"
+  vinfo "Audio restored: output='$ORIGINAL_OUTPUT' input='$ORIGINAL_INPUT'"
   restore_system_volume
 }
 trap switch_back EXIT
 trap 'exit 130' INT TERM
 if [ "$FLOOR" = 1 ]; then
   if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then _floor_target="$NORMAL_OUTPUT"
+  elif [ "$MULTI_OUTPUT" = "$OUTPUT_AIRPODS" ] && [ -n "$AUTO_PODS" ]; then _floor_target="$AUTO_PODS"
   else _floor_target="$MULTI_OUTPUT"; fi
   if [ "$(SwitchAudioSource -c -t output)" != "$_floor_target" ]; then
     SwitchAudioSource -s "$_floor_target" -t output >/dev/null \
       || fail "Could not switch output to $_floor_target"
-    ok "output -> $_floor_target (level check)"
+    vok "output -> $_floor_target (level check)"
   fi
   floor_system_volume "$_floor_target"
 else
-  info "system volume left untouched (use --floor to level it first)"
+  vinfo "system volume left untouched (use --floor to level it first)"
 fi
 SwitchAudioSource -s "$MULTI_OUTPUT" -t output >/dev/null
 [ "$(SwitchAudioSource -c -t output)" = "$MULTI_OUTPUT" ] \
   || fail "Could not switch output to $MULTI_OUTPUT"
-ok "output -> $MULTI_OUTPUT"
+vok "output -> $MULTI_OUTPUT"
 SwitchAudioSource -s "$MIC" -t input >/dev/null
 [ "$(SwitchAudioSource -c -t input)" = "$MIC" ] || fail "Could not switch input to $MIC"
-ok "input -> $MIC"
+vok "input -> $MIC"
 
 if [ -n "$PERSONA" ]; then
-  step "Role card"
-  what "Show who you are calling as, so you can speak from that errand."
-  run "read $PERSONA from role-phrasebooks.json"
+  vstep "Role card"
+  vwhat "Show who you are calling as, so you can speak from that errand."
+  vrun "read $PERSONA from role-phrasebooks.json"
   if ! PYTHONPATH="$ROOT/src" python3 - "$PERSONA" "$PHRASEBOOKS" <<'CARD'
 import json
 import sys
+import textwrap
 roles = json.load(open(sys.argv[2], encoding="utf-8"))["roles"]
 persona = next((r for r in roles if r["id"] == sys.argv[1]), None)
 if persona is None:
     sys.exit(1)
-print(f"Role: {persona['label']}")
+print(f"── Role: {persona['label']} ──")
 print(f"Errand: {persona['errand']}")
-print(f"Try words like: {', '.join(persona['vocabulary'])}")
+for line in textwrap.wrap("Words: " + ", ".join(persona["vocabulary"]), width=84):
+    print(line)
 print("Checklist (guidance, not legal advice):")
 for i, item in enumerate(persona.get("checklist", []), 1):
-    print(f"  {i}. Say: {item['say']}")
-    print(f"     Why: {item['why']}")
+    for line in textwrap.wrap(f"Say: {item['say']}", width=78,
+                              initial_indent=f"  {i}. ",
+                              subsequent_indent="     "):
+        print(line)
+    for line in textwrap.wrap(f"Why: {item['why']}", width=78,
+                              initial_indent="     ",
+                              subsequent_indent="     "):
+        print(line)
 CARD
   then
     info "valid persona ids:"
     PYTHONPATH="$ROOT/src" python3 -c "import json; [print(' - ' + r['id']) for r in json.load(open('$PHRASEBOOKS'))['roles']]"
     fail "Unknown persona '$PERSONA'"
   fi
-  ok "rounds will be tagged: $PERSONA"
+  vok "rounds will be tagged: $PERSONA"
 fi
 
 CALL_STAMP="$(date +%Y%m%d-%H%M%S)"
@@ -435,11 +573,16 @@ drain_keys() {
 
 poll_dtmf() { # web keypad digit: sets DTMF_DIGIT, consumes file
   # No Mac beep here: the browser already beeps instantly (else it sounds twice).
+  # The board server writes $STATE_DIR/dtmf; local .talk-dtmf also works.
   DTMF_DIGIT=""
   [ -n "${CALL_STAMP:-}" ] || return 1
-  [ -f "$DTMF_FILE" ] || return 1
-  _d="$(cat "$DTMF_FILE" 2>/dev/null)" || return 1
-  rm -f "$DTMF_FILE"
+  _dtmf=""
+  for _cand in "$DTMF_FILE" "${STATE_DIR:-/tmp/holdmate}/dtmf"; do
+    if [ -f "$_cand" ]; then _dtmf="$_cand"; break; fi
+  done
+  [ -n "$_dtmf" ] || return 1
+  _d="$(cat "$_dtmf" 2>/dev/null)" || return 1
+  rm -f "$_dtmf"
   case "$_d" in
     [0-9*#]) ;;
     *) return 1 ;;
@@ -518,7 +661,7 @@ prepare_playback() {
     if ffmpeg -hide_banner -loglevel error -y -i "$PLAY_SRC" \
         -af "volume=$TALK_VOLUME,alimiter=limit=0.95" "$PLAY_FILE" 2>/dev/null; then
       PLAY_VOL="1"
-      info "boost x$TALK_VOLUME (ffmpeg gain)"
+      vinfo "boost x$TALK_VOLUME (ffmpeg gain)"
     else
       warn "boost failed, playing at max instead"
       PLAY_FILE="$PLAY_SRC"; PLAY_VOL="1"
@@ -554,7 +697,7 @@ play_skippable() { # $1 = file; any key skips, + / - and slider act live
       quit_call
     elif [ "$RC" = 0 ]; then
       kill "$APID" 2>/dev/null
-      info "skipped ahead"
+      vinfo "skipped ahead"
       break
     fi
     kill -0 "$APID" 2>/dev/null || break
@@ -579,17 +722,18 @@ play_skippable() { # $1 = file; any key skips, + / - and slider act live
   wait "$APID" 2>/dev/null || true
 }
 
-agda_says() {
+roksolana_says() {
   # $1 = opening|round|identified|queue|english|officer, $2 = transcript (round only),
   # $3 = aiff file, $4 = caller wav (round only), $5 = voice override (or "").
-  # Speaks Agda's line, saves the audio, publishes the board state,
+  # Speaks Roksolana's line, saves the audio, publishes the board state,
   # prints the exchange plus TALK_DONE / TALK_MISSES.
   TALK_ROOT="$ROOT" TALK_TXT="${2:-}" TALK_AIFF="$3" TALK_VOICE="${5:-$VOICE}" TALK_MISSES="$MISSES" \
     TALK_CALL="$CALL_STAMP" TALK_ROUND="${ROUND:-0}" \
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
-    TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
+    TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$ROKSOLANA_FORGIVING" \
     TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_SPARK="$SPARK" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
+    TALK_CALL_LANG="$CALL_LANG" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
 import json
 import os
@@ -611,13 +755,70 @@ from adaptive_ivr_agent.live_view import (
 from adaptive_ivr_agent.intent import SparkFallback, maybe_spark_normalizer
 from adaptive_ivr_agent.reactive import ReactiveRobot
 from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines, opening_cache_path
-from adaptive_ivr_agent.talk import AgdaCall, with_aliases
+from adaptive_ivr_agent.talk import RoksolanaCall, with_aliases
 
 root = os.environ["TALK_ROOT"]
 voice = os.environ.get("TALK_VOICE", SAY_VOICE)
-lines = load_indexed_lines(os.path.join(root, "data/doorkeeper-lines.json"))
+call_lang = os.environ.get("TALK_CALL_LANG", "sv")
+lines = load_indexed_lines(os.path.join(root, "data/doorkeeper-lines.json"),
+                            lang=call_lang)
 translations = line_translations(os.path.join(root, "data/doorkeeper-lines.json"))
-ears = ReactiveRobot.from_phrasebooks(os.path.join(root, "data/role-phrasebooks.json"))
+if os.environ.get("NO_COLOR"):
+    _G = _Y = _X = ""
+else:
+    _G, _Y, _X = "\033[36m", "\033[2m", "\033[0m"
+
+
+EN_BITS = ["For English, press 0."]
+TALK_JSON = os.environ.get("TALK_JSON") == "1"
+
+
+def _wrap(text, width=84):
+    import textwrap
+    return textwrap.wrap(text, width=width) or [""]
+
+
+def _sentences(text):
+    import re
+    parts = re.split(r"(?<=[.!?])\s+", text.strip())
+    return [p for p in parts if p]
+
+
+def _is_option(sentence):
+    import re
+    return re.search(r"\b(press|tryck)\s+\d", sentence, re.IGNORECASE) is not None
+
+
+SPEAKER_NAME = os.environ.get("TALK_SPEAKER_NAME", "Roksolana")
+
+
+def show_robot(text, suffix=""):
+    """Bilingual turn: one sentence per line, digit options highlighted."""
+    if TALK_JSON:
+        print(json.dumps({"speaker": "robot", "sv": text,
+                          "en": translate_robot(text, translations),
+                          "note": suffix.strip()},
+                         ensure_ascii=False))
+        return
+    sv = text
+    for bit in EN_BITS:
+        sv = sv.replace(bit, "")
+    sv = " ".join(sv.split())
+    en = translate_robot(text, translations)
+    opt = "\033[1;33m" if not os.environ.get("NO_COLOR") else ""
+    print(f"── {SPEAKER_NAME} ──{suffix}")
+    for sentence in _sentences(sv):
+        color = opt if _is_option(sentence) else _G
+        for line in _wrap(sentence):
+            print(f"{color}{line}{_X}")
+    if en != text:
+        print("── English ──")
+        for sentence in _sentences(en):
+            color = opt if _is_option(sentence) else _Y
+            for line in _wrap(sentence):
+                print(f"{color}{line}{_X}")
+ears = ReactiveRobot.from_phrasebooks(
+    os.path.join(root, "data/role-phrasebooks.json"), lang=call_lang)
 learned_path = os.environ["TALK_LEARNED_FILE"]
 forgiving = os.environ.get("TALK_FORGIVING") == "1"
 if forgiving and os.path.exists(learned_path):
@@ -647,7 +848,7 @@ welcome = lines["L44"] if busy else lines["L01"]
 # L30: Rickard's pick 1 Nov (UNVERIFIED memory). Replace with verbatim
 # from Monday's sampling.
 SERVED_LINE = lines["L30"]
-agda = AgdaCall(
+roksolana = RoksolanaCall(
     opening=welcome if busy else f"{welcome} {lines['L02']}",
     examples=lines["L03"],
     yesno=lines["L22"],
@@ -662,6 +863,7 @@ agda = AgdaCall(
     respond=base_respond,
     queue_place=(lambda: forced) if forced else None,
     english_menu=lines["L17"],
+    yesno_words=("yes", "no") if call_lang == "en" else ("ja", "nej"),
 )
 
 
@@ -772,11 +974,11 @@ if sys.argv[1] == "opening":
     en_voice = os.environ.get("TALK_EN_VOICE", voice)
     cached = opening_cache_path(
         os.path.join(root, "data/recordings/.opening-cache"),
-        voice, en_voice, agda.opening)
+        voice, en_voice, roksolana.opening)
     if cached.exists() and cached.stat().st_size > 0:
         shutil.copy(cached, out_aiff)
-    elif marker in agda.opening:
-        sv1, _, rest = agda.opening.partition(marker)
+    elif marker in roksolana.opening:
+        sv1, _, rest = roksolana.opening.partition(marker)
         sv1_aiff, en_aiff, sv2_aiff = out_aiff + ".sv1", out_aiff + ".en", out_aiff + ".sv2"
         subprocess.run(["say", "-v", voice, "-o", sv1_aiff, sv1.strip()], check=True)
         subprocess.run(["say", "-v", en_voice, "-o", en_aiff, marker], check=True)
@@ -790,26 +992,26 @@ if sys.argv[1] == "opening":
         os.remove(sv2_aiff)
         shutil.copy(out_aiff, cached)
     else:
-        render_reply(agda.opening)
+        render_reply(roksolana.opening)
         shutil.copy(out_aiff, cached)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r0"
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), agda.opening, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), roksolana.opening, duration_of(aiff))
     call = LiveCall()
-    call.add_turn("", agda.opening, False, "open_question",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
-                  robot_en=translate_robot(agda.opening, translations))
+    call.add_turn("", roksolana.opening, False, "open_question",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
+                  robot_en=translate_robot(roksolana.opening, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
-    print(f"ROBOT: {agda.opening}")
+    show_robot(roksolana.opening)
 elif sys.argv[1] == "round":
     heard = open(os.environ["TALK_TXT"], encoding="utf-8").read()
-    answer = agda.reply_to(heard, int(os.environ["TALK_MISSES"]))
+    answer = roksolana.reply_to(heard, int(os.environ["TALK_MISSES"]))
     log_round(heard, answer.matched)
     if answer.matched is None:
         log_miss(heard)
@@ -817,27 +1019,27 @@ elif sys.argv[1] == "round":
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}"
-    you_name, agda_name = f"{base}-you.wav", f"{base}-agda.mp3"
-    you_vtt, agda_vtt = f"{base}-you.vtt", f"{base}-agda.vtt"
+    you_name, roksolana_name = f"{base}-you.wav", f"{base}-roksolana.mp3"
+    you_vtt, roksolana_vtt = f"{base}-you.vtt", f"{base}-roksolana.vtt"
     wav = os.environ["TALK_WAV"]
     aiff = os.environ["TALK_AIFF"]
     shutil.copy(wav, os.path.join(audio_dir, you_name))
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
     write_captions(os.path.join(audio_dir, you_vtt), heard, duration_of(wav))
-    write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), answer.reply, duration_of(aiff))
     call = load_call()
     spark = spark_fallback.last if spark_fallback is not None else None
     call.add_turn(heard.strip(), answer.reply, answer.matched is not None,
                   state_after(answer.done, answer.misses, answer.identify),
                   robot_en=translate_robot(answer.reply, translations),
-                  caller_audio=f"audio/{you_name}", robot_audio=f"audio/{agda_name}",
-                  caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{agda_vtt}",
+                  caller_audio=f"audio/{you_name}", robot_audio=f"audio/{roksolana_name}",
+                  caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{roksolana_vtt}",
                   queue_place=answer.queue_place, spark=spark)
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
     print(f"YOU:   {heard.strip()}")
-    print(f"ROBOT: {answer.reply} (matched: {answer.matched})")
+    show_robot(answer.reply, f" (matched: {answer.matched})")
     if spark is not None:
         print(f"TALK_SPARK={spark['word']} {spark['confidence']}")
     else:
@@ -847,24 +1049,24 @@ elif sys.argv[1] == "round":
     print(f"TALK_IDENTIFY={'yes' if answer.identify else 'no'}")
 elif sys.argv[1] == "identified":
     ok = os.environ.get("TALK_ID_OK", "1") == "1"
-    answer = agda.after_identified(int(os.environ["TALK_MISSES"]), ok=ok)
+    answer = roksolana.after_identified(int(os.environ["TALK_MISSES"]), ok=ok)
     render_reply(answer.reply)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}id"
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), answer.reply, duration_of(aiff))
     call = load_call()
     call.add_turn("", answer.reply, False, "queue",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   queue_place=answer.queue_place, queue_total=answer.queue_place,
                   robot_en=translate_robot(answer.reply, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
-    print(f"ROBOT: {answer.reply}")
+    show_robot(answer.reply)
     print(f"TALK_PLACE={answer.queue_place}")
     print("TALK_DONE=no")
 elif sys.argv[1] == "idline":
@@ -874,39 +1076,39 @@ elif sys.argv[1] == "idline":
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}{line_id.lower()}"
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), text, duration_of(aiff))
     call = load_call()
     call.add_turn("", text, False, "identification",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   robot_en=translate_robot(text, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
-    print(f"ROBOT: {text}")
+    show_robot(text)
     print("TALK_DONE=no")
 elif sys.argv[1] == "queue":
-    answer = agda.queue_tick(int(os.environ["TALK_PLACE"]), int(os.environ["TALK_MISSES"]))
+    answer = roksolana.queue_tick(int(os.environ["TALK_PLACE"]), int(os.environ["TALK_MISSES"]))
     render_reply(answer.reply)
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = f"talk-{os.environ['TALK_CALL']}-r{os.environ['TALK_ROUND']}q{answer.queue_place}"
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), answer.reply, duration_of(aiff))
     call = load_call()
     call.add_turn("", answer.reply, False, "queue",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   queue_place=answer.queue_place,
                   queue_total=int(os.environ["TALK_TOTAL"]),
                   robot_en=translate_robot(answer.reply, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
-    print(f"ROBOT: {answer.reply}")
+    show_robot(answer.reply)
     print(f"TALK_PLACE={answer.queue_place}")
     print(f"TALK_DONE={'yes' if answer.done else 'no'}")
 elif sys.argv[1] == "english":
@@ -924,15 +1126,15 @@ elif sys.argv[1] == "english":
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = os.environ["TALK_EN_BASE"]
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), text, duration_of(aiff))
     call = load_call()
     place = os.environ.get("TALK_EN_PLACE", "")
     total = os.environ.get("TALK_EN_TOTAL", "")
     call.add_turn(heard, text, bool(digit), state,
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   queue_place=int(place) if place else None,
                   queue_total=int(total) if total else None,
                   robot_en=translate_robot(text, translations))
@@ -940,7 +1142,7 @@ elif sys.argv[1] == "english":
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
     print(f"YOU:   {heard}")
-    print(f"ROBOT: {text}")
+    show_robot(text)
     if place:
         print(f"TALK_PLACE={place}")
     print(f"TALK_DONE={'yes' if os.environ.get('TALK_EN_DONE', '') == '1' else 'no'}")
@@ -950,19 +1152,19 @@ elif sys.argv[1] == "officer":
     audio_dir = os.environ["TALK_AUDIO_DIR"]
     os.makedirs(audio_dir, exist_ok=True)
     base = os.environ["TALK_OFF_BASE"]
-    agda_name, agda_vtt = f"{base}-agda.mp3", f"{base}-agda.vtt"
+    roksolana_name, roksolana_vtt = f"{base}-roksolana.mp3", f"{base}-roksolana.vtt"
     aiff = os.environ["TALK_AIFF"]
-    to_mp3(aiff, os.path.join(audio_dir, agda_name))
-    write_captions(os.path.join(audio_dir, agda_vtt), text, duration_of(aiff))
+    to_mp3(aiff, os.path.join(audio_dir, roksolana_name))
+    write_captions(os.path.join(audio_dir, roksolana_vtt), text, duration_of(aiff))
     call = load_call()
     call.add_turn("", text, False, "officer",
-                  robot_audio=f"audio/{agda_name}", robot_captions=f"audio/{agda_vtt}",
+                  robot_audio=f"audio/{roksolana_name}", robot_captions=f"audio/{roksolana_vtt}",
                   speaker=os.environ.get("TALK_OFF_SPEAKER") or None,
                   robot_en=translate_robot(text, translations))
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
-    print(f"ROBOT: {text}")
+    show_robot(text)
 EOF
 }
 
@@ -986,7 +1188,7 @@ digit_or_wait() { # a digit pressed during playback counts; else wait 12 s
   case "${KEY_PRESSED:-}" in
     [0-9])
       DIGIT="$KEY_PRESSED"; KEY_PRESSED=""
-      info "using pressed digit $DIGIT"
+      vinfo "using pressed digit $DIGIT"
       return 0
       ;;
   esac
@@ -997,18 +1199,18 @@ en_turn() {
   # $1 caller, $2 line ids, $3 digit sub (or ""), $4 state, $5 audio base,
   # $6 place (or ""), $7 total (or ""), $8 done 1/0, $9 digit (or "").
   EN_AIFF="$REC_DIR/talk-$CALL_STAMP-e$5.aiff"
-  EN_ROBOT="AF Agda ($EN_VOICE)"
+  EN_ROBOT="Roksolana ($EN_VOICE)"
   EN_OUT="$(TALK_MAP=english TALK_ROBOT_NAME="$EN_ROBOT" \
     TALK_EN_CALLER="$1" TALK_EN_IDS="$2" TALK_EN_SUB="$3" TALK_EN_STATE="$4" \
     TALK_EN_BASE="talk-$CALL_STAMP-e$5" TALK_EN_PLACE="$6" TALK_EN_TOTAL="$7" \
     TALK_EN_DONE="$8" TALK_EN_DIGIT="$9" \
-    agda_says english "" "$EN_AIFF" "" "$EN_VOICE")" || fail "Agda failed in English ($4)"
+    roksolana_says english "" "$EN_AIFF" "" "$EN_VOICE")" || fail "Roksolana failed in English ($4)"
   printf '%s\n' "$EN_OUT" | grep -v '^TALK_'
   [ -s "$EN_AIFF" ] || fail "English audio missing: $EN_AIFF"
-  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-agda.mp3" ] || fail "English board audio missing: e$5"
-  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-agda.vtt" ] || fail "English board captions missing: e$5"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-roksolana.mp3" ] || fail "English board audio missing: e$5"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-e$5-roksolana.vtt" ] || fail "English board captions missing: e$5"
   ok "English turn on board: e$5 ($4)"
-  run "Agda speaks English (any key skips, q quits, +/- volume)"
+  vrun "Roksolana speaks English"
   play_skippable "$EN_AIFF"
 }
 
@@ -1017,7 +1219,7 @@ run_english() {
   title "English menu (pressed 0)"
   what "Full call-5 path: key menu, sub-menu, SMS offer, identification, queue. Digits answer; silence moves on."
   EN_VOICE="$(pick_english_voice)"
-  info "English voice: $EN_VOICE"
+  vinfo "English voice: $EN_VOICE"
   en_turn "(pressed 0)" "L17" "" english_menu e01 "" "" 0 0
   run "wait for 1/2/4 (12 s, silence moves on)"
   digit_or_wait; digit_caller $?
@@ -1028,14 +1230,14 @@ run_english() {
   run "wait for 1 (12 s, silence moves on)"
   digit_or_wait; digit_caller $?
   en_turn "$DC_CALLER" "L32" "" identification e04 "" "" 0 "$DC_DIGIT"
-  run "wait for BankID 1 / Freja 2 (12 s)"
+  vrun "wait for BankID 1 / Freja 2 (12 s)"
   digit_or_wait; EN_RC=$?
   if [ "$EN_RC" = 2 ]; then quit_call; fi
   if [ "$EN_RC" = 0 ]; then
     METHOD_OK=1; ID_CALLER="(pressed $DIGIT)"; ID_DIGIT="$DIGIT"
   else
     en_turn "(silence)" "L33" "" identification e05 "" "" 0 ""
-    run "wait again for 1/2 (12 s)"
+    vrun "wait again for 1/2 (12 s)"
     digit_or_wait; EN_RC=$?
     if [ "$EN_RC" = 2 ]; then quit_call; fi
     if [ "$EN_RC" = 0 ]; then
@@ -1084,7 +1286,7 @@ run_english() {
 }
 
 pick_sv_officer() {
-  # Klara answers, unless Agda already uses her voice.
+  # Klara answers, unless Roksolana already uses her voice.
   if [ "$VOICE" != "Klara" ] && say -v '?' 2>/dev/null | grep -q '^Klara '; then
     printf 'Klara'
   else
@@ -1093,7 +1295,7 @@ pick_sv_officer() {
 }
 
 pick_en_officer() {
-  # First installed English voice that is not Agda's English voice.
+  # First installed English voice that is not Roksolana's English voice.
   for _v in Daniel Karen Moira Samantha Tessa Fiona Serena; do
     if [ "$_v" != "$EN_VOICE" ] && say -v '?' 2>/dev/null | grep -q "^$_v "; then
       printf '%s' "$_v"
@@ -1107,84 +1309,116 @@ officer_scene() {
   # $1 = sv|en. Touch-tone beeps while connecting, then the officer answers.
   if [ "$1" = "en" ]; then
     OFF_VOICE="$(pick_en_officer)"; OFF_ID="L40"; OFF_BASE="oen"
-    OFF_MAP="english"; OFF_SPEAKER="Officer ($OFF_VOICE)"
+    OFF_MAP="english"; OFF_SPEAKER="Officer Erik ($OFF_VOICE)"
   else
     OFF_VOICE="$(pick_sv_officer)"; OFF_ID="L39"; OFF_BASE="osv"
     OFF_MAP="swedish"; OFF_SPEAKER="Handläggare ($OFF_VOICE)"
   fi
-  info "officer voice: $OFF_VOICE"
-  step "Connecting"
-  what "Touch-tone beeps while the call goes through, then the officer answers."
+  vinfo "officer voice: $OFF_VOICE"
+  vstep "Connecting"
+  vwhat "Touch-tone beeps while the call goes through, then the officer answers."
   if [ "$QUIET" = 1 ]; then
-    info "(quiet: beeps muted)"
+    vinfo "(quiet: beeps muted)"
   else
   BEEPS_WAV="$REC_DIR/talk-$CALL_STAMP-beeps.wav"
-  run "write DTMF beeps to $BEEPS_WAV"
+  vrun "write DTMF beeps to $BEEPS_WAV"
   PYTHONPATH="$ROOT/src" python3 - "$BEEPS_WAV" <<'EOF' || fail "Could not make beeps"
 import sys
 from adaptive_ivr_agent.tones import write_beeps
 write_beeps(sys.argv[1])
 EOF
   [ -s "$BEEPS_WAV" ] || fail "Beeps missing: $BEEPS_WAV"
-  run "play beeps (any key skips, q quits, +/- volume)"
+  vrun "play beeps (any key skips, q quits, +/- volume)"
   play_skippable "$BEEPS_WAV"
   fi
   OFF_AIFF="$REC_DIR/talk-$CALL_STAMP-officer.aiff"
-  run "render officer ($OFF_VOICE)"
+  vrun "render officer ($OFF_VOICE)"
   OFF_OUT="$(TALK_MAP="$OFF_MAP" TALK_OFF_ID="$OFF_ID" \
     TALK_OFF_BASE="talk-$CALL_STAMP-$OFF_BASE" TALK_OFF_SPEAKER="$OFF_SPEAKER" \
-    agda_says officer "" "$OFF_AIFF" "" "$OFF_VOICE")" || fail "Officer failed to answer"
+    TALK_SPEAKER_NAME="$OFF_SPEAKER" \
+    roksolana_says officer "" "$OFF_AIFF" "" "$OFF_VOICE")" || fail "Officer failed to answer"
   printf '%s\n' "$OFF_OUT" | grep -v '^TALK_'
   [ -s "$OFF_AIFF" ] || fail "Officer audio missing: $OFF_AIFF"
-  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-$OFF_BASE-agda.mp3" ] || fail "Officer board audio missing"
-  ok "officer on board: $OFF_BASE"
-  run "Officer speaks (any key skips, q quits, +/- volume)"
-  play_skippable "$OFF_AIFF"
+  [ -s "$AUDIO_DIR/talk-$CALL_STAMP-$OFF_BASE-roksolana.mp3" ] || fail "Officer board audio missing"
+  vok "officer on board: $OFF_BASE"
+  vrun "Officer speaks"
+  if [ -t 1 ]; then
+    pacman_loop & _PACMAN=$!
+    play_skippable "$OFF_AIFF"
+    kill "$_PACMAN" 2>/dev/null
+    wait "$_PACMAN" 2>/dev/null
+    printf '\r%50s\r' ''
+  else
+    play_skippable "$OFF_AIFF"
+  fi
 }
 
-title "Agda is calling..."
+pacman_loop() { # ping-pong pacman while the officer talks (killed after)
+  _x=0; _d=1; _f=0
+  while true; do
+    if [ "$_d" = 1 ]; then
+      if [ "$_f" = 0 ]; then _m="C>"; else _m="c>"; fi
+    else
+      if [ "$_f" = 0 ]; then _m="<C"; else _m="<c"; fi
+    fi
+    printf '\r    %*s%s' "$_x" '' "$_m"
+    _f=$((1 - _f))
+    _x=$((_x + _d))
+    if [ "$_x" -ge 28 ]; then _d=-1; elif [ "$_x" -le 0 ]; then _d=1; fi
+    sleep 0.12
+  done
+}
+
+title "$(T calling)"
+info "$(T keys_hint)"
 rm -f "$DTMF_FILE"
-run "render opening ($VOICE + English voice)"
+vrun "render opening ($VOICE + English voice)"
 OPENING_AIFF="$REC_DIR/talk-$CALL_STAMP-robot0.aiff"
 EN_OPEN_VOICE="$(pick_english_voice)"
-info "English voice: $EN_OPEN_VOICE"
-TALK_EN_VOICE="$EN_OPEN_VOICE" agda_says opening "" "$OPENING_AIFF" || fail "Agda failed to speak the opening"
+vinfo "English voice: $EN_OPEN_VOICE"
+TALK_EN_VOICE="$EN_OPEN_VOICE" roksolana_says opening "" "$OPENING_AIFF" || fail "Roksolana failed to speak the opening"
 [ -s "$OPENING_AIFF" ] || fail "Opening audio missing: $OPENING_AIFF"
-ok "opening saved: $OPENING_AIFF"
-OPENING_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r0-agda.mp3"
+vok "opening saved: $OPENING_AIFF"
+OPENING_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r0-roksolana.mp3"
 [ -s "$OPENING_MP3" ] || fail "Opening board audio missing: $OPENING_MP3"
-ok "opening on board: $OPENING_MP3"
-run "Agda speaks (any key skips, q quits, +/- volume)"
+vok "opening on board: $OPENING_MP3"
+vrun "Roksolana speaks"
 play_skippable "$OPENING_AIFF"
 if [ "${KEY_PRESSED:-}" = "0" ]; then
   info "pressed 0: switching to the English menu"
   run_english
 fi
 
-id_say_line() { # $1 = L10|L12: Agda speaks it and boards it
+id_say_line() { # $1 = L10|L12: Roksolana speaks it and boards it
   IDLINE_AIFF="$REC_DIR/talk-$CALL_STAMP-$1.aiff"
-  OUTL="$(TALK_ID_LINE="$1" agda_says idline "" "$IDLINE_AIFF")" || fail "Agda failed ($1)"
+  OUTL="$(TALK_ID_LINE="$1" roksolana_says idline "" "$IDLINE_AIFF")" || fail "Roksolana failed ($1)"
   printf '%s\n' "$OUTL" | grep -v '^TALK_'
   [ -s "$IDLINE_AIFF" ] || fail "ID line audio missing: $IDLINE_AIFF"
-  run "Agda speaks (any key skips, q quits, +/- volume)"
+  vrun "Roksolana speaks"
   play_skippable "$IDLINE_AIFF"
 }
 
 run_identification() {
   wintitle "identification"
-  title "Identification (faked, human in the loop)"
-  what "BankID (1) or Freja (2) first, then the TEST number. Enter uses it; anything else reprompts and digits are never logged."
-  run "wait for BankID 1 / Freja 2 (12 s)"
+  [ "$VERBOSE" = 1 ] && title "Identification (faked, human in the loop)"
+  vwhat "BankID (1) or Freja (2) first, then the TEST number. Enter uses it; anything else reprompts and digits are never logged."
+  vrun "wait for BankID 1 / Freja 2 (12 s)"
   digit_or_wait; ID_RC=$?
   if [ "$ID_RC" = 2 ]; then quit_call; fi
-  if [ "$ID_RC" != 0 ]; then
+  ID_OK=0
+  if [ "$ID_RC" = 0 ]; then
+    case "$DIGIT" in 1|2) ID_OK=1;; *) warn "$(T id_bad)";; esac
+  fi
+  if [ "$ID_OK" != 1 ]; then
     id_say_line L10
-    run "wait again for 1/2 (12 s)"
+    vrun "wait again for 1/2 (12 s)"
     digit_or_wait; ID_RC=$?
     if [ "$ID_RC" = 2 ]; then quit_call; fi
+    if [ "$ID_RC" = 0 ]; then
+      case "$DIGIT" in 1|2) ID_OK=1;; *) warn "$(T id_bad)";; esac
+    fi
   fi
-  if [ "$ID_RC" = 0 ]; then
-    ID_OK=1
+  if [ "$ID_OK" = 1 ]; then
     while true; do
       printf 'Personnummer [%s] (Enter = test number, q quits): ' "$FAKE_PERSONNUMMER"
       read -r typed || typed=""
@@ -1192,20 +1426,20 @@ run_identification() {
       if [ -z "$typed" ] || [ "$typed" = "$FAKE_PERSONNUMMER" ]; then break; fi
       warn "only the test number is accepted (nothing real ever flows)"
     done
-    ok "identified with test number"
+    vok "identified with test number"
   else
     ID_OK=0
     id_say_line L12
   fi
-  run "render confirmation ($VOICE)"
+  vrun "render confirmation ($VOICE)"
   ID_AIFF="$REC_DIR/talk-$CALL_STAMP-rid.aiff"
-  OUT2="$(TALK_ID_OK="$ID_OK" agda_says identified "" "$ID_AIFF")" || fail "Agda failed after identification"
+  OUT2="$(TALK_ID_OK="$ID_OK" roksolana_says identified "" "$ID_AIFF")" || fail "Roksolana failed after identification"
   printf '%s\n' "$OUT2" | grep -v '^TALK_'
   [ -s "$ID_AIFF" ] || fail "Confirmation audio missing: $ID_AIFF"
-  ID_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}id-agda.mp3"
+  ID_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}id-roksolana.mp3"
   [ -s "$ID_MP3" ] || fail "Confirmation board audio missing: $ID_MP3"
-  ok "confirmation on board: $ID_MP3"
-  run "Agda speaks (any key skips, q quits, +/- volume)"
+  vok "confirmation on board: $ID_MP3"
+  vrun "Roksolana speaks"
   play_skippable "$ID_AIFF"
   START="$(printf '%s\n' "$OUT2" | sed -n 's/^TALK_PLACE=//p')"
   case "$START" in
@@ -1223,17 +1457,17 @@ run_identification() {
     fi
     run "render queue number ($VOICE)"
     Q_AIFF="$REC_DIR/talk-$CALL_STAMP-q$PLACE.aiff"
-    OUT3="$(agda_says queue "" "$Q_AIFF")" || fail "Agda failed in the queue"
+    OUT3="$(roksolana_says queue "" "$Q_AIFF")" || fail "Roksolana failed in the queue"
     printf '%s\n' "$OUT3" | grep -v '^TALK_'
     [ -s "$Q_AIFF" ] || fail "Queue audio missing: $Q_AIFF"
     PLACE="$(printf '%s\n' "$OUT3" | sed -n 's/^TALK_PLACE=//p')"
     case "$PLACE" in
       '' | *[!0-9]*) fail "Lost track of the queue place" ;;
     esac
-    Q_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}q${PLACE}-agda.mp3"
+    Q_MP3="$AUDIO_DIR/talk-$CALL_STAMP-r${ROUND}q${PLACE}-roksolana.mp3"
     [ -s "$Q_MP3" ] || fail "Queue board audio missing: $Q_MP3"
     ok "queue number on board: $Q_MP3"
-    run "Agda speaks (any key skips, q quits, +/- volume)"
+    vrun "Roksolana speaks"
     play_skippable "$Q_AIFF"
   done
   if [ "$(printf '%s\n' "$OUT3" | sed -n 's/^TALK_DONE=//p')" != "yes" ]; then
@@ -1263,11 +1497,11 @@ while [ "$ROUND" -lt 6 ]; do
     if [ "$typed" = "/sound" ]; then QUIET=0; save_quiet; info "sound on"; continue; fi
     if [ -z "${typed//[[:space:]]/}" ]; then warn "nothing typed, skipping this round"; continue; fi
     printf '%s\n' "$typed" > "$TXT"
-    run "ffmpeg silent stand-in $WAV"
+    vrun "ffmpeg silent stand-in $WAV"
     ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=r=16000:cl=mono -t 0.5 -y "$WAV" \
       || fail "Could not write silent audio"
   else
-  run "ffmpeg ... -t $RECORD_SECONDS $WAV"
+  vrun "ffmpeg ... -t $RECORD_SECONDS $WAV"
   ffmpeg -hide_banner -loglevel error -f avfoundation -i ":$MIC_INDEX" \
     -t "$RECORD_SECONDS" -ar 16000 -ac 1 -y "$WAV" &
   FFPID=$!
@@ -1291,14 +1525,20 @@ while [ "$ROUND" -lt 6 ]; do
     *) fail "Recording failed (mic busy or permission revoked?)" ;;
   esac
   [ -s "$WAV" ] || fail "Recording is empty: $WAV"
-  ok "recorded: $WAV"
+  vok "recorded: $WAV"
   if ! "$HERE/check-recording.sh" "$WAV" >/dev/null 2>&1; then
     warn "silent recording, counts as no answer"
     printf '(silence)\n' > "$TXT"
   else
-    run "sh/transcribe-latest.sh $WAV"
-    WHISPER_LANG="${WHISPER_LANG:-sv}" "$HERE/transcribe-latest.sh" "$WAV" >/dev/null \
-      || fail "Transcription failed for $WAV"
+    vrun "sh/transcribe-latest.sh $WAV"
+    WHISPER_LOG="/tmp/whisper-err.log"
+    if [ "$VERBOSE" = 1 ]; then
+      WHISPER_LANG="${WHISPER_LANG:-sv}" "$HERE/transcribe-latest.sh" "$WAV" >/dev/null \
+        || fail "Transcription failed for $WAV"
+    else
+      WHISPER_LANG="${WHISPER_LANG:-sv}" "$HERE/transcribe-latest.sh" "$WAV" >/dev/null 2>"$WHISPER_LOG" \
+        || { cat "$WHISPER_LOG" >&2; fail "Transcription failed for $WAV"; }
+    fi
     [ -f "$TXT" ] || fail "Transcript missing: $TXT"
     if ! grep -q '[^[:space:]]' "$TXT"; then
       warn "nothing heard, counts as no answer"
@@ -1306,26 +1546,26 @@ while [ "$ROUND" -lt 6 ]; do
     fi
   fi
   fi
-  run "render reply ($VOICE)"
-  OUT="$(agda_says round "$TXT" "$ROBOT_AIFF" "$WAV")" || fail "Agda failed to answer"
+  vrun "render reply ($VOICE)"
+  OUT="$(roksolana_says round "$TXT" "$ROBOT_AIFF" "$WAV")" || fail "Roksolana failed to answer"
   printf '%s\n' "$OUT" | grep -v '^TALK_'
   MISSES="$(printf '%s\n' "$OUT" | sed -n 's/^TALK_MISSES=//p')"
   case "$MISSES" in
     '' | *[!0-9]*) fail "Lost track of the miss count" ;;
   esac
   [ -s "$ROBOT_AIFF" ] || fail "Robot audio missing: $ROBOT_AIFF"
-  ok "robot reply saved: $ROBOT_AIFF"
-  MP3="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-agda.mp3"
+  vok "robot reply saved: $ROBOT_AIFF"
+  MP3="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-roksolana.mp3"
   [ -s "$MP3" ] || fail "Board audio missing: $MP3"
-  ok "board audio: $MP3"
-  VTT="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-agda.vtt"
+  vok "board audio: $MP3"
+  VTT="$AUDIO_DIR/talk-$CALL_STAMP-r$ROUND-roksolana.vtt"
   [ -s "$VTT" ] || fail "Board captions missing: $VTT"
-  ok "board captions: $VTT"
+  vok "board captions: $VTT"
   [ -f "$ROUNDS_FILE" ] || fail "Rounds log missing: $ROUNDS_FILE"
-  ok "round logged for Holdmate training"
+  vok "round logged for Holdmate training"
   [ -f "$BOARD_FILE" ] || fail "Board state missing: $BOARD_FILE"
-  ok "board updated: $BOARD_FILE"
-  run "Agda speaks (any key skips, q quits, +/- volume)"
+  vok "board updated: $BOARD_FILE"
+  vrun "Roksolana speaks"
   play_skippable "$ROBOT_AIFF"
   if [ "${KEY_PRESSED:-}" = "0" ]; then
     info "pressed 0: switching to the English menu"
@@ -1335,7 +1575,7 @@ while [ "$ROUND" -lt 6 ]; do
     run_identification
   fi
   if printf '%s\n' "$OUT" | grep -qx 'TALK_DONE=yes'; then
-    title "Call over — Agda transferred you. Your audio setup is restored on exit."
+    title "Call over — Roksolana transferred you. Your audio setup is restored on exit."
     exit 0
   fi
 done
