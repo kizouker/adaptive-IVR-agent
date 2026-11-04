@@ -211,11 +211,15 @@ find_airpods() {
 }
 
 apply_call_voice() {
-  # English call with no explicit VOICE: switch to an English TTS voice.
+  # English call with no explicit VOICE: switch to a woman's English TTS
+  # voice (Roksolana keeps her identity); Daniel only as last resort.
   if [ "${CALL_LANG:-sv}" != "en" ] || [ -n "${_VOICE_ENV:-}" ]; then
     return 0
   fi
-  _found="$(say -v '?' 2>/dev/null | grep -oE '^(Samantha|Karen|Moira|Daniel|Tessa|Fiona|Serena)' | head -1)"
+  _found=""
+  for _v in Samantha Karen Moira Tessa Fiona Serena Daniel; do
+    if say -v '?' 2>/dev/null | grep -q "^$_v "; then _found="$_v"; break; fi
+  done
   VOICE="${_found:-$VOICE}"
 }
 apply_call_voice
@@ -1170,9 +1174,11 @@ EOF
 }
 
 pick_english_voice() {
-  # First decent installed English voice, else the Swedish default.
-  _found="$(say -v '?' 2>/dev/null | grep -oE '^(Samantha|Karen|Moira|Daniel|Tessa|Fiona|Serena)' | head -1)"
-  printf '%s' "${_found:-$VOICE}"
+  # Roksolana's English voice: first installed woman's voice, else fallback.
+  for _v in Samantha Karen Moira Tessa Fiona Serena Daniel; do
+    if say -v '?' 2>/dev/null | grep -q "^$_v "; then printf '%s' "$_v"; return 0; fi
+  done
+  printf '%s' "$VOICE"
 }
 
 digit_caller() {
