@@ -2,8 +2,15 @@
 
 Runs sh/check-prompts.sh (OWASP LLM01 baseline) and requires OK.
 """
+import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
+
+pytestmark = pytest.mark.skipif(
+    shutil.which("bash") is None, reason="bash not installed (minimal container)"
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 SCAN = ROOT / "sh" / "check-prompts.sh"

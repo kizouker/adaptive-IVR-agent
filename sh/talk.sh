@@ -1,12 +1,15 @@
 #!/bin/bash
 # Talk to the practice robot with your own voice (push-to-talk loop).
 # Runs on: Rickard's Mac (M4). Modes: talk (default) | check.
+# check mode warns (exit 0) when audio devices are absent — a missing device on a
+# clean machine is not an error; talk mode still fails loudly without them.
 # Flags: --airpods (physical AirPods; must be connected), --output NAME (exact output
 #   device; wins over everything), --as <persona> (role-play + tag rounds for Holdmate training),
 #   --queue N (simulate a queue of N, 1-99; default is a random short one),
 #   --quiet (type + read instead of speak + listen), --sound (force sound on),
 #   --floor (level the system volume first; default leaves it untouched),
-#   --busy (delay-notice welcome instead of the plain one).
+#   --busy (delay-notice welcome instead of the plain one),
+#   --spark (rescue word-step misses with one Muse Spark call; keyless runs skip it).
 # Output pick order: --output > $TALK_OUTPUT > .talk-output (holdmate menu) >
 #   AirPods auto-follow > IVR_Agent_Speakers. Aggregate names overridable:
 #   OUTPUT_SPEAKERS / OUTPUT_AIRPODS env. --lang=en|sv (default en, shared
@@ -95,12 +98,14 @@ sect() { printf '%s%s── %s ──%s\n' "$D" '' "$1" "$X"; }
 
 MODE="talk"
 CALL_LANG="sv"
+AUDIO_DEGRADED=0 # check mode: 1 once a missing device downgrades a fail to a warn
 AIRPODS=0
 PERSONA=""
 QUIET=0
 QUIET_FORCED=""
 FLOOR=0
 BUSY=0
+SPARK=0
 QUEUE_START=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -129,6 +134,7 @@ while [ $# -gt 0 ]; do
     --sound) QUIET=0; QUIET_FORCED=0 ;;
     --floor) FLOOR=1 ;;
     --busy) BUSY=1 ;;
+    --spark) SPARK=1 ;;
     --as)
       PERSONA="${2:-}"
       [ -n "$PERSONA" ] || fail "--as needs a persona id (see data/role-phrasebooks.json)"
@@ -144,7 +150,7 @@ while [ $# -gt 0 ]; do
       fi
       shift
       ;;
-    *) fail "Unknown argument: $1 (use: check, --airpods, --output NAME, --mic NAME, --lang=en|sv, --call en|sv, -v, --as <persona>, --queue N, --quiet, --sound, --floor, --busy)" ;;
+    *) fail "Unknown argument: $1 (use: check, --airpods, --output NAME, --mic NAME, --lang=en|sv, --call en|sv, -v, --as <persona>, --queue N, --quiet, --sound, --floor, --busy, --spark)" ;;
   esac
   shift
 done
@@ -223,8 +229,14 @@ else
   if [ -n "$_remembered" ] && SwitchAudioSource -a -t output 2>/dev/null | grep -Fxq "$_remembered"; then
     MULTI_OUTPUT="$_remembered" # menu choice from holdmate.sh
   elif [ "$AIRPODS" = 1 ]; then
-    [ -n "$AUTO_PODS" ] || fail "No AirPods found among output devices (connect them first, then retry)"
-    MULTI_OUTPUT="$AUTO_PODS"
+    if [ -n "$AUTO_PODS" ]; then
+      MULTI_OUTPUT="$AUTO_PODS"
+    elif [ "$MODE" = "check" ]; then
+      AUDIO_DEGRADED=1
+      warn "No AirPods found among output devices (check continues on $OUTPUT_SPEAKERS)"
+    else
+      fail "No AirPods found among output devices (connect them first, then retry)"
+    fi
   elif [ -n "$AUTO_PODS" ]; then
     MULTI_OUTPUT="$AUTO_PODS"
   fi
@@ -308,12 +320,22 @@ vok "$(T model) $MODEL"
 [ -f "$PHRASEBOOKS" ] || fail "Phrasebooks not found: $PHRASEBOOKS"
 vok "$(T phrase) $PHRASEBOOKS"
 vsect "$(T sect_audio)"
-SwitchAudioSource -a -t output | grep -Fxq "$MULTI_OUTPUT" \
-  || fail "Output device '$MULTI_OUTPUT' not found (open Audio MIDI Setup and check the Multi-Output device)"
-vok "$(T out_dev) $MULTI_OUTPUT"
-if [ -n "${TALK_OUTPUT:-}" ] || [ -n "${_remembered:-}" ]; then
-  vinfo "$(T out_dev) $MULTI_OUTPUT $(T out_chosen)"
-elif [ "$AIRPODS" = 0 ]; then
+OUTPUT_LIST="$(SwitchAudioSource -a -t output 2>/dev/null)" \
+  || fail "Could not list output devices (SwitchAudioSource errored — broken audio setup?)"
+OUTPUT_OK=1
+if printf '%s\n' "$OUTPUT_LIST" | grep -Fxq "$MULTI_OUTPUT"; then
+  vok "$(T out_dev) $MULTI_OUTPUT"
+  if [ -n "${TALK_OUTPUT:-}" ] || [ -n "${_remembered:-}" ]; then
+    vinfo "$(T out_dev) $MULTI_OUTPUT $(T out_chosen)"
+  fi
+elif [ "$MODE" = "check" ]; then
+  OUTPUT_OK=0
+  AUDIO_DEGRADED=1
+  warn "Output device '$MULTI_OUTPUT' not found — clean machine? (create it in Audio MIDI Setup; talk mode needs it)"
+else
+  fail "Output device '$MULTI_OUTPUT' not found (open Audio MIDI Setup and check the Multi-Output device)"
+fi
+if [ "$AIRPODS" = 0 ] && [ "$OUTPUT_OK" = 1 ]; then
   if [ "$MULTI_OUTPUT" = "$OUTPUT_SPEAKERS" ]; then
     vinfo "$(T auto_spk)"
   else
@@ -353,14 +375,27 @@ fi
 if [ "$QUIET" = 1 ]; then
   vinfo "$(T quiet_on)"
 fi
-SwitchAudioSource -a -t input | grep -Fxq "$MIC" \
-  || fail "Mic '$MIC' not found (check System Settings -> Sound -> Input)"
-vok "$(T mic) $MIC"
-if [ -z "$MIC_INDEX" ]; then
+INPUT_LIST="$(SwitchAudioSource -a -t input 2>/dev/null)" \
+  || fail "Could not list input devices (SwitchAudioSource errored — broken audio setup?)"
+MIC_OK=1
+if printf '%s\n' "$INPUT_LIST" | grep -Fxq "$MIC"; then
+  vok "$(T mic) $MIC"
+elif [ "$MODE" = "check" ]; then
+  MIC_OK=0
+  AUDIO_DEGRADED=1
+  warn "Mic '$MIC' not found — clean machine? (check System Settings -> Sound -> Input; talk mode needs it)"
+else
+  fail "Mic '$MIC' not found (check System Settings -> Sound -> Input)"
+fi
+if [ -z "$MIC_INDEX" ] && [ "$MIC_OK" = 1 ]; then
   MIC_INDEX="$(audio_index_for "$MIC")"
   [ -n "$MIC_INDEX" ] || fail "Could not find '$MIC' in the ffmpeg device list (first run may need mic permission: allow Terminal, then re-run)"
 fi
-vok "$(T mic_idx) $MIC_INDEX"
+if [ "$MIC_OK" = 1 ]; then
+  vok "$(T mic_idx) $MIC_INDEX"
+else
+  warn "ffmpeg mic index: skipped (no mic '$MIC' to match)"
+fi
 vsect "$(T sect_data)"
 mkdir -p "$REC_DIR"
 vnote "$(T rec_to) $REC_DIR"
@@ -374,6 +409,9 @@ else
   vinfo "$(T mem_off)"
 fi
 vinfo "$(T call_lang) $CALL_LANG (voice: $VOICE)"
+if [ "$SPARK" = "1" ]; then
+  info "Spark fallback ON: one Muse Spark call rescues each word-step miss (skipped when keyless)"
+fi
 case "$QUEUE_TICK" in
   '' | *[!0-9]*) fail "QUEUE_TICK must be whole seconds" ;;
 esac
@@ -383,7 +421,14 @@ else
   vinfo "$(T q_rand) $(T q_every) ${QUEUE_TICK}s $(T q_hurry)"
 fi
 
-[ "$MODE" = "check" ] && { title "$(T check_only)"; exit 0; }
+if [ "$MODE" = "check" ]; then
+  if [ "$AUDIO_DEGRADED" = 1 ]; then
+    title "Check only: nothing changed (audio devices missing — see warnings; talk mode needs them)"
+  else
+    title "$(T check_only)"
+  fi
+  exit 0
+fi
 
 vstep "Switch audio"
 vwhat "Route audio through $MULTI_OUTPUT (--floor levels the physical output first). Originals are restored on exit."
@@ -687,7 +732,7 @@ agda_says() {
     TALK_WAV="${4:-}" TALK_TURNS_FILE="$TURNS_FILE" TALK_BOARD_FILE="$BOARD_FILE" \
     TALK_AUDIO_DIR="$AUDIO_DIR" TALK_MISS_FILE="$MISS_FILE" TALK_LEARNED_FILE="$LEARNED_FILE" \
     TALK_ROUNDS_FILE="$ROUNDS_FILE" TALK_PERSONA="$PERSONA" TALK_FORGIVING="$AGDA_FORGIVING" \
-    TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
+    TALK_QUEUE_START="$QUEUE_START" TALK_BUSY="$BUSY" TALK_SPARK="$SPARK" TALK_PLACE="${PLACE:-}" TALK_TOTAL="${START:-}" \
     TALK_CALL_LANG="$CALL_LANG" \
     PYTHONPATH="$ROOT/src" python3 - "$1" <<'EOF'
 import json
@@ -707,6 +752,7 @@ from adaptive_ivr_agent.live_view import (
     translate_robot,
     write_captions,
 )
+from adaptive_ivr_agent.intent import SparkFallback, maybe_spark_normalizer
 from adaptive_ivr_agent.reactive import ReactiveRobot
 from adaptive_ivr_agent.robot import SAY_VOICE, load_indexed_lines, opening_cache_path
 from adaptive_ivr_agent.talk import AgdaCall, with_aliases
@@ -779,6 +825,19 @@ if forgiving and os.path.exists(learned_path):
     aliases = json.load(open(learned_path, encoding="utf-8"))
 else:
     aliases = {}
+base_respond = with_aliases(ears.respond, aliases)
+spark_fallback = None
+if os.environ.get("TALK_SPARK") == "1":
+    with open(os.path.join(root, "data/role-phrasebooks.json"), encoding="utf-8") as handle:
+        talk_roles = json.load(handle)["roles"]
+    talk_vocab = list(dict.fromkeys(
+        word for role in talk_roles for word in role["vocabulary"]))
+    spark_normalizer = maybe_spark_normalizer(True)
+    if spark_normalizer is None:
+        print("spark: no key, fallback skipped (keyless run)", file=sys.stderr)
+    else:
+        spark_fallback = SparkFallback(base_respond, spark_normalizer, talk_vocab)
+        base_respond = spark_fallback.respond
 forced_start = os.environ.get("TALK_QUEUE_START", "").strip()
 forced = int(forced_start) if forced_start.isdigit() else None
 # Full verbatim L01: the English sentence is spoken by an English voice.
@@ -801,7 +860,7 @@ agda = AgdaCall(
     served_line=SERVED_LINE,
     queue_line=lines["L13"],
     place_template=lines["L29"],
-    respond=with_aliases(ears.respond, aliases),
+    respond=base_respond,
     queue_place=(lambda: forced) if forced else None,
     english_menu=lines["L17"],
     yesno_words=("yes", "no") if call_lang == "en" else ("ja", "nej"),
@@ -863,7 +922,8 @@ def load_call():
                 call.add_turn(turn["caller"], turn["robot"], turn["matched"], turn["state"],
                               turn.get("caller_audio"), turn.get("robot_audio"),
                               turn.get("caller_captions"), turn.get("robot_captions"),
-                              turn.get("queue_place"), turn.get("queue_total"))
+                              turn.get("queue_place"), turn.get("queue_total"),
+                              spark=turn.get("spark"))
     return call
 
 
@@ -968,17 +1028,22 @@ elif sys.argv[1] == "round":
     write_captions(os.path.join(audio_dir, you_vtt), heard, duration_of(wav))
     write_captions(os.path.join(audio_dir, agda_vtt), answer.reply, duration_of(aiff))
     call = load_call()
+    spark = spark_fallback.last if spark_fallback is not None else None
     call.add_turn(heard.strip(), answer.reply, answer.matched is not None,
                   state_after(answer.done, answer.misses, answer.identify),
                   robot_en=translate_robot(answer.reply, translations),
                   caller_audio=f"audio/{you_name}", robot_audio=f"audio/{agda_name}",
                   caller_captions=f"audio/{you_vtt}", robot_captions=f"audio/{agda_vtt}",
-                  queue_place=answer.queue_place)
+                  queue_place=answer.queue_place, spark=spark)
     with open(os.environ["TALK_TURNS_FILE"], "a", encoding="utf-8") as handle:
         handle.write(json.dumps(call.turns[-1], ensure_ascii=False) + "\n")
     write_board(call)
     print(f"YOU:   {heard.strip()}")
     show_robot(answer.reply, f" (matched: {answer.matched})")
+    if spark is not None:
+        print(f"TALK_SPARK={spark['word']} {spark['confidence']}")
+    else:
+        print("TALK_SPARK=")
     print(f"TALK_DONE={'yes' if answer.done else 'no'}")
     print(f"TALK_MISSES={answer.misses}")
     print(f"TALK_IDENTIFY={'yes' if answer.identify else 'no'}")
