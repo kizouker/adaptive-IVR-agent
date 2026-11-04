@@ -1,5 +1,5 @@
 #!/bin/bash
-# Holdmate calls Agda by itself: BFS lessons per persona, headless and fast.
+# Holdmate calls Roksolana by itself: BFS lessons per persona, headless and fast.
 # Runs on: Rickard's Mac (M4). Modes: run (default) | check.
 # Flags: --as <persona> (one lesson), --all (every persona, default),
 #   --depth 0..2 (miss levels, default 2), --speak (Oskar calls, Alva answers),

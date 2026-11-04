@@ -104,7 +104,7 @@ EOF
 
 mk FN-REQ-IVR-006 "Mini robot plays three lines" <<'EOF'
 ## What
-Mini practice robot playing 3 AF Agda lines made with `say`; each line saved as a step.
+Mini practice robot playing 3 AF Roksolana lines made with `say`; each line saved as a step.
 
 ## Acceptance
 - 3 lines play

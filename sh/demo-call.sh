@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Speaking demo call: one persona phones AF Agda ALOUD, tries 3 keywords.
+# Speaking demo call: one persona phones AF Roksolana ALOUD, tries 3 keywords.
 # Caller words use voice Oskar, robot replies use voice Alva. Mac only.
 # Prints every turn, like show-call.sh. Part of T-046 (#48).
 # Usage: demo-call.sh [persona-id] (default ny-arbetslos).
