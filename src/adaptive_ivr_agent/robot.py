@@ -30,9 +30,18 @@ def load_lines(path: str | Path) -> list[str]:
     return [entry[LINE_TEXT_KEY] for entry in raw[LINES_KEY]]
 
 
-def load_indexed_lines(path: str | Path) -> dict[str, str]:
-    """Load doorkeeper lines keyed by id (L01, L02, ...) for scripted calls."""
+def load_indexed_lines(path: str | Path, lang: str = "sv") -> dict[str, str]:
+    """Load doorkeeper lines keyed by id (L01, L02, ...) for scripted calls.
+
+    lang="en" prefers each line's recorded English rendering, falling back
+    to the Swedish text when a line has no English version (Swedish default).
+    """
     raw = json.loads(Path(path).read_text(encoding=ENCODING))
+    if lang == "en":
+        return {
+            entry["id"]: entry.get("en") or entry[LINE_TEXT_KEY]
+            for entry in raw[LINES_KEY]
+        }
     return {entry["id"]: entry[LINE_TEXT_KEY] for entry in raw[LINES_KEY]}
 
 
