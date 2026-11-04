@@ -97,7 +97,7 @@ T() { # $1 = key; prints the string for $MENU_LANG (en default, sv optional)
 sect() { printf '%s%s── %s ──%s\n' "$D" '' "$1" "$X"; }
 
 MODE="talk"
-CALL_LANG="sv"
+CALL_LANG="" # empty = follow the menu language; --call wins
 AUDIO_DEGRADED=0 # check mode: 1 once a missing device downgrades a fail to a warn
 AIRPODS=0
 PERSONA=""
@@ -159,6 +159,7 @@ if [ -f "$ROOT/.menu-lang" ] && [ "${LANG_GIVEN:-0}" != 1 ]; then
   _lang_remembered="$(cat "$ROOT/.menu-lang" 2>/dev/null)"
   case "$_lang_remembered" in en|sv) MENU_LANG="$_lang_remembered" ;; esac
 fi
+[ -n "$CALL_LANG" ] || CALL_LANG="$MENU_LANG" # English menu -> English call
 
 OUTPUT_SPEAKERS="${OUTPUT_SPEAKERS:-IVR_Agent_Speakers}" # MacBook speakers + BlackHole (default)
 OUTPUT_AIRPODS="${OUTPUT_AIRPODS:-IVR_Agent_Airpods}" # AirPods + BlackHole aggregate
