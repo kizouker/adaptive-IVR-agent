@@ -1,0 +1,38 @@
+set slidesData to {¬
+ {"Holdmate", "Waits on hold, so you don't have to.", "Hi, I'm Rickard. This is Holdmate."}, ¬
+ {"\"What is your errand?\"", "I said: sign up for your program." & return & "It heard: parental leave.", "I called the Swedish unemployment office to sign up. A robot asked what my errand was. I answered in my own words. It didn't understand, and tried to send me to parental leave."}, ¬
+ {"An idea for years", "Large language models made it possible — now.", "I've had this idea for several years, but only now, with large language models, could I make it come true."}, ¬
+ {"The problem", "Partially observable" & return & "Non-deterministic" & return & "Traps: loops with no way out", "In Russell and Norvig's terms: you never see the menu tree. It hears my Skåne dialect differently each time. And one wrong word can trap you in a loop - a point of no return."}, ¬
+ {"Who it hurts", "Hard for me." & return & "Close to impossible for many immigrants in Sweden.", "If it's hard for me, imagine everyone who doesn't speak the exact Swedish the robot expects."}, ¬
+ {"Holdmate does three things", "1. Maps the menu — which words work" & return & "2. Makes the call — you stay in the loop" & return & "3. Counts your place in the queue", "One: document the menu system, so you know which keywords work. Two: the agent does the call for you. You identify yourself, and you take over when a person answers."}, ¬
+ {"An IVR simulator", "Roksolana = a copy of the phone robot, built from real calls" & return & "Holdmate = your agent, practicing on her", "I can't call the real line a hundred times. So I built Roksolana, an IVR simulator made from my real recorded calls. Holdmate practices on her to learn the keywords."}, ¬
+ {"The menu is a state machine", "Open question → Options → Yes/no (trap: no way back)" & return & "→ Transfer → Identification → Queue", "Every call follows the same states. An open question. Then options: say one of these. Then yes or no, where you can get stuck in a loop with no way back. Then transfer, identification, and the queue."}, ¬
+ {"Holdmate counts the queue", "Mute the call" & return & "Your place on iPhone and Apple Watch" & return & "A notification when it's your turn", "The goal is to get to the front of the line. Holdmate keeps track of your place in the queue. You mute the call, and get a notification on your phone or watch when it's your turn."}, ¬
+ {"What it shows", "Explore → map as a state graph → learn keywords → practice → get further in line", "Built from first principles: a rational agent, Russell and Norvig chapter 2. It explores the menu, documents it as a state machine, learns the words, practices alone, and gets further in line."}, ¬
+ {"Where it stands", "Simulator + learning agent" & return & "Meta Muse Spark: intent" & return & "Next: real phone line (46elks)", "Today it's a simulator plus an agent learning from it. Meta's Muse Spark handles intent. Next step is a real phone line through 46elks."}, ¬
+ {"Holdmate", "Waits on hold, so you don't have to.", "(Closing - to be written.)"}}
+
+tell application "Keynote"
+	activate
+	set doc to make new document with properties {document theme:theme "Svart"}
+	set n to 0
+	repeat with s in slidesData
+		set n to n + 1
+		if n = 1 then
+			set sl to slide 1 of doc
+			set base slide of sl to master slide "Titel" of doc
+		else
+			set sl to make new slide at end of slides of doc with properties {base slide:master slide "Titel och punkter" of doc}
+		end if
+		tell sl
+			try
+				set object text of default title item to item 1 of s
+			end try
+			try
+				set object text of default body item to item 2 of s
+			end try
+			set presenter notes to item 3 of s
+		end tell
+	end repeat
+	save doc in POSIX file "/Users/raberg/kod/001_Meta_Hackathon_w44/adaptive-IVR-agent/docs/talk/holdmate-talk.key"
+end tell
