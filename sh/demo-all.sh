@@ -29,7 +29,7 @@ sh sh/route-demo.sh
 say_step "6/6 graphic snapshots"
 PYTHONPATH=src python3 -c "
 from adaptive_ivr_agent.menu_map import MenuMap
-sv = MenuMap.af_agda()
+sv = MenuMap.af_roksolana()
 for s in ['example_words', 'yes_no', 'transfer']:
     sv.move_to(s)
 sv.render_image('/tmp/holdmate-demo/swedish.svg')

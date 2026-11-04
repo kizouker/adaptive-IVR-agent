@@ -1,14 +1,14 @@
-"""Agda talk script: open question -> examples -> yes/no -> transfer. No audio."""
+"""Roksolana talk script: open question -> examples -> yes/no -> transfer. No audio."""
 
 from adaptive_ivr_agent.reactive import ReactiveRobot
-from adaptive_ivr_agent.talk import AgdaCall, with_aliases
+from adaptive_ivr_agent.talk import RoksolanaCall, with_aliases
 
 MISS = ("sorry", None)
 HIT = ("thanks", "vab")
 
 
 def make_call(respond, queue_place=None, english_menu=""):
-    return AgdaCall(
+    return RoksolanaCall(
         english_menu=english_menu,
         opening="welcome, what is it?",
         examples="for example say vab",
