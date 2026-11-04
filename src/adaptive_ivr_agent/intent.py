@@ -117,7 +117,9 @@ class SparkNormalizer(Normalizer):
         timeout: int = 0,  # 0 = SPARK_TIMEOUT env or DEFAULT_SPARK_TIMEOUT
         effort: str = "",
         daily_max_calls: int | None = None,
+        stage: str = "rescue",
     ) -> None:
+        self.stage = stage
         if daily_max_calls is None:
             raw = os.environ.get("SPARK_DAILY_MAX_CALLS", "")
             try:
@@ -171,6 +173,7 @@ class SparkNormalizer(Normalizer):
                 "ts": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "model": self.model,
                 "runtime": "spark-hosted",
+                "stage": self.stage,
                 "endpoint": self.endpoint,
                 "latency_ms": round(ms, 1),
                 "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest()[:16],
@@ -274,7 +277,9 @@ class OpenWeightNormalizer(Normalizer):
         api_key: str | None = None,
         model: str = "",
         timeout: int = 30,
+        stage: str = "intent",
     ) -> None:
+        self.stage = stage
         self.endpoint = (
             endpoint
             or os.environ.get("OPENWEIGHT_URL", "")
@@ -318,6 +323,7 @@ class OpenWeightNormalizer(Normalizer):
             {
                 "model": self.model,
                 "runtime": self.runtime,
+                "stage": self.stage,
                 "endpoint": self.endpoint,
                 "latency_ms": round(ms, 1),
                 "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest()[:16],
