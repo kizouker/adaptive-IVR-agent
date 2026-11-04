@@ -9,7 +9,7 @@
   - Spark fallback in talk loop + board badge — in progress ([#205](https://github.com/kizouker/adaptive-IVR-agent/issues/205))
   - `Muse Spark Open` — planned load-bearing open-weight stage (stretch goal, not wired yet)
 - **Bonus Prize Categories Targeted**: Best Agentic Use-Case · Best Creative Build
-- **3-Minute Demo Video**: https://youtu.be/6KtzT4xfa5k (draft v1)
+- **3-Minute Demo Video**: https://youtu.be/orxqS8rnxt0
 - **Quickstart & Keyless Replay**: `./sh/holdmate.sh` runs the full sim keyless; live Meta calls need `MODEL_API_KEY` (see `.env.example`).
 - **Real lines**: Holdmate trains against a scripted copy of the line, so the real government line is never spammed. Real calls today: human in the loop on speakerphone. Next: telephony via 46elks, and a free BlackHole path ([#190](https://github.com/kizouker/adaptive-IVR-agent/issues/190)).
 
