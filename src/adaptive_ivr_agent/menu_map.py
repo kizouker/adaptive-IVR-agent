@@ -92,6 +92,11 @@ AF_ROKSOLANA_EDGES = [
 
 NO_INPUT_EDGE_LABEL = "silence"
 
+# Busy day from call 5 parts 1-4: the delay notice (L44) replaces the open
+# question, then press 0 leads into the same English key-menu branch.
+BUSY_TITLE = "Roksolana - busy day (delay notice, press 0)"
+BUSY_WELCOME = "busy_welcome"
+
 # English branch from call 5 part 4: pressing 0 skips all speech, then the
 # key menus, SMS offer, identification and queue follow in order. Pressed
 # digits are recorded but the path is the same; failed ID still queues.
@@ -143,6 +148,20 @@ class MenuMap:
             edges=copy.deepcopy(ENGLISH_EDGES),
             current=ENGLISH_STATES[0].id,
             title=ENGLISH_TITLE,
+        )
+
+    @classmethod
+    def busy_day(cls) -> "MenuMap":
+        """Busy-day path (call 5): delay notice, press 0, English branch."""
+        states = [State(BUSY_WELCOME, "Delay notice (L44), press 0 for English")]
+        states.extend(copy.deepcopy(ENGLISH_STATES))
+        edges = [Edge(BUSY_WELCOME, "english_menu", PRESS_ZERO_LABEL)]
+        edges.extend(copy.deepcopy(ENGLISH_EDGES))
+        return cls(
+            states=states,
+            edges=edges,
+            current=BUSY_WELCOME,
+            title=BUSY_TITLE,
         )
 
     @classmethod
