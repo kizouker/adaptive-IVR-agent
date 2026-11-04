@@ -234,6 +234,50 @@ def test_spark_logs_provenance(monkeypatch, tmp_path):
     assert row["keyword"] == "vab"
 
 
+def test_spark_daily_cap_abstains_with_warning(monkeypatch, tmp_path, capsys):
+    log = tmp_path / "prov.jsonl"
+    today = __import__("datetime").datetime.now(
+        __import__("datetime").timezone.utc).date().isoformat()
+    rows = [{"ts": today, "runtime": "spark-hosted", "keyword": "vab"}] * 2
+    rows.append({"ts": "2000-01-01", "runtime": "spark-hosted", "keyword": "vab"})
+    rows.append({"ts": today, "runtime": "openweight-local", "keyword": "vab"})
+    log.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+
+    def boom(req, timeout):
+        raise AssertionError("urlopen called over cap")
+
+    monkeypatch.setattr(urllib.request, "urlopen", boom)
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k", daily_max_calls=2)
+    assert norm.map("ont i magen, vab?", VOCAB) == (None, 0.0)
+    assert "[spark-cap]" in capsys.readouterr().err
+
+
+def test_spark_daily_cap_allows_under_limit(monkeypatch, tmp_path):
+    log = tmp_path / "prov.jsonl"
+    log.write_text("", encoding="utf-8")
+    monkeypatch.setenv("OPENWEIGHT_LOG", str(log))
+    monkeypatch.setenv("SPARK_DAILY_MAX_CALLS", "5")
+    norm = SparkNormalizer(endpoint="https://x.test/v1", api_key="k")
+    assert norm.daily_max_calls == 5
+    body = json.dumps(
+        {"choices": [{"message": {"content": '{"keyword": "vab", "confidence": 0.8}'}}]}
+    ).encode()
+
+    class FakeRes:
+        def __enter__(self):
+            return io.BytesIO(body)
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout: FakeRes())
+    assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.8)
+    row = json.loads(log.read_text(encoding="utf-8").strip())
+    assert row["ts"][:10] == __import__("datetime").datetime.now(
+        __import__("datetime").timezone.utc).date().isoformat()
+
+
 def test_resolve_chain_names_stage():
     class First:
         def map(self, heard, vocab):
