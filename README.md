@@ -8,6 +8,9 @@
   - `Muse Spark` (`muse-spark-1.3` on `api.meta.ai`) — live: opt-in intent normalization + eval via `MODEL_API_KEY`; first live run rescue 3/3 ([eval notes](docs/evals/spark-live-2026-11-03.md))
   - Spark fallback in talk loop + board badge — in progress ([#205](https://github.com/kizouker/adaptive-IVR-agent/issues/205))
   - `Muse Spark Open` — planned load-bearing open-weight stage (stretch goal, not wired yet)
+- **Meta Models Used to Build It (Muse Code telemetry, Oct 29 – Nov 4)**: `muse-spark-1.3-contributor` ($11.12), `muse-wonder-1.0` ($6.64), `muse-spark-1.3` ($0.99) — 47 sessions, 1.5 B input tokens (1.4 B cached), 7.5 M output tokens, ≈ $18.78 API-equivalent.
+
+  <a href="data/telemetry/usage-overview.jpeg"><img src="data/telemetry/usage-overview.jpeg" width="120" alt="Usage overview"></a> <a href="data/telemetry/cost-by-model.jpeg"><img src="data/telemetry/cost-by-model.jpeg" width="120" alt="Cost by model"></a> <a href="data/telemetry/top-sessions.jpeg"><img src="data/telemetry/top-sessions.jpeg" width="120" alt="Top sessions"></a>
 - **Bonus Prize Categories Targeted**: Best Agentic Use-Case · Best Creative Build
 - **3-Minute Demo Video**: https://youtu.be/orxqS8rnxt0
 - **Quickstart & Keyless Replay**: `./sh/holdmate.sh` runs the full sim keyless; live Meta calls need `MODEL_API_KEY` (see `.env.example`).
@@ -23,25 +26,15 @@ Holdmate learns these lines for you: it maps the menu by practicing on a scripte
 
 ## Screenshots
 
-**Screenshot 1 — live board overview:** the call mapped onto the process, live.
+Click a thumbnail to open it full size.
 
-[![Screenshot 1: live board overview](docs/images/board-overview.png)](docs/images/board-overview.png)
-
-**Screenshot 2 — queue ticket:** your place, counting down; N/A until the queue arrives.
-
-[![Screenshot 2: queue ticket](docs/images/board-queue.png)](docs/images/board-queue.png)
-
-**Screenshot 3 — BFS lessons:** every sim run, and what Holdmate learned from it.
-
-[![Screenshot 3: BFS lessons](docs/images/board-lessons.png)](docs/images/board-lessons.png)
-
-**Screenshot 4 — menu map maze:** exploration drawn as a maze; dead ends are walls.
-
-[![Screenshot 4: menu map maze](docs/images/board-pacman.png)](docs/images/board-pacman.png)
-
-**Screenshot 5 — iPhone queue ticket:** the same countdown on the phone, big and glanceable.
-
-[![Screenshot 5: iPhone queue ticket](docs/images/iphone-queue.png)](docs/images/iphone-queue.png)
+<table><tr>
+<td align="center" valign="top"><a href="docs/images/board-overview.png"><img src="docs/images/board-overview.png" width="150" alt="Live board"></a><br><b>1. Live board</b><br><sub>the call mapped onto the process, live</sub></td>
+<td align="center" valign="top"><a href="docs/images/board-queue.png"><img src="docs/images/board-queue.png" width="150" alt="Queue ticket"></a><br><b>2. Queue ticket</b><br><sub>your place, counting down</sub></td>
+<td align="center" valign="top"><a href="docs/images/board-lessons.png"><img src="docs/images/board-lessons.png" width="150" alt="BFS lessons"></a><br><b>3. BFS lessons</b><br><sub>every sim run and what Holdmate learned</sub></td>
+<td align="center" valign="top"><a href="docs/images/board-pacman.png"><img src="docs/images/board-pacman.png" width="150" alt="Menu map maze"></a><br><b>4. Menu map maze</b><br><sub>exploration as a maze; dead ends are walls</sub></td>
+<td align="center" valign="top"><a href="docs/images/iphone-queue.png"><img src="docs/images/iphone-queue.png" width="150" alt="iPhone ticket"></a><br><b>5. iPhone ticket</b><br><sub>the same countdown on the phone</sub></td>
+</tr></table>
 
 Screenshot 6 (Watch queue ticket) is taken on the watch and added next.
 
