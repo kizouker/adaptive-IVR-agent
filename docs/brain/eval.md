@@ -1,6 +1,6 @@
 # Eval criteria vs now #eval
 
-Source: `Judging Workflow.md`. Weights override the guide typo.
+Source: `docs/judging-workflow.md`. Weights override the guide typo.
 
 ## Impact 30% (3.0p) — ~2.0 now
 

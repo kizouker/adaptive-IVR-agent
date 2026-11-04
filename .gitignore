@@ -61,3 +61,6 @@ data/video/auto/
 data/video/*.mp4
 data/video/*.jpg
 data/video/*.mov
+# local agent instructions (kept on disk, not published)
+COACH.MD
+BLOCKED.MD
