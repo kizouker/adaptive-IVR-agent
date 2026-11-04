@@ -12,7 +12,7 @@ from adaptive_ivr_agent.talk import RoksolanaCall
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 BOOKS = DATA_DIR / "role-phrasebooks.json"
-EN_WORD = "activity report"
+EN_WORD = "register"
 EN_ERRAND = "Register as a job seeker"
 
 

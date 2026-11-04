@@ -126,8 +126,40 @@ class Exchange(NamedTuple):
     spark: dict | None = None
 
 
-def build_roksolana(lines: dict[str, str], respond, busy: bool = False) -> RoksolanaCall:
-    """Scripted Roksolana with the recorded lines; fixed queue place for lessons."""
+#: Recorded English line set for English lessons (#238): welcome menu,
+#: sub-menu, SMS offer, identification, queue, place number and handover.
+ENGLISH_LESSON_LINE_IDS = ("L17", "L18", "L31", "L32", "L35", "L36", "L37")
+
+
+def build_roksolana(lines: dict[str, str], respond, busy: bool = False,
+                    lang: str = "sv") -> RoksolanaCall:
+    """Scripted Roksolana with the recorded lines; fixed queue place for lessons.
+
+    lang="en" speaks the recorded English line set (welcome menu, sub-menu,
+    SMS offer, identification, queue, handover) and takes yes/no answers;
+    Swedish stays the default. There is no recorded English busy-day line,
+    so English lessons open with the English menu either way.
+    """
+    if lang == "en":
+        return RoksolanaCall(
+            opening=lines["L17"],
+            examples=lines["L18"],
+            yesno=lines["L31"],
+            yesno_reprompt=lines["L31"],
+            transfer=lines["L37"],
+            identify_line=lines["L32"],
+            identified_line=lines["L38"],
+            failed_line=lines["L34"],
+            served_line=lines["L37"],
+            queue_line=lines["L35"],
+            place_template=lines["L36"],
+            respond=respond,
+            queue_place=lambda: FIXED_PLACE,
+            survey_line=lines["L15"],
+            survey_done=lines["L16"],
+            english_menu=lines["L17"],
+            yesno_words=("yes", "no"),
+        )
     welcome = lines["L44"] if busy else lines["L01"]
     opening = welcome if busy else f"{welcome} {lines['L02']}"
     return RoksolanaCall(
@@ -443,6 +475,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--lessons", required=True)
     parser.add_argument("--as", dest="persona", default="")
     parser.add_argument("--depth", type=int, default=MAX_MISSES)
+    parser.add_argument("--lang", default="sv", choices=("sv", "en"),
+                        help="lesson language: sv (default) or en "
+                             "(recorded English lines + English vocab, #238)")
     parser.add_argument("--speak", action="store_true")
     parser.add_argument("--fresh", action="store_true")
     parser.add_argument("--board-out", default="")
@@ -452,20 +487,28 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.depth < 0 or args.depth > MAX_MISSES:
         parser.error(f"--depth must be 0..{MAX_MISSES}")
-    lines = load_indexed_lines(args.lines)
+    lines = load_indexed_lines(args.lines, lang=args.lang)
     translations = line_translations(args.lines)
-    ears = ReactiveRobot.from_phrasebooks(args.phrasebooks)
+    ears = ReactiveRobot.from_phrasebooks(args.phrasebooks, lang=args.lang)
     all_roles = load_personas(args.phrasebooks)
+
+    def lesson_vocab(role: dict) -> list[str]:
+        """Persona words in the lesson language (English falls back to Swedish)."""
+        if args.lang == "en":
+            return list(role.get("vocabulary_en") or role["vocabulary"])
+        return list(role["vocabulary"])
+
     spark_fallback = None
     if args.spark:
         vocab = list(dict.fromkeys(
-            word for role in all_roles for word in role["vocabulary"]))
+            word for role in all_roles for word in lesson_vocab(role)))
         normalizer = maybe_spark_normalizer(True)
         if normalizer is None:
             print("spark: no key, fallback skipped (keyless run)")
         else:
             spark_fallback = SparkFallback(ears.respond, normalizer, vocab)
-    roksolana = build_roksolana(lines, spark_fallback.respond if spark_fallback else ears.respond)
+    roksolana = build_roksolana(lines, spark_fallback.respond if spark_fallback else ears.respond,
+                                lang=args.lang)
     personas = all_roles
     if args.persona:
         personas = [r for r in all_roles if r["id"] == args.persona]
@@ -474,7 +517,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
     knowledge = Knowledge() if args.fresh else Knowledge.load(args.knowledge)
     planned = [
-        (role, list(dict.fromkeys([*role["vocabulary"], *PROBES])))
+        (role, list(dict.fromkeys([*lesson_vocab(role), *PROBES])))
         for role in personas
     ]
     total = sum(len(candidates) * (args.depth + 1) for _, candidates in planned)
@@ -498,7 +541,12 @@ def main(argv: list[str] | None = None) -> int:
             )
             if args.board_out:
                 live_calls.append(lesson_call(role, lesson, translations))
-                write_lesson_board(args.board_out, live_calls, knowledge, all_roles)
+                coverage_roles = all_roles
+                if args.lang == "en":
+                    coverage_roles = [
+                        {**r, "vocabulary": lesson_vocab(r)} for r in all_roles
+                    ]
+                write_lesson_board(args.board_out, live_calls, knowledge, coverage_roles)
     except KeyboardInterrupt:
         print("stopped early; saving what was learned so far")
     except BrokenPipeError:

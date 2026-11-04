@@ -352,3 +352,91 @@ def test_lesson_call_keeps_queue_place_on_board():
     call = lesson_call(role, lesson, {})
     turns = [t for t in call.turns if t["state"] == "queue"]
     assert turns and turns[0]["queue_place"] == FIXED_PLACE
+
+
+def test_build_roksolana_english_uses_english_lines():
+    from adaptive_ivr_agent.robot import load_indexed_lines
+
+    lines = load_indexed_lines(LINES, lang="en")
+    assert lines["L17"].startswith("Welcome to Arbetsförmedlingen")
+    roksolana = build_roksolana(lines, fake_respond, lang="en")
+    assert roksolana.opening == lines["L17"]
+    assert roksolana.opening.startswith("Welcome to Arbetsförmedlingen")
+    transfer = roksolana.reply_to("kw", 0)
+    assert lines["L37"] in transfer.reply  # handover in English
+    assert lines["L32"] in transfer.reply  # identification in English
+    assert transfer.identify is True
+
+
+def test_build_roksolana_english_takes_yes_and_no():
+    from adaptive_ivr_agent.robot import load_indexed_lines
+
+    lines = load_indexed_lines(LINES, lang="en")
+    roksolana = build_roksolana(lines, fake_respond, lang="en")
+    assert roksolana.reply_to("yes", 2).matched == "yes"
+    assert roksolana.reply_to("no", 2).matched == "no"
+    assert roksolana.reply_to("ja", 2).misses == 3
+    calm = build_roksolana(lines, fake_respond, lang="en")
+    busy = build_roksolana(lines, fake_respond, busy=True, lang="en")
+    assert busy.opening == lines["L17"] == calm.opening
+
+
+def test_english_run_call_reaches_queue_and_handover_in_english():
+    from adaptive_ivr_agent.robot import load_indexed_lines
+
+    from adaptive_ivr_agent.reactive import ReactiveRobot
+
+    lines = load_indexed_lines(LINES, lang="en")
+    ears = ReactiveRobot.from_phrasebooks(PHRASEBOOKS, lang="en")
+    roksolana = build_roksolana(lines, ears.respond, lang="en")
+    result, _, exchanges = run_call(roksolana, "register", 0)
+    assert result.transferred is True
+    assert result.matched == "register"
+    assert result.served is True
+    robots = [e.robot for e in exchanges]
+    assert any(lines["L32"] in robot for robot in robots)
+    assert any(lines["L35"] in robot for robot in robots)
+    assert any("You are number 3 in the queue." in robot for robot in robots)
+    assert any(robot == lines["L37"] for robot in robots)  # served/handover
+    assert robots[-1] == f"{lines['L15']} {lines['L16']}"  # survey tail in English
+
+
+def test_main_english_lessons_produce_english_sims(tmp_path):
+    knowledge = tmp_path / "k.json"
+    lessons = tmp_path / "l.jsonl"
+    board = tmp_path / "board.json"
+    code = main([
+        "--phrasebooks", str(PHRASEBOOKS),
+        "--lines", str(LINES),
+        "--knowledge", str(knowledge),
+        "--lessons", str(lessons),
+        "--as", "ny-arbetslos",
+        "--depth", "0",
+        "--fresh",
+        "--lang", "en",
+        "--board-out", str(board),
+    ])
+    assert code == 0
+    saved = json.loads(knowledge.read_text(encoding="utf-8"))
+    assert saved["lessons"][0]["persona"] == "ny-arbetslos"
+    assert "register" in saved["words"]
+    assert "skriva in mig" not in saved["words"]
+    raw = json.loads(board.read_text(encoding="utf-8"))
+    robots = [t["robot"] for t in raw["calls"][0]["turns"]]
+    assert any("If you wish to register, press 1." in r for r in robots)
+    assert any("You will now be placed in a queue" in r for r in robots)
+    assert any("You are number" in r for r in robots)
+    assert raw["words"]["register"]["transfers"] == 1
+    assert any(c["token"] == "register" and c["tried"]
+               for c in raw["coverage"]["cells"])
+
+
+def test_main_rejects_bad_lang(tmp_path):
+    with pytest.raises(SystemExit):
+        main([
+            "--phrasebooks", str(PHRASEBOOKS),
+            "--lines", str(LINES),
+            "--knowledge", str(tmp_path / "k.json"),
+            "--lessons", str(tmp_path / "l.jsonl"),
+            "--lang", "xx",
+        ])
