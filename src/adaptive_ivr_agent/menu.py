@@ -279,7 +279,7 @@ class App:
 
     def server_up(self) -> bool:
         try:
-            with urllib.request.urlopen(self.url, timeout=2):
+            with urllib.request.urlopen(self.url, timeout=2):  # nosec B310: localhost only
                 return True
         except OSError:
             return False
