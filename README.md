@@ -17,7 +17,7 @@ Calling a robot operator like Sweden's Public Employment Service means menus, qu
 
 Swedish government phone lines (employment service, social insurance, police non-emergency) are run by voice robots that only understand exact words — nobody tells you which. Say anything else and the robot repeats "answer yes or no" forever; then you wait in long queues, ears glued to the speaker so you don't miss your turn. It hits hardest those who need help most: stressed job seekers, non-native speakers, people with ADHD or disabilities.
 
-Holdmate learns these lines for you: it maps the menu by practicing on a scripted copy, waits in the queue, and hands you the call when a human answers. Source: [the application draft](Meta_Hackathon_2026_Application_Form.md).
+Holdmate learns these lines for you: it maps the menu by practicing on a scripted copy, waits in the queue, and hands you the call when a human answers. Source: [the application draft](docs/Meta_Hackathon_2026_Application_Form.md).
 
 ## Screenshots
 

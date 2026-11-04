@@ -43,3 +43,21 @@ xcuserdata/
 .agentchute/loop/scratch-*
 # agentchute-gitignore v3 end
 data/video/cut/.mic
+.talk-input
+.talk-output
+.menu-lang
+plans/night-tasks.md
+.claude/
+.codex/
+.muse/
+.obsidian/
+AGENTCHUTE.md
+RETRO_LOG.MD
+# local video renders (large binaries, keep out of git)
+data/video/cut/
+data/video/phone/
+data/video/term/
+data/video/auto/
+data/video/*.mp4
+data/video/*.jpg
+data/video/*.mov
