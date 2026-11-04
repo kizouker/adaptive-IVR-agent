@@ -69,7 +69,7 @@ def main() -> int:
 
             os.environ["SPARK_EFFORT"] = args[args.index("--effort") + 1]
         try:
-            normalizer = SparkNormalizer()
+            normalizer = SparkNormalizer(stage="eval")
         except NotConfiguredError as err:
             print(f"live needs configuration: {err}")
             return 2
@@ -77,7 +77,7 @@ def main() -> int:
               f"endpoint={normalizer.endpoint} (max {len(CASES)} calls)")
     elif "--openweight" in sys.argv[1:]:
         try:
-            normalizer = OpenWeightNormalizer()
+            normalizer = OpenWeightNormalizer(stage="eval")
         except NotConfiguredError as err:
             print(f"openweight needs configuration: {err}")
             return 2
