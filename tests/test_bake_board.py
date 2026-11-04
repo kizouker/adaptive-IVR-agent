@@ -44,6 +44,25 @@ def test_bake_writes_lines_and_telemetry(tmp_path, monkeypatch, capsys):
     assert "baked 1 lines" in capsys.readouterr().out
 
 
+def test_bake_passes_through_cost_box(tmp_path, monkeypatch):
+    board = tmp_path / "board-state.json"
+    _write(board, {"generated": "test"})
+    lines = tmp_path / "lines.json"
+    _write(lines, {"lines": []})
+    costs = tmp_path / "cost-by-model.json"
+    _write(costs, {"as_of": "2026-11-04", "models": [{"model": "m", "usd_estimated": 1.5}]})
+    monkeypatch.setattr(
+        sys, "argv",
+        ["bake-board.py", "--board", str(board), "--lines", str(lines),
+         "--provenance", str(tmp_path / "absent.jsonl"),
+         "--telemetry-out", str(tmp_path / "telemetry.json"),
+         "--costs", str(costs)],
+    )
+    assert bake_board.main() == 0
+    baked_costs = json.loads((tmp_path / "costs.json").read_text(encoding="utf-8"))
+    assert baked_costs["models"] == [{"model": "m", "usd_estimated": 1.5}]
+
+
 def test_bake_missing_provenance_writes_empty_telemetry(tmp_path, monkeypatch):
     board = tmp_path / "board-state.json"
     _write(board, {"generated": "test"})

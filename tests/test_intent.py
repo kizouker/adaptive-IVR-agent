@@ -205,6 +205,7 @@ def test_openweight_logs_provenance(monkeypatch, tmp_path):
     assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.7)
     row = json.loads(log.read_text(encoding="utf-8").strip())
     assert row["runtime"] == "openweight-local"
+    assert row["stage"] == "intent"
     assert row["keyword"] == "vab"
     assert row["confidence"] == 0.7
     assert len(row["prompt_sha256"]) == 16
@@ -230,6 +231,7 @@ def test_spark_logs_provenance(monkeypatch, tmp_path):
     assert norm.map("ont i magen, vab?", VOCAB) == ("vab", 0.8)
     row = json.loads(log.read_text(encoding="utf-8").strip())
     assert row["runtime"] == "spark-hosted"
+    assert row["stage"] == "rescue"
     assert row["model"] == "muse-spark-1.3"  # Meta quickstart default
     assert row["keyword"] == "vab"
 
