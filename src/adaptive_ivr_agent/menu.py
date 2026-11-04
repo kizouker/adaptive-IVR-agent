@@ -34,7 +34,7 @@ from adaptive_ivr_agent.menu_music import menu_music_path
 ROOT = Path(__file__).resolve().parent.parent.parent
 SH = ROOT / "sh"
 BOARD_DIR = ROOT / "ui" / "board"
-BOARD_LOG = Path("/tmp/holdmate-board.log")
+BOARD_LOG = Path("/tmp/holdmate-board.log")  # nosec B108: must match sh/holdmate.sh
 OUTPUT_FILE = ROOT / ".talk-output"
 LANG_FILE = ROOT / ".menu-lang"
 QUIET_FILE = ROOT / ".talk-quiet"
