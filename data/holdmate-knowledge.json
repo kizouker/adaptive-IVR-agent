@@ -1,11 +1,11 @@
 {
-  "updated": "2026-11-02T22:08:27+00:00",
+  "updated": "2026-11-04T22:38:02+00:00",
   "words": {
     "skriva in mig": {
-      "tries": 41,
-      "transfers": 41,
+      "tries": 42,
+      "transfers": 42,
       "keywords": {
-        "skriva in mig": 41
+        "skriva in mig": 42
       }
     },
     "skriv in dig": {
@@ -312,24 +312,24 @@
         "source": "transfer",
         "target": "identification",
         "label": "kopplar",
-        "tries": 1504,
-        "successes": 1504,
+        "tries": 1505,
+        "successes": 1505,
         "status": "observed"
       },
       {
         "source": "identification",
         "target": "queue",
         "label": "legitimerad",
-        "tries": 1504,
-        "successes": 1504,
+        "tries": 1505,
+        "successes": 1505,
         "status": "observed"
       },
       {
         "source": "queue",
         "target": "officer",
         "label": "served",
-        "tries": 1504,
-        "successes": 1504,
+        "tries": 1505,
+        "successes": 1505,
         "status": "observed"
       },
       {
@@ -352,16 +352,16 @@
         "source": "open_question",
         "target": "transfer",
         "label": "skriva in mig",
-        "tries": 31,
-        "successes": 31,
+        "tries": 32,
+        "successes": 32,
         "status": "observed"
       },
       {
         "source": "queue",
         "target": "queue",
         "label": "tick",
-        "tries": 3008,
-        "successes": 3008,
+        "tries": 3010,
+        "successes": 3010,
         "status": "observed"
       },
       {

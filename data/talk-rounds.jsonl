@@ -182,3 +182,13 @@
 {"ts": "2026-11-02T22:57:58", "call": "20261102-225742", "round": 3, "persona": "", "heard": "fds", "matched": null}
 {"ts": "2026-11-02T22:57:59", "call": "20261102-225742", "round": 4, "persona": "", "heard": "df", "matched": null}
 {"ts": "2026-11-02T22:58:00", "call": "20261102-225742", "round": 5, "persona": "", "heard": "df", "matched": null}
+{"ts": "2026-11-04T23:23:21", "call": "20261104-232303", "round": 1, "persona": "", "heard": "Tänk på att du har tittat på den här videon!", "matched": null}
+{"ts": "2026-11-04T23:23:58", "call": "20261104-232339", "round": 1, "persona": "", "heard": "Fyra.", "matched": null}
+{"ts": "2026-11-04T23:24:17", "call": "20261104-232339", "round": 2, "persona": "", "heard": "Fyra.", "matched": null}
+{"ts": "2026-11-04T23:24:34", "call": "20261104-232339", "round": 3, "persona": "", "heard": "Detta är en av de här videorna som jag har tittat på.\nTack för att du har tittat på den här videorna.", "matched": null}
+{"ts": "2026-11-04T23:24:48", "call": "20261104-232339", "round": 4, "persona": "", "heard": "Det är en del av det här.", "matched": null}
+{"ts": "2026-11-04T23:25:41", "call": "20261104-232525", "round": 1, "persona": "programdeltagare", "heard": "Fick cell, my reports.", "matched": null}
+{"ts": "2026-11-04T23:26:00", "call": "20261104-232525", "round": 2, "persona": "programdeltagare", "heard": "Det är en del av det här.", "matched": null}
+{"ts": "2026-11-04T23:26:13", "call": "20261104-232525", "round": 3, "persona": "programdeltagare", "heard": "Efter att det är en del av den här videon, så ska vi gå tillbaka till den här videon.", "matched": null}
+{"ts": "2026-11-04T23:26:27", "call": "20261104-232525", "round": 4, "persona": "programdeltagare", "heard": "Efter att det är en del av den här videon, så ska vi gå tillbaka till den här videon.", "matched": null}
+{"ts": "2026-11-05T01:04:06", "call": "20261105-010349", "round": 1, "persona": "", "heard": "Jag stoppar massa ställer på det här med ändå, liksom.", "matched": null}
