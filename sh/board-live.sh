@@ -8,8 +8,9 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT" || exit 1
 
-PORT="8765"
+PORT="5173"
 HOST="127.0.0.1"
+BOARD_DIR="${BOARD_DIR:-$ROOT/ui/board}"
 OPEN="1"
 MODE="live"
 while [ "$#" -gt 0 ]; do
@@ -33,16 +34,15 @@ ok() { echo "OK: $1"; }
 command -v python3 >/dev/null 2>&1 || fail "python3 missing"
 command -v node >/dev/null 2>&1 || fail "node missing (brew install node)"
 command -v npm >/dev/null 2>&1 || fail "npm missing (brew install node)"
-[ -d "ui/board/node_modules" ] || fail "board deps missing (cd ui/board && npm ci)"
+[ -d "$BOARD_DIR/node_modules" ] || fail "board deps missing (cd ui/board && npm ci)"
 [ -f "data/doorkeeper-lines.json" ] || fail "data/doorkeeper-lines.json missing"
 ok "preflight: python3, node, npm, board deps, lines"
 
+case "$PORT" in ''|*[!0-9]*) fail "--port needs a number, got '$PORT'" ;; esac
 if [ "$MODE" = "check" ]; then
-  echo "check only: nothing started"
+  echo "check only: nothing started (board URL would be http://$HOST:$PORT/)"
   exit 0
 fi
-
-case "$PORT" in ''|*[!0-9]*) fail "--port needs a number, got '$PORT'" ;; esac
 if curl -sf -o /dev/null --max-time 2 "http://$HOST:$PORT/" 2>/dev/null; then
   fail "something already answers http://$HOST:$PORT/ (stop it or pick --port=N)"
 fi
@@ -55,7 +55,7 @@ BOARD_LOG="/tmp/holdmate-board-live.log"
 python3 sh/telemetry-live.py --provenance data/provenance.jsonl \
   --out ui/board/public/telemetry.json >"$TEL_LOG" 2>&1 &
 TEL_PID="$!"
-(cd ui/board && npm run dev -- --port "$PORT" --host "$HOST") >"$BOARD_LOG" 2>&1 &
+(cd "$BOARD_DIR" && npm run dev -- --port "$PORT" --host "$HOST") >"$BOARD_LOG" 2>&1 &
 BOARD_PID="$!"
 
 cleanup() {

@@ -14,7 +14,15 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "sh" / "board-live.sh"
 
 
-def test_check_mode_passes_preflight():
+@pytest.fixture
+def fake_board(tmp_path, monkeypatch):
+    board = tmp_path / "board"
+    (board / "node_modules").mkdir(parents=True)
+    monkeypatch.setenv("BOARD_DIR", str(board))
+    return board
+
+
+def test_check_mode_passes_preflight(fake_board):
     proc = subprocess.run(
         ["bash", str(SCRIPT), "check"],
         capture_output=True, text=True, timeout=60, cwd=ROOT,
@@ -24,7 +32,26 @@ def test_check_mode_passes_preflight():
     assert "check only: nothing started" in proc.stdout
 
 
-def test_bad_port_fails_fast():
+def test_check_defaults_to_holdmate_port(fake_board):
+    proc = subprocess.run(
+        ["bash", str(SCRIPT), "check"],
+        capture_output=True, text=True, timeout=60, cwd=ROOT,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "board URL would be http://127.0.0.1:5173/" in proc.stdout
+
+
+def test_check_port_flag_overrides_default(fake_board):
+    for argv in (["--port", "8765"], ["--port=8765"]):
+        proc = subprocess.run(
+            ["bash", str(SCRIPT), "check", *argv],
+            capture_output=True, text=True, timeout=60, cwd=ROOT,
+        )
+        assert proc.returncode == 0, proc.stdout + proc.stderr
+        assert "board URL would be http://127.0.0.1:8765/" in proc.stdout
+
+
+def test_bad_port_fails_fast(fake_board):
     proc = subprocess.run(
         ["bash", str(SCRIPT), "--port=abc"],
         capture_output=True, text=True, timeout=60, cwd=ROOT,
@@ -33,7 +60,7 @@ def test_bad_port_fails_fast():
     assert "--port needs a number" in proc.stderr
 
 
-def test_unknown_arg_fails_fast():
+def test_unknown_arg_fails_fast(fake_board):
     proc = subprocess.run(
         ["bash", str(SCRIPT), "wat"],
         capture_output=True, text=True, timeout=60, cwd=ROOT,
